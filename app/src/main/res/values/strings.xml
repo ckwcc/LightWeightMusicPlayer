@@ -1,0 +1,14 @@
+<resources>
+    <!--<string name="app_name">LightWeightMusicPlayer</string>-->
+    <string name="app_name">简·音</string>
+
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
+    <string name="action_settings">设置</string>
+    <string name="drawer_item_home">主页</string>
+    <string name="drawer_item_local">本地音乐</string>
+    <string name="drawer_item_folder">文件夹</string>
+    <string name="drawer_item_timer">定时关闭</string>
+    <string name="drawer_item_skin">个性换肤</string>
+
+</resources>

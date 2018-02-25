@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <group android:checkableBehavior="single">
+        <item
+            android:id="@+id/nav_home"
+            android:checked="true"
+            android:icon="@drawable/ic_home"
+            android:title="@string/drawer_item_home" />
+        <item
+            android:id="@+id/nav_local"
+            android:icon="@drawable/ic_local"
+            android:title="@string/drawer_item_local" />
+
+        <item
+            android:id="@+id/nav_folder"
+            android:icon="@drawable/ic_folder"
+            android:title="@string/drawer_item_folder" />
+
+        <item
+            android:id="@+id/nav_time_close"
+            android:icon="@drawable/ic_recent"
+            android:title="@string/drawer_item_timer"
+            />
+
+        <item
+            android:id="@+id/nav_change_skin"
+            android:icon="@drawable/ic_clothes"
+            android:title="@string/drawer_item_skin"
+            />
+
+    </group>
+
+</menu>
