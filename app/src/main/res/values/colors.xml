@@ -6,7 +6,8 @@
 
     <color name="colorPrimary">#000000</color>
     <color name="colorPrimaryDark">#000000</color>
-    <color name="colorAccent">#000000</color>
+    <color name="colorAccent">#FF4081</color>
     <color name="colorDark">#111111</color>
     <color name="colorListItem">#111111</color>
+    <color name="colorGray">#797878</color>
 </resources>

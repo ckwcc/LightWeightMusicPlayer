@@ -1,6 +1,6 @@
 <resources>
     <!--<string name="app_name">LightWeightMusicPlayer</string>-->
-    <string name="app_name">简·音</string>
+    <string name="app_name">音乐季</string>
 
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
@@ -10,5 +10,10 @@
     <string name="drawer_item_folder">文件夹</string>
     <string name="drawer_item_timer">定时关闭</string>
     <string name="drawer_item_skin">个性换肤</string>
+
+    <string name="recent_play">最近播放</string>
+    <string name="see_all">查看全部</string>
+    <string name="play_list">播放列表</string>
+    <string name="empty_tip">空空如也</string>
 
 </resources>
