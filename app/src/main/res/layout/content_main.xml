@@ -193,6 +193,12 @@
 
         </RelativeLayout>
 
+        <com.ckw.lightweightmusicplayer.weight.RotaryTableView
+            android:id="@+id/bitview"
+            android:layout_below="@+id/rl_local_container"
+            android:layout_width="300dp"
+            android:layout_height="300dp" />
+
 
 
 

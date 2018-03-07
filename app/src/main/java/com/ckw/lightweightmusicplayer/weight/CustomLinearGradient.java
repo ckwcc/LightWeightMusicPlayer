@@ -60,7 +60,6 @@ public class CustomLinearGradient extends View {
         startColor = Color.argb(alpha, Color.red(MainActivity.themeColor), Color.green(MainActivity.themeColor), Color.blue(MainActivity.themeColor));
         midColor = Color.parseColor("#88111111");
         endColor = Color.parseColor("#FF111111");
-//        paint.setShader(new LinearGradient(0, 0, 0, getHeight(), new int[]{startColor, midColor, endColor}, new float[]{0.0f, 0.35f, 1.0f}, Shader.TileMode.MIRROR));
         paint.setShader(new LinearGradient(0, 0, 0, getHeight(), startColor, endColor, Shader.TileMode.CLAMP));
         canvas.drawPaint(paint);
     }

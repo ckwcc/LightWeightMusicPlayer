@@ -55,6 +55,8 @@ public abstract class BaseActivity extends DaggerAppCompatActivity {
 
         //处理从其他界面传过来的数据
         handleIntent();
+
+        initVariable();
         //view与数据绑定
         initView(savedInstanceState);
 
@@ -99,6 +101,8 @@ public abstract class BaseActivity extends DaggerAppCompatActivity {
      * @param bundle 界面跳转时传递的数据
      */
     protected abstract void handleBundle(@NonNull Bundle bundle);
+
+    protected abstract void initVariable();
 
     /**
      * this activity layout res

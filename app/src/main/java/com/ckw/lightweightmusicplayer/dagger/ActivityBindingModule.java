@@ -1,5 +1,8 @@
 package com.ckw.lightweightmusicplayer.dagger;
 
+import com.ckw.lightweightmusicplayer.MainActivity;
+import com.ckw.lightweightmusicplayer.MainActivityModule;
+
 import dagger.Module;
 import dagger.android.ContributesAndroidInjector;
 
@@ -10,7 +13,8 @@ import dagger.android.ContributesAndroidInjector;
  */
 @Module
 public abstract class ActivityBindingModule {
-//    @ActivityScoped
-//    @ContributesAndroidInjector(modules = LoginModule.class)
-//    abstract LoginActivity loginActivity();
+
+    @ActivityScoped
+    @ContributesAndroidInjector(modules = MainActivityModule.class)
+    abstract MainActivity mainActivity();
 }
