@@ -4,8 +4,8 @@ import android.app.Application;
 import android.content.Context;
 
 import com.ckw.lightweightmusicplayer.CkwApplication;
-import com.ckw.lightweightmusicplayer.NetLoader.ApiService;
-import com.ckw.lightweightmusicplayer.NetLoader.HttpManager;
+import com.ckw.lightweightmusicplayer.network.ApiService;
+import com.ckw.lightweightmusicplayer.network.HttpManager;
 import com.google.gson.Gson;
 
 import javax.inject.Singleton;

@@ -28,4 +28,10 @@
 
     <style name="MaterialTheme" parent="MaterialTheme.Base"/>
 
+    <!--toolbar的样式-->
+    <style name="tool_bar_theme" parent="ThemeOverlay.AppCompat.Dark.ActionBar">
+        <item name="colorControlNormal">@color/colorWhite</item>
+        <item name="actionMenuTextColor">@color/colorWhite</item>
+    </style>
+
 </resources>

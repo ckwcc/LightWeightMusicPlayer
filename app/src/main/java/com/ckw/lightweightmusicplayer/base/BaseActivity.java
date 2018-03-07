@@ -14,6 +14,8 @@ import android.transition.Slide;
 import android.transition.Transition;
 import android.view.Gravity;
 import android.view.View;
+import android.view.Window;
+import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.TextView;
 
@@ -42,8 +44,14 @@ public abstract class BaseActivity extends DaggerAppCompatActivity {
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        getWindow().requestFeature(Window.FEATURE_ACTION_BAR);
+        getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
         setContentView(getLayoutId());
         mUnbinder = ButterKnife.bind(this);
+
+        if(needToolbar()){
+            initToolbar();
+        }
 
         //处理从其他界面传过来的数据
         handleIntent();
@@ -140,6 +148,113 @@ public abstract class BaseActivity extends DaggerAppCompatActivity {
     }
 
     ///////////////////////////////////////////////////////////////////////////////////////////
+
+    /////////////////////////////////////////////////////////////////////////////////////////
+    //ToolBar相关
+
+    //返回false的时候，就不再需要重写setToolbar方法，当需要显示toolbar的时候，返回true
+//    protected abstract boolean needToolbar();
+    private boolean needToolbar(){
+        return true;
+    }
+
+    private void initToolbar(){
+        mToolbar =  findViewById(R.id.toolbar_id);
+        if(mToolbar != null){
+            setToolbar();
+            setSupportActionBar(mToolbar);
+        }
+
+    }
+
+    public abstract void setToolbar();
+
+    public Toolbar getToolbar(){
+        return mToolbar;
+    }
+
+    /**
+     * 设置头部标题
+     * @param title
+     */
+    public void setToolBarTitle(String title) {
+        if(mToolbar != null){
+            mToolbar.setTitle(title);
+        }
+    }
+
+    public void setToolBarTitle(int resId) {
+        if(mToolbar != null){
+            mToolbar.setTitle(resId);
+        }
+    }
+
+    /**
+     * 自定义导航图标
+     *
+     * @param resId 图片的资源id
+     */
+    protected void setNavigationIcon(int resId) {
+        if (mToolbar != null) {
+            mToolbar.setNavigationIcon(resId);
+            mToolbar.setNavigationOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    onNavigationIconClick();
+                }
+            });
+        }
+    }
+
+    /**
+     * 自定义导航栏图标
+     *
+     * @param drawable drawable对象
+     */
+    protected void setNavigationIcon(Drawable drawable) {
+        if (mToolbar != null) {
+            mToolbar.setNavigationIcon(drawable);
+            mToolbar.setNavigationOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    onNavigationIconClick();
+                }
+            });
+        }
+    }
+
+
+
+    /**
+     * 设置toolbar的返回箭头是否显示
+     *
+     * @param enabled true:显示  false:不显示
+     */
+    protected void setDisplayHomeAsUpEnabled(boolean enabled) {
+        if (mToolbar != null) {
+            ActionBar actionBar = getSupportActionBar();
+            if (actionBar != null) {
+                actionBar.setDisplayHomeAsUpEnabled(enabled);
+                if (enabled) {
+                    mToolbar.setNavigationOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            onNavigationIconClick();
+                        }
+                    });
+                }
+            }
+        }
+    }
+
+    /**
+     * toolbar左侧返回键点击
+     */
+    protected void onNavigationIconClick() {
+        onBackPressed();
+    }
+
+    //////////////////////////////////////////////////////////////////////////////////////////////
     //其他
 
     //跳转界面时判读Intent是否携带数据

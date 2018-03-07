@@ -10,4 +10,5 @@
     <color name="colorDark">#111111</color>
     <color name="colorListItem">#111111</color>
     <color name="colorGray">#797878</color>
+    <color name="colorWhite">#ffffff</color>
 </resources>

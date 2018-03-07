@@ -1,4 +1,4 @@
-package com.ckw.lightweightmusicplayer.NetLoader;
+package com.ckw.lightweightmusicplayer.network;
 
 
 public interface CallBackListener<T> {

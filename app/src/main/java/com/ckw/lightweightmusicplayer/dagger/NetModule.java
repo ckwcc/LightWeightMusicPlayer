@@ -1,8 +1,8 @@
 package com.ckw.lightweightmusicplayer.dagger;
 
 
-import com.ckw.lightweightmusicplayer.NetLoader.ApiService;
-import com.ckw.lightweightmusicplayer.NetLoader.HttpManager;
+import com.ckw.lightweightmusicplayer.network.ApiService;
+import com.ckw.lightweightmusicplayer.network.HttpManager;
 import com.ckw.lightweightmusicplayer.common.Config;
 import com.google.gson.Gson;
 

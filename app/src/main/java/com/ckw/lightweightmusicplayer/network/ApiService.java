@@ -1,4 +1,4 @@
-package com.ckw.lightweightmusicplayer.NetLoader;
+package com.ckw.lightweightmusicplayer.network;
 
 import java.util.Map;
 
