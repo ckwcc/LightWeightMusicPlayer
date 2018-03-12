@@ -8,6 +8,7 @@ import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AlertDialog;
+import android.util.Log;
 import android.view.View;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -54,8 +55,8 @@ public class MainActivity extends BaseActivity
     /**
      * 抽奖的文字
      */
-    private String[] mStrs = new String[]{"七里香", "七里香", "七里香","七里香","七里香","七里香",
-            "七里香", "七里香"};
+    private String[] mStrs = new String[]{"0","1", "2", "3","4","5"
+           };
 
     @Override
     protected void initView(Bundle savedInstanceState) {
@@ -104,7 +105,14 @@ public class MainActivity extends BaseActivity
         mBitView.setOnWheelCheckListener(new RotaryTableView.OnWheelCheckListener() {
             @Override
             public void onCheck(int position) {
-                Toast.makeText(getApplicationContext(),"点击了位置："+position,Toast.LENGTH_SHORT).show();
+                Log.d("----", "onCheck: 点击了第"+position+"个位置");
+            }
+        });
+
+        mBitView.setOnCenterBitmapClickListener(new RotaryTableView.OnCenterBitmapClickListener() {
+            @Override
+            public void onCenterClick(int position) {
+                Log.d("----", "onCenterClick: 当前的初始位置item数字是："+position);
             }
         });
     }
@@ -211,7 +219,8 @@ public class MainActivity extends BaseActivity
 
     private void getBitWheelInfos() {
         for (int i = 0; i < mStrs.length; i++) {
-            infos.add(new RotaryTableInfo(mStrs[i], BitmapFactory.decodeResource(getResources(), R.mipmap.ic_launcher)));
+            infos.add(new RotaryTableInfo(mStrs[i], BitmapFactory.decodeResource(getResources(), R.mipmap.ic_cd
+            )));
         }
     }
 

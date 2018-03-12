@@ -1,9 +1,11 @@
 package com.ckw.lightweightmusicplayer.weight;
 
 import android.content.Context;
+import android.content.res.TypedArray;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
+import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Rect;
 import android.graphics.RectF;
@@ -45,7 +47,7 @@ public class RotaryTableView extends View {
     /*
     * 被选中的position，默认是第0个位置
     * */
-    private int checkPosition = 0;
+    private int checkPosition = -1;
 
     /**
      * 绘画区域的图片。这边会将各个小图片拼接成一张图片
@@ -69,15 +71,21 @@ public class RotaryTableView extends View {
     private Canvas mCanvas;
 
     /**
-     * 非选中和选择的颜色色块
+     * 非选中和选中的颜色色块
      */
-    private int[] mColors = new int[]{0xffffeb8c, 0xffffe670};
+    private int[] mColors;
 
     /**
      * 触摸点的坐标位置
      **/
     private float touchX;
     private float touchY;
+
+    /*
+    * 非点击模式下，初始的触摸点
+    * */
+    private float originX;
+    private float originY;
 
     /**
      * 绘制盘块的范围
@@ -109,6 +117,7 @@ public class RotaryTableView extends View {
      * 圆盘角度
      **/
     private volatile float mStartAngle = 0;
+
 
     /**
      * 控件的中心位置,处于中心位置。x和y是相等的
@@ -150,23 +159,64 @@ public class RotaryTableView extends View {
     /**
      * 中心图片信息
      **/
-    private Bitmap mCheckBitmap = BitmapFactory.decodeResource(getResources(), R.mipmap.ic_round_play);
+    private Bitmap mCheckBitmap;
     private float mCheckBitmapWidth = 270;//1080p下的270
     private RectF mCheckBitmapRect = new RectF();//图片绘制区域
 
+    /////////////////////////////////////////////////////////////////////////////////////
+    /*
+    * 对外提供的属性（xml中） 圆盘背景 item未被选中的颜色 item选中的颜色 分割线颜色 中心图片 是否能点击
+    * */
+    private int mBackgroundColor;
+    private int mItemSelectedColor;
+    private int mItemUnSelectedColor;
+    private int mSplitLineColor;
+    private int mCenterBitmapSrc;
+    private boolean mCanClick;
+
+    /////////////////////////////////////////////////////////////////////////////////////
+
     private OnWheelCheckListener mOnWheelCheckListener;
 
-    public void setOnWheelCheckListener(OnWheelCheckListener mOnWheelCheckListener) {
-        this.mOnWheelCheckListener = mOnWheelCheckListener;
+    public void setOnWheelCheckListener(OnWheelCheckListener onWheelCheckListener) {
+        this.mOnWheelCheckListener = onWheelCheckListener;
     }
 
+    private OnCenterBitmapClickListener mOnCenterBitmapClickListener;
 
+    public void setOnCenterBitmapClickListener(OnCenterBitmapClickListener onCenterBitmapClickListener){
+        this.mOnCenterBitmapClickListener = onCenterBitmapClickListener;
+    }
+
+    /////////////////////////////////////////////////////////////////////////////////////
     public RotaryTableView(Context context) {
-        super(context);
+        this(context,null);
     }
 
     public RotaryTableView(Context context, @Nullable AttributeSet attrs) {
-        super(context, attrs);
+        this(context,attrs,0);
+    }
+
+    public RotaryTableView(Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
+        super(context, attrs, defStyleAttr);
+        TypedArray typedArray = context.obtainStyledAttributes(attrs, R.styleable.RotaryTableView);
+        mBackgroundColor = typedArray.getColor(R.styleable.RotaryTableView_backgroundColor,Color.YELLOW);
+        mSplitLineColor = typedArray.getColor(R.styleable.RotaryTableView_splitLineColor,Color.WHITE);
+        mCanClick = typedArray.getBoolean(R.styleable.RotaryTableView_canClick,true);
+        if(!mCanClick){//如果不能点击，不会有选中的效果
+            mItemUnSelectedColor = typedArray.getColor(R.styleable.RotaryTableView_itemUnSelectedColor,Color.DKGRAY);
+            mItemSelectedColor = mItemUnSelectedColor;
+        }else {
+            mItemSelectedColor = typedArray.getColor(R.styleable.RotaryTableView_itemSelectedColor,Color.DKGRAY);
+            mItemUnSelectedColor = typedArray.getColor(R.styleable.RotaryTableView_itemUnSelectedColor,Color.GRAY);
+        }
+
+        mCenterBitmapSrc = typedArray.getResourceId(R.styleable.RotaryTableView_centerBitmapSrc,R.mipmap.ic_launcher_round);
+
+        mColors = new int[]{mItemUnSelectedColor, mItemSelectedColor};
+        mCheckBitmap = BitmapFactory.decodeResource(getResources(), mCenterBitmapSrc);
+        typedArray.recycle();
+
     }
 
     @Override
@@ -177,7 +227,6 @@ public class RotaryTableView extends View {
         int width = Math.min(getMeasuredWidth(),getMeasuredHeight());
         mCenter = width / 2;
         mDrawWidth = width;
-
         //控件整体为正方形
         setMeasuredDimension(width,width);
 
@@ -193,14 +242,19 @@ public class RotaryTableView extends View {
 
     @Override
     public boolean onTouchEvent(MotionEvent event) {
-        //判断按点是否在圆内
+        //判断按点是否在圆内,如果没有在自己的范围内，则返回false，事件由父控件消费
         if (!mRange.contains(event.getX(), event.getY())) {
-            return true;
+            return false;
         }
+
+        //当滑动在自己的范围内时，阻止父控件拦截事件，将事件交由自己处理
+        getParent().requestDisallowInterceptTouchEvent(true);
         switch (event.getAction()) {
             case MotionEvent.ACTION_DOWN:
                 touchX = event.getX();
                 touchY = event.getY();
+                originX = event.getX();
+                originY = event.getY();
                 //按下时的时间
                 nowClick = System.currentTimeMillis();
                 break;
@@ -217,14 +271,25 @@ public class RotaryTableView extends View {
                 onDrawInvalidate();
                 break;
             case MotionEvent.ACTION_UP:
-                if (System.currentTimeMillis() - nowClick <= timeClick) {//此时为点击事件
-                    //落点的角度加上偏移量基于初始的点的位置
-                    checkPosition = calInExactArea(getRoundArc(event.getX(), event.getY()) - mStartAngle);
-                    onDrawInvalidate();
-                    if (mOnWheelCheckListener != null) {
-                        mOnWheelCheckListener.onCheck(checkPosition);
+                if(mCanClick){
+                    if (System.currentTimeMillis() - nowClick <= timeClick) {//此时为点击事件
+                        //落点的角度加上偏移量基于初始的点的位置
+
+                        checkPosition = calInExactArea(getRoundArc(event.getX(), event.getY()) - mStartAngle);
+                        onDrawInvalidate();
+                        if (mOnWheelCheckListener != null) {
+                            mOnWheelCheckListener.onCheck(checkPosition);
+                        }
                     }
+                }else {
+                    int currentZeroIndex = getZeroPositionByCoordinateSystem(mStartAngle);
+                    onDrawInvalidate();
+                    if(mOnCenterBitmapClickListener != null){
+                        mOnCenterBitmapClickListener.onCenterClick(currentZeroIndex);
+                    }
+
                 }
+
                 break;
         }
         return true;
@@ -242,10 +307,14 @@ public class RotaryTableView extends View {
         mCanvas.drawCircle(mCenter,mCenter,mBackgroundWidth / 2,mBackgroundPaint);
         //绘制前景图片（比背景图略小的）
         mCanvas.drawBitmap(getFontBitmap(),0,0,null);
+        //绘制中心图片
+        mCanvas.drawBitmap(mCheckBitmap, null, mCheckBitmapRect, null);
 
     }
 
-    //绘制前景图片,这里包含的是图片信息和文字信息
+    /*
+    * 绘制前景图片,这里包含的是图片信息和文字信息
+    * */
     private Bitmap getFontBitmap() {
         fontBitmap = Bitmap.createBitmap(getWidth(),getHeight(),Bitmap.Config.ARGB_8888);
 
@@ -262,7 +331,9 @@ public class RotaryTableView extends View {
         return fontBitmap;
     }
 
-    //绘制单个的item
+    /*
+    * 绘制单个的item
+    * */
     private Bitmap getDrawItemBitmap(float tmpAngle, float sweepAngle, int position) {
         //是否需要重新绘制
         boolean needReDraw = false;
@@ -377,7 +448,7 @@ public class RotaryTableView extends View {
         float rotate = (startAngle % 360.0f + 360.0f) % 360.0f;
 
         for (int i = 0; i < mItemCount; i++) {
-            // 每个的中奖范围
+            // 每个的范围
             if (i == 0) {
                 if ((rotate > 360 - size / 2) || (rotate < size / 2)) {
                     return i;
@@ -393,10 +464,35 @@ public class RotaryTableView extends View {
         return -1;
     }
 
-    //根据落点计算角度
+    /*
+    * 通过坐标系的偏移来确定当前在[330,30]（假如是6个item）范围内的item下标
+    * */
+    private int getZeroPositionByCoordinateSystem(float offAngle){
+        int ret = 0;
+        float size = 360 / mItemCount;
+        float rotate = (offAngle % 360.0f + 360.0f) % 360.0f;
+
+        if(rotate < 0){
+            rotate = 360 + rotate;
+        }
+
+        if(Math.abs(rotate) <= Math.abs(size / 2)){
+            return ret;
+        } else if(rotate > size/2){
+            int offCount = (int) ((rotate - size/2)/size);//需要转过的item数
+            ret = mItemCount - offCount - 1;
+            return ret;
+        }
+        return -1;
+    }
+
+    /*
+    * 根据落点计算角度（点击事件）
+    * 得到的角度是落点和y轴上半轴的角度
+    * */
     private float getRoundArc(float upX, float upY) {
         float arc = 0;
-        //首先计算三边的长度
+        //首先计算三边的长度 Math.sqrt求平方根，Math.pow求参数一的参数二次方
         float a = (float) Math.sqrt(Math.pow(mCenter - mCenter, 2) + Math.pow(0 - mCenter, 2));
         float b = (float) Math.sqrt(Math.pow(upX - mCenter, 2) + Math.pow(upY - mCenter, 2));
         float c = (float) Math.sqrt(Math.pow(upX - mCenter, 2) + Math.pow(upY - 0, 2));
@@ -426,7 +522,9 @@ public class RotaryTableView extends View {
         return arc;
     }
 
-    //根据三点的坐标计算旋转的角度
+    /*
+    * 根据三点的坐标计算旋转的角度
+    * */
     private float getRoundArc(float startX, float startY, float endX, float endY) {
         float arc = 0;
         //首先计算三边的长度
@@ -492,7 +590,7 @@ public class RotaryTableView extends View {
         mTextPaint.setDither(true);
         //设置圆形背景的画笔
         mBackgroundPaint = new Paint();
-        mBackgroundPaint.setColor(0xffae6112);
+        mBackgroundPaint.setColor(mBackgroundColor);
         mBackgroundPaint.setAntiAlias(true);
         mBackgroundPaint.setDither(true);
         //分割线的画笔
@@ -501,7 +599,7 @@ public class RotaryTableView extends View {
         mLinePaint.setDither(true);
         mLinePaint.setStrokeWidth(dip2px(1f));
         mLinePaint.setStyle(Paint.Style.FILL);
-        mLinePaint.setColor(0xffff9406);
+        mLinePaint.setColor(mSplitLineColor);
         //内圈画盘(矩形)
         mRange = new RectF(mCenter - mRangeWidth / 2, mCenter - mRangeWidth / 2, mCenter + mRangeWidth / 2, mCenter + mRangeWidth / 2);
         //中心图片绘制区域（矩形）
@@ -528,8 +626,19 @@ public class RotaryTableView extends View {
         return (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, dpValue, getContext().getResources().getDisplayMetrics());
     }
 
+    //////////////////////////////////////////////////////////////////
+    /*
+    * position：当前被选中（手指按下）的item，在数据源中所在的序列
+    * */
     public interface OnWheelCheckListener {
         void onCheck(int position);
+    }
+
+    /*
+    * position：当前被选中（在0位置）的item，在数据源中所在的序列
+    * */
+    public interface OnCenterBitmapClickListener{
+        void onCenterClick(int position);
     }
 
     //////////////////////////////////////////////////////////////

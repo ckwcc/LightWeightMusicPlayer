@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <declare-styleable name="RotaryTableView">
+        <attr name="backgroundColor" format="color"/>
+        <attr name="splitLineColor" format="color"/>
+        <attr name="itemSelectedColor" format="color"/>
+        <attr name="itemUnSelectedColor" format="color"/>
+        <attr name="centerBitmapSrc" format="reference"/>
+        <attr name="canClick" format="boolean"/>
+    </declare-styleable>
+</resources>

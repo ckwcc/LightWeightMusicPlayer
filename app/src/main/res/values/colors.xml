@@ -10,5 +10,8 @@
     <color name="colorDark">#111111</color>
     <color name="colorListItem">#111111</color>
     <color name="colorGray">#797878</color>
+    <color name="colorSmallGray">#bab5b5</color>
     <color name="colorWhite">#ffffff</color>
+    <color name="colorYellow">#fcef03</color>
+    <color name="colorRotaryItem">#a18531</color>
 </resources>

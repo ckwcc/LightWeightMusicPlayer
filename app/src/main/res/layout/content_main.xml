@@ -10,11 +10,8 @@
     tools:showIn="@layout/app_bar_main">
 
     <RelativeLayout
-
-        android:clickable="true"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:focusable="true">
+        android:layout_height="match_parent">
 
         <RelativeLayout
             android:id="@+id/rl_recent_container"
@@ -193,11 +190,30 @@
 
         </RelativeLayout>
 
-        <com.ckw.lightweightmusicplayer.weight.RotaryTableView
-            android:id="@+id/bitview"
+        <RelativeLayout
             android:layout_below="@+id/rl_local_container"
-            android:layout_width="300dp"
-            android:layout_height="300dp" />
+            android:layout_width="match_parent"
+            android:layout_height="300dp">
+
+            <com.ckw.lightweightmusicplayer.weight.RotaryTableView
+                android:id="@+id/bitview"
+                android:layout_centerHorizontal="true"
+                app:backgroundColor="@color/colorWhite"
+                app:itemSelectedColor="@color/colorYellow"
+                app:itemUnSelectedColor="@color/colorAccent"
+                app:splitLineColor="@color/colorDark"
+                app:centerBitmapSrc="@mipmap/ic_round_play"
+                app:canClick="false"
+                android:layout_width="300dp"
+                android:layout_height="300dp" />
+
+            <ImageView
+                android:src="@mipmap/ic_pointer"
+                android:layout_centerHorizontal="true"
+                android:layout_width="40dp"
+                android:layout_height="50dp" />
+
+        </RelativeLayout>
 
 
 
