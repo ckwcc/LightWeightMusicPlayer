@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:background="@color/colorListItem"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+    
+    <ImageView
+        android:id="@+id/iv_song"
+        android:background="@mipmap/ic_song_default"
+        android:scaleType="fitXY"
+        android:layout_margin="@dimen/nav_header_vertical_spacing"
+        android:layout_width="56dp"
+        android:layout_height="56dp"
+        tools:ignore="ContentDescription" />
+
+    <TextView
+        android:id="@+id/tv_song"
+        android:layout_toEndOf="@+id/iv_song"
+        android:layout_marginTop="@dimen/nav_header_vertical_spacing"
+        tools:text="七里香"
+        android:textColor="@color/colorWhite"
+        android:textSize="@dimen/normal_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
+
+    <TextView
+        android:id="@+id/tv_artist"
+        android:layout_toEndOf="@+id/iv_song"
+        android:layout_below="@+id/tv_song"
+        tools:text="周杰伦"
+        android:textColor="@color/colorWhite"
+        android:textSize="@dimen/small_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
+
+    <TextView
+        android:id="@+id/tv_duration"
+        android:layout_alignBaseline="@+id/tv_artist"
+        android:layout_alignParentEnd="true"
+        android:layout_marginEnd="@dimen/nav_header_vertical_spacing"
+        android:layout_marginBottom="@dimen/nav_header_vertical_spacing"
+        tools:text="05:28"
+        android:textColor="@color/colorWhite"
+        android:textSize="@dimen/small_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
+    
+
+</RelativeLayout>

@@ -1,18 +1,22 @@
 package com.ckw.lightweightmusicplayer.ui.localmusic;
 
-import android.Manifest;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
-import android.support.v4.app.FragmentManager;
+import android.support.v4.app.Fragment;
+import android.support.v4.view.ViewPager;
+import android.view.MenuItem;
 
-import com.blankj.utilcode.util.FragmentUtils;
 import com.ckw.lightweightmusicplayer.R;
 import com.ckw.lightweightmusicplayer.base.BaseActivity;
+import com.ckw.lightweightmusicplayer.ui.localmusic.adapter.LocalMusicAdapter;
+import com.ckw.lightweightmusicplayer.ui.localmusic.fragments.LocalAlbumFragment;
+import com.ckw.lightweightmusicplayer.ui.localmusic.fragments.LocalMusicListFragment;
 
+import java.util.ArrayList;
 import java.util.List;
 
-import pub.devrel.easypermissions.EasyPermissions;
-import pub.devrel.easypermissions.PermissionRequest;
+import butterknife.BindView;
+import cn.hugeterry.coordinatortablayout.CoordinatorTabLayout;
 
 /**
  * Created by ckw
@@ -21,17 +25,27 @@ import pub.devrel.easypermissions.PermissionRequest;
 
 public class LocalMusicActivity extends BaseActivity {
 
-    private LocalMusicFragment localMusicFragment;
+    @BindView(R.id.coordinatortablayout)
+    CoordinatorTabLayout mCoordinatorTabLayout;
+
+    @BindView(R.id.viewpager)
+    ViewPager mViewPager;
+
+    private List<Fragment> mFragments;
+
+    private final String[] mTitles = {"歌曲", "专辑", "歌手"};
+    private int[] mImageArray, mColorArray;
 
     @Override
     protected void initView(Bundle savedInstanceState) {
+        mViewPager.setOffscreenPageLimit(3);
+        mViewPager.setAdapter(new LocalMusicAdapter(getSupportFragmentManager(), mFragments, mTitles));
 
-        LocalMusicFragment localMusicFragment = (LocalMusicFragment) getSupportFragmentManager().findFragmentById(R.id.rl_common_content);
-        if (localMusicFragment == null) {
-            localMusicFragment = LocalMusicFragment.newInstance();
-            FragmentUtils.add(getSupportFragmentManager(),localMusicFragment,R.id.rl_common_content);
-
-        }
+        mCoordinatorTabLayout
+                .setTitle("本地音乐")
+                .setBackEnable(true)
+                .setImageArray(mImageArray, mColorArray)
+                .setupWithViewPager(mViewPager);
     }
 
 
@@ -42,11 +56,30 @@ public class LocalMusicActivity extends BaseActivity {
 
     @Override
     protected void initVariable() {
+        mFragments = new ArrayList<>();
+
+        LocalMusicListFragment localSongFragment  = LocalMusicListFragment.newInstance(mTitles[0]);
+        LocalAlbumFragment localAlbumFragment = LocalAlbumFragment.newInstance();
+        LocalMusicListFragment localArtistFragment  = LocalMusicListFragment.newInstance(mTitles[2]);
+
+        mFragments.add(localSongFragment);
+        mFragments.add(localAlbumFragment);
+        mFragments.add(localArtistFragment);
+
+        mImageArray = new int[]{
+                R.drawable.bg_music,
+                R.drawable.bg_music,
+                R.drawable.bg_music};
+        mColorArray = new int[]{
+                R.color.colorDark,
+                R.color.colorDark,
+                R.color.colorDark,};
+
     }
 
     @Override
     protected int getLayoutId() {
-        return R.layout.activity_common;
+        return R.layout.activity_local_music;
     }
 
     @Override
@@ -55,11 +88,26 @@ public class LocalMusicActivity extends BaseActivity {
     }
 
     @Override
-    public void setToolbar() {
-        setToolBarTitle(R.string.drawer_item_local);
+    public boolean onOptionsItemSelected(MenuItem item) {
+        //这边由于CoordinatorTabLayout自带的toolbar与baseActivity系列有冲突，使用CoordinatorTabLayout的
+        //但是使用它的之后，返回键不起作用，只能自己重写了
+        int itemId = item.getItemId();
+        switch (itemId){
+            case android.R.id.home:
+                finish();
+                break;
+        }
+        return super.onOptionsItemSelected(item);
     }
 
+    @Override
+    protected boolean needToolbar() {
+        return false;
+    }
 
+    @Override
+    public void setToolbar() {
+    }
 
 
 }

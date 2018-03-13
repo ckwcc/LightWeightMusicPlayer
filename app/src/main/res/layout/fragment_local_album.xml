@@ -9,7 +9,7 @@
 
 
     <com.jude.easyrecyclerview.EasyRecyclerView
-        android:id="@+id/recyclerView"
+        android:id="@+id/recyclerView_album"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         app:layout_empty="@layout/view_empty"
@@ -21,5 +21,5 @@
         app:recyclerPaddingRight="8dp"
         app:scrollbarStyle="insideOverlay"
         app:scrollbars="none"
-    />
+        />
 </RelativeLayout>

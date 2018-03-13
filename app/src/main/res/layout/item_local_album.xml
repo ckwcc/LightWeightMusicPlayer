@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:background="@color/colorListItem"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <ImageView
+        android:id="@+id/iv_album"
+        android:src="@drawable/ic_album_music"
+        android:scaleType="fitXY"
+        android:layout_width="match_parent"
+        android:layout_height="160dp" />
+
+    <TextView
+        android:id="@+id/tv_album_name"
+        tools:text="七里香"
+        android:layout_marginTop="@dimen/nav_header_vertical_spacing"
+        android:layout_marginStart="@dimen/nav_header_vertical_spacing"
+        android:textColor="@color/colorWhite"
+        android:layout_below="@+id/iv_album"
+        android:textSize="@dimen/normal_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
+
+    <TextView
+        android:id="@+id/tv_album_artist"
+        tools:text="周杰伦"
+        android:layout_marginStart="@dimen/nav_header_vertical_spacing"
+        android:textColor="@color/colorWhite"
+        android:layout_below="@+id/tv_album_name"
+        android:textSize="@dimen/small_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
+
+    <TextView
+        android:id="@+id/tv_album_number"
+        tools:text="1首歌曲"
+        android:layout_marginStart="@dimen/nav_header_vertical_spacing"
+        android:layout_marginBottom="@dimen/nav_header_vertical_spacing"
+        android:textColor="@color/colorWhite"
+        android:layout_below="@+id/tv_album_artist"
+        android:textSize="@dimen/small_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
+
+
+
+</RelativeLayout>

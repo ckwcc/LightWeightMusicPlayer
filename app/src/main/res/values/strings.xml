@@ -16,4 +16,6 @@
     <string name="play_list">播放列表</string>
     <string name="empty_tip">空空如也</string>
 
+    <string name="song_num">%d首歌曲</string>
+
 </resources>

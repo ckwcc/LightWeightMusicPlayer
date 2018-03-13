@@ -9,11 +9,11 @@ import java.util.List;
 
 public class Artist {
     private String Name;
-    private List<LocalSong> mArtistsongs;
+    private List<Song> artistsongs;
 
-    public Artist(String name, List<LocalSong> mArtistsongs) {
+    public Artist(String name, List<Song> mArtistsongs) {
         Name = name;
-        this.mArtistsongs = mArtistsongs;
+        this.artistsongs = mArtistsongs;
     }
 
     public String getName() {
@@ -24,11 +24,11 @@ public class Artist {
         Name = name;
     }
 
-    public List<LocalSong> getmArtistsongs() {
-        return mArtistsongs;
+    public List<Song> getArtistsongs() {
+        return artistsongs;
     }
 
-    public void setmArtistsongs(List<LocalSong> mArtistsongs) {
-        this.mArtistsongs = mArtistsongs;
+    public void setArtistsongs(List<Song> mArtistsongs) {
+        this.artistsongs = mArtistsongs;
     }
 }

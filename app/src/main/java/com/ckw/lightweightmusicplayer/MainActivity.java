@@ -119,6 +119,11 @@ public class MainActivity extends BaseActivity
         });
     }
 
+    @Override
+    protected boolean needToolbar() {
+        return true;
+    }
+
 
     @Override
     public void setToolbar() {

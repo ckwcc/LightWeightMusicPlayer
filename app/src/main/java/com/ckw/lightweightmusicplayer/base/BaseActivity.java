@@ -158,17 +158,17 @@ public abstract class BaseActivity extends DaggerAppCompatActivity {
     //ToolBar相关
 
     //返回false的时候，就不再需要重写setToolbar方法，当需要显示toolbar的时候，返回true
-//    protected abstract boolean needToolbar();
-    private boolean needToolbar(){
-        return true;
-    }
+    protected abstract boolean needToolbar();
+//    private boolean needToolbar(){
+//        return true;
+//    }
 
     private void initToolbar(){
         mToolbar =  findViewById(R.id.toolbar_id);
         if(mToolbar != null){
             setToolbar();
             setSupportActionBar(mToolbar);
-            setNavigationIcon(R.mipmap.ic_back);
+            setNavigationIcon(R.drawable.ic_arrow_white_24dp);
         }
 
     }

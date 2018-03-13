@@ -6,4 +6,17 @@
     <dimen name="nav_header_height">176dp</dimen>
     <dimen name="fab_margin">16dp</dimen>
     <dimen name="common_app_bar_layout_elevation">2dp</dimen>
+
+    <!--
+    12sp 小字提示
+    14sp（桌面端13sp） 正文/按钮文字
+    16sp（桌面端15sp） 小标题
+    20sp Appbar文字
+    24sp 大标题
+    -->
+    <dimen name="small_text">12sp</dimen>
+    <dimen name="normal_text">14sp</dimen>
+    <dimen name="small_title">16sp</dimen>
+    <dimen name="app_bar_title">20sp</dimen>
+    <dimen name="big_title">24sp</dimen>
 </resources>

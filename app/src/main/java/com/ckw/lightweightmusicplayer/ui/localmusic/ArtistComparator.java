@@ -1,5 +1,4 @@
-package com.ckw.lightweightmusicplayer.ui.localmusic.comparators;
-
+package com.ckw.lightweightmusicplayer.ui.localmusic;
 
 import com.ckw.lightweightmusicplayer.repository.Artist;
 

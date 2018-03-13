@@ -1,34 +1,70 @@
 package com.ckw.lightweightmusicplayer.repository;
 
-import java.util.List;
+import java.io.Serializable;
 
 /**
  * Created by ckw
  * on 2018/3/13.
  */
 
-public class Album {
-    private String Name;
-    private List<LocalSong> mAlbumsongs;
+public class Album implements Serializable{
+    private int id, minYear, maxYear, numSongs;
+    private String album, albumKey, artist, albumArt;
 
-    public Album(String name, List<LocalSong> mAlbumsongs) {
-        Name = name;
-        this.mAlbumsongs = mAlbumsongs;
+    public Album(int id, int minYear, int maxYear, int numSongs, String album, String albumKey, String artist, String albumArt) {
+        this.id = id;
+        this.minYear = minYear;
+        this.maxYear = maxYear;
+        this.numSongs = numSongs;
+        this.album = album;
+        this.albumKey = albumKey;
+        this.artist = artist;
+        this.albumArt = albumArt;
     }
 
-    public String getName() {
-        return Name;
+    public int getId() {
+        return id;
     }
 
-    public void setName(String name) {
-        Name = name;
+    public int getMinYear() {
+        return minYear;
     }
 
-    public List<LocalSong> getmAlbumsongs() {
-        return mAlbumsongs;
+    public int getMaxYear() {
+        return maxYear;
     }
 
-    public void setmAlbumsongs(List<LocalSong> mAlbumsongs) {
-        this.mAlbumsongs = mAlbumsongs;
+    public int getNumSongs() {
+        return numSongs;
+    }
+
+    public String getAlbum() {
+        return album;
+    }
+
+    public String getAlbumKey() {
+        return albumKey;
+    }
+
+    public String getArtist() {
+        return artist;
+    }
+
+    public String getAlbumArt() {
+        return albumArt;
+    }
+
+    @Override
+    public String toString() {
+        return "Album{" +
+                "id=" + id +
+                ", minYear=" + minYear +
+                ", maxYear=" + maxYear +
+                ", numSongs=" + numSongs +
+                ", album='" + album + '\'' +
+                ", albumKey='" + albumKey + '\'' +
+                ", artist='" + artist + '\'' +
+                ", albumArt='" + albumArt + '\'' +
+                '}';
     }
 }
