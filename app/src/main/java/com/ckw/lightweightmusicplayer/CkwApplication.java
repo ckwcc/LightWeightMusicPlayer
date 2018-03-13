@@ -1,7 +1,8 @@
 package com.ckw.lightweightmusicplayer;
 
-import com.ckw.lightweightmusicplayer.dagger.AppComponent;
-import com.ckw.lightweightmusicplayer.dagger.DaggerAppComponent;
+import com.blankj.utilcode.util.Utils;
+import com.ckw.lightweightmusicplayer.di.AppComponent;
+import com.ckw.lightweightmusicplayer.di.DaggerAppComponent;
 
 import dagger.android.AndroidInjector;
 import dagger.android.DaggerApplication;
@@ -24,6 +25,6 @@ public class CkwApplication extends DaggerApplication{
     @Override
     public void onCreate() {
         super.onCreate();
-
+        Utils.init(this);
     }
 }

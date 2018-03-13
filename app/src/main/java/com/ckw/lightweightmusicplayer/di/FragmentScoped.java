@@ -1,4 +1,4 @@
-package com.ckw.lightweightmusicplayer.dagger;
+package com.ckw.lightweightmusicplayer.di;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;

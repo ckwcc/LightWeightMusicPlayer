@@ -50,4 +50,13 @@ dependencies {
 
     //color selector
     compile 'com.github.QuadFlask:colorpicker:0.0.13'
+
+    //AndroidUtilCode  https://github.com/Blankj/AndroidUtilCode 工具类
+    compile 'com.blankj:utilcode:1.9.11'
+
+    //EasyRecyclerView
+    compile 'com.jude:easyrecyclerview:4.4.2'
+
+    //easyPermission
+    implementation 'pub.devrel:easypermissions:1.1.3'
 }

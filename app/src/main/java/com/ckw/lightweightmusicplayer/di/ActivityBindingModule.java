@@ -1,7 +1,9 @@
-package com.ckw.lightweightmusicplayer.dagger;
+package com.ckw.lightweightmusicplayer.di;
 
 import com.ckw.lightweightmusicplayer.MainActivity;
 import com.ckw.lightweightmusicplayer.MainActivityModule;
+import com.ckw.lightweightmusicplayer.ui.localmusic.LocalMusicActivity;
+import com.ckw.lightweightmusicplayer.ui.localmusic.LocalMusicModule;
 
 import dagger.Module;
 import dagger.android.ContributesAndroidInjector;
@@ -17,4 +19,8 @@ public abstract class ActivityBindingModule {
     @ActivityScoped
     @ContributesAndroidInjector(modules = MainActivityModule.class)
     abstract MainActivity mainActivity();
+
+    @ActivityScoped
+    @ContributesAndroidInjector(modules = LocalMusicModule.class)
+    abstract LocalMusicActivity localMusicActivity();
 }

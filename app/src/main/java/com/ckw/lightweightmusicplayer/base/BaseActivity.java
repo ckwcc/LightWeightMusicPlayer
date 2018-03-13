@@ -12,6 +12,7 @@ import android.support.v7.widget.Toolbar;
 import android.transition.Fade;
 import android.transition.Slide;
 import android.transition.Transition;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
 import android.view.Window;
@@ -167,6 +168,7 @@ public abstract class BaseActivity extends DaggerAppCompatActivity {
         if(mToolbar != null){
             setToolbar();
             setSupportActionBar(mToolbar);
+            setNavigationIcon(R.mipmap.ic_back);
         }
 
     }

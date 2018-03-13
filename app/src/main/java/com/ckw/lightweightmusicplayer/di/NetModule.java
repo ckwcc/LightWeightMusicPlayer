@@ -1,4 +1,4 @@
-package com.ckw.lightweightmusicplayer.dagger;
+package com.ckw.lightweightmusicplayer.di;
 
 
 import com.ckw.lightweightmusicplayer.network.ApiService;

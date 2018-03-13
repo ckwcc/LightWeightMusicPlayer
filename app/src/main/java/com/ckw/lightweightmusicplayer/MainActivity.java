@@ -20,7 +20,9 @@ import android.view.MenuItem;
 import android.widget.RelativeLayout;
 import android.widget.Toast;
 
+import com.blankj.utilcode.util.ActivityUtils;
 import com.ckw.lightweightmusicplayer.base.BaseActivity;
+import com.ckw.lightweightmusicplayer.ui.localmusic.LocalMusicActivity;
 import com.ckw.lightweightmusicplayer.weight.RotaryTableInfo;
 import com.ckw.lightweightmusicplayer.weight.RotaryTableView;
 import com.flask.colorpicker.ColorPickerView;
@@ -158,7 +160,7 @@ public class MainActivity extends BaseActivity
 
                 break;
             case R.id.nav_local://本地音乐
-
+                ActivityUtils.startActivity(LocalMusicActivity.class);
                 break;
             case R.id.nav_folder://本地音乐文件夹
 
