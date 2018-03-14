@@ -68,6 +68,7 @@ public class AlbumActivity extends BaseActivity {
 
 
             mCollapsingToolbarLayout.setTitle(mAlbum.getAlbum());
+            mCollapsingToolbarLayout.setExpandedTitleColor(getResources().getColor(R.color.colorWhite));
             Glide.with(this).load(mAlbum.getAlbumArt()).into(mPhotoAlbum);
         }
     }

@@ -14,11 +14,6 @@
         android:layout_height="match_parent"
         app:layout_empty="@layout/view_empty"
         app:recyclerClipToPadding="true"
-        app:recyclerPadding="8dp"
-        app:recyclerPaddingTop="8dp"
-        app:recyclerPaddingBottom="8dp"
-        app:recyclerPaddingLeft="8dp"
-        app:recyclerPaddingRight="8dp"
         app:scrollbarStyle="insideOverlay"
         app:scrollbars="none"
     />

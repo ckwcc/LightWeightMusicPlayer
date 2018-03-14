@@ -11,6 +11,7 @@ import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.blankj.utilcode.util.ActivityUtils;
 import com.blankj.utilcode.util.SizeUtils;
 import com.ckw.lightweightmusicplayer.R;
 import com.ckw.lightweightmusicplayer.base.BaseFragment;
@@ -19,6 +20,7 @@ import com.ckw.lightweightmusicplayer.repository.Artist;
 import com.ckw.lightweightmusicplayer.repository.Song;
 import com.ckw.lightweightmusicplayer.ui.localmusic.viewholder.LocalArtistViewHolder;
 import com.ckw.lightweightmusicplayer.ui.localmusic.viewholder.LocalSongViewHolder;
+import com.ckw.lightweightmusicplayer.ui.playmusic.MusicPlayActivity;
 import com.ckw.lightweightmusicplayer.utils.MediaUtils;
 import com.jude.easyrecyclerview.EasyRecyclerView;
 import com.jude.easyrecyclerview.adapter.BaseViewHolder;
@@ -109,6 +111,13 @@ public class LocalMusicListFragment extends BaseFragment implements EasyPermissi
                 }
             });
             mAdapter.addAll(mSongs);
+
+            mAdapter.setOnItemClickListener(new RecyclerArrayAdapter.OnItemClickListener() {
+                @Override
+                public void onItemClick(int position) {
+                    ActivityUtils.startActivity(MusicPlayActivity.class);
+                }
+            });
         }else {
             mEasyRecyclerView.setAdapter(mArtistAdapter = new RecyclerArrayAdapter<Artist>(getContext()) {
                 @Override
@@ -117,10 +126,9 @@ public class LocalMusicListFragment extends BaseFragment implements EasyPermissi
                 }
             });
             mArtistAdapter.addAll(mArtists);
-            for (int i = 0; i < mArtists.size(); i++) {
-                Log.d("----", "initEasyRecyclerView: "+mArtists.get(i).toString());
-            }
+
         }
+
     }
 
     @Override
