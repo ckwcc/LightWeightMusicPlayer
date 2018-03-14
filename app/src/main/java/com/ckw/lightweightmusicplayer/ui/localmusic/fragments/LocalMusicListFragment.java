@@ -35,7 +35,7 @@ import pub.devrel.easypermissions.EasyPermissions;
 /**
  * Created by ckw
  * on 2018/3/12.
- * 本地歌曲列表 歌手列表
+ * 本地音乐-歌曲列表 、歌手列表
  */
 
 public class LocalMusicListFragment extends BaseFragment implements EasyPermissions.PermissionCallbacks{

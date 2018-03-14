@@ -18,4 +18,6 @@
 
     <string name="song_num">%d首歌曲</string>
 
+    <string name="translation_thumb">thumb</string>
+
 </resources>

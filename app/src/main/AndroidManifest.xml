@@ -27,6 +27,7 @@
             </intent-filter>
         </activity>
         <activity android:name=".ui.localmusic.LocalMusicActivity" />
+        <activity android:name=".ui.localmusic.activities.AlbumActivity" android:theme="@style/AlbumTheme" />
     </application>
 
 </manifest>

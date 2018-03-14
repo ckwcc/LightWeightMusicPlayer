@@ -12,10 +12,10 @@
             android:icon="@drawable/ic_local"
             android:title="@string/drawer_item_local" />
 
-        <item
-            android:id="@+id/nav_folder"
-            android:icon="@drawable/ic_folder"
-            android:title="@string/drawer_item_folder" />
+        <!--<item-->
+            <!--android:id="@+id/nav_folder"-->
+            <!--android:icon="@drawable/ic_folder"-->
+            <!--android:title="@string/drawer_item_folder" />-->
 
         <item
             android:id="@+id/nav_time_close"

@@ -36,7 +36,7 @@ import java.util.List;
 import butterknife.BindView;
 
 public class MainActivity extends BaseActivity
-        implements NavigationView.OnNavigationItemSelectedListener {
+        implements NavigationView.OnNavigationItemSelectedListener, View.OnClickListener {
 
     public static int themeColor = Color.parseColor("#B24242");
 
@@ -49,7 +49,9 @@ public class MainActivity extends BaseActivity
     @BindView(R.id.fab)
     FloatingActionButton mPlay;
     @BindView(R.id.rl_local_container)
-    RelativeLayout mLocalMusic;
+    RelativeLayout mLocalMusicContainer;
+    @BindView(R.id.rl_favourite_container)
+    RelativeLayout mFavouriteContainer;
     @BindView(R.id.bitview)
     RotaryTableView mBitView;
 
@@ -87,23 +89,10 @@ public class MainActivity extends BaseActivity
 
     @Override
     protected void initListener() {
-        mLocalMusic.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                showChangeSkin();
-            }
-        });
+        mLocalMusicContainer.setOnClickListener(this);
+        mFavouriteContainer.setOnClickListener(this);
+        mPlay.setOnClickListener(this);
 
-        mPlay.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                //TODO 进入音乐播放界面
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
-            }
-        });
-
-        mBitView.setBitInfos(infos);
         mBitView.setOnWheelCheckListener(new RotaryTableView.OnWheelCheckListener() {
             @Override
             public void onCheck(int position) {
@@ -120,6 +109,23 @@ public class MainActivity extends BaseActivity
     }
 
     @Override
+    public void onClick(View v) {
+        int id = v.getId();
+        switch (id){
+            case R.id.rl_local_container://本地音乐
+                ActivityUtils.startActivity(LocalMusicActivity.class);
+                break;
+            case R.id.rl_favourite_container://我喜欢的
+                showChangeSkin();
+                break;
+            case R.id.fab:
+                Snackbar.make(v, "Replace with your own action", Snackbar.LENGTH_LONG)
+                        .setAction("Action", null).show();
+                break;
+        }
+    }
+
+    @Override
     protected boolean needToolbar() {
         return true;
     }
@@ -130,14 +136,7 @@ public class MainActivity extends BaseActivity
     }
 
 
-    @Override
-    public void onBackPressed() {
-        if (mDrawerLayout.isDrawerOpen(GravityCompat.START)) {
-            mDrawerLayout.closeDrawer(GravityCompat.START);
-        } else {
-            super.onBackPressed();
-        }
-    }
+
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -167,9 +166,6 @@ public class MainActivity extends BaseActivity
             case R.id.nav_local://本地音乐
                 ActivityUtils.startActivity(LocalMusicActivity.class);
                 break;
-            case R.id.nav_folder://本地音乐文件夹
-
-                break;
             case R.id.nav_time_close://定时关闭
 
                 break;
@@ -179,6 +175,15 @@ public class MainActivity extends BaseActivity
         }
         mDrawerLayout.closeDrawer(GravityCompat.START);
         return true;
+    }
+
+    @Override
+    public void onBackPressed() {
+        if (mDrawerLayout.isDrawerOpen(GravityCompat.START)) {
+            mDrawerLayout.closeDrawer(GravityCompat.START);
+        } else {
+            super.onBackPressed();
+        }
     }
 
 
@@ -229,6 +234,8 @@ public class MainActivity extends BaseActivity
             infos.add(new RotaryTableInfo(mStrs[i], BitmapFactory.decodeResource(getResources(), R.mipmap.ic_cd
             )));
         }
+
+        mBitView.setBitInfos(infos);
     }
 
     /**
@@ -238,5 +245,6 @@ public class MainActivity extends BaseActivity
     private void setHomeActivityColor(int color) {
         this.themeColor = color;
     }
+
 
 }

@@ -27,6 +27,7 @@ import butterknife.BindView;
 /**
  * Created by ckw
  * on 2018/3/13.
+ * 本地音乐-专辑
  */
 
 public class LocalAlbumFragment extends BaseFragment{
@@ -72,7 +73,6 @@ public class LocalAlbumFragment extends BaseFragment{
 
     @Override
     protected void initListener() {
-
     }
 
     /*
@@ -120,10 +120,11 @@ public class LocalAlbumFragment extends BaseFragment{
         mEasyRecyclerView.setAdapter(mAdapter = new RecyclerArrayAdapter<Album>(getContext()) {
             @Override
             public BaseViewHolder OnCreateViewHolder(ViewGroup parent, int viewType) {
-                return new LocalAlbumViewHolder(parent,getContext());
+                return new LocalAlbumViewHolder(parent,getContext(),getActivity());
             }
         });
 
         mAdapter.addAll(mAlbums);
+
     }
 }
