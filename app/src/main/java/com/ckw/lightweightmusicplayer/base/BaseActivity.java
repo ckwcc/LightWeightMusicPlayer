@@ -46,7 +46,6 @@ public abstract class BaseActivity extends DaggerAppCompatActivity {
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         getWindow().requestFeature(Window.FEATURE_ACTION_BAR);
-//        getWindow().requestFeature(Window.FEATURE_CONTENT_TRANSITIONS);
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
         setContentView(getLayoutId());
         mUnbinder = ButterKnife.bind(this);

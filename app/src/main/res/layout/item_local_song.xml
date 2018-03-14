@@ -8,7 +8,7 @@
     
     <ImageView
         android:id="@+id/iv_song"
-        android:background="@mipmap/ic_song_default"
+        android:background="@mipmap/ic_music_default"
         android:scaleType="fitXY"
         android:layout_margin="@dimen/nav_header_vertical_spacing"
         android:layout_width="56dp"
