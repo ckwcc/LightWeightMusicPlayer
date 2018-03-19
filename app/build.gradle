@@ -69,7 +69,10 @@ dependencies {
     implementation 'com.github.bumptech.glide:glide:4.6.1'
     annotationProcessor 'com.github.bumptech.glide:compiler:4.6.1'
 
-    //音乐相关
+    //音乐相关 https://github.com/andremion/Music-Cover-View
     compile 'com.github.andremion:musiccoverview:1.0.0'
+
+    compile 'com.google.android.exoplayer:exoplayer:2.6.1'
+    compile 'com.google.android.gms:play-services-cast-framework:11.8.0'
 
 }

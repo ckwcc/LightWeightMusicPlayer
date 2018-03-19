@@ -29,6 +29,13 @@
         <activity android:name=".ui.localmusic.LocalMusicActivity" />
         <activity android:name=".ui.localmusic.activities.AlbumActivity" android:theme="@style/AlbumTheme" />
         <activity android:name=".ui.playmusic.MusicPlayActivity" />
+
+        <service android:name=".ui.playmusic.service.MusicService"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.media.browse.MediaBrowserService" />
+            </intent-filter>
+        </service>
     </application>
 
 </manifest>

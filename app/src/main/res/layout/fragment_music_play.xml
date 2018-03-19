@@ -72,35 +72,35 @@
         android:transitionName="@string/transition_name_duration"
         tools:text="04:30"/>
 
-    <LinearLayout
-        android:id="@+id/ordering"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/time"
-        android:layout_centerHorizontal="true"
-        android:transitionGroup="true">
+    <!--<LinearLayout-->
+        <!--android:id="@+id/ordering"-->
+        <!--android:layout_width="wrap_content"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:layout_below="@id/time"-->
+        <!--android:layout_centerHorizontal="true"-->
+        <!--android:transitionGroup="true">-->
 
-        <ImageView
-            android:id="@+id/repeat"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:background="?attr/selectableItemBackgroundBorderless"
-            android:clickable="true"
-            android:src="@mipmap/ic_repeat_white_24dp"/>
+        <!--<ImageView-->
+            <!--android:id="@+id/repeat"-->
+            <!--android:layout_width="wrap_content"-->
+            <!--android:layout_height="wrap_content"-->
+            <!--android:background="?attr/selectableItemBackgroundBorderless"-->
+            <!--android:clickable="true"-->
+            <!--android:src="@mipmap/ic_repeat_white_24dp"/>-->
 
-        <Space
-            android:layout_width="@dimen/activity_horizontal_margin"
-            android:layout_height="wrap_content"/>
+        <!--<Space-->
+            <!--android:layout_width="@dimen/activity_horizontal_margin"-->
+            <!--android:layout_height="wrap_content"/>-->
 
-        <ImageView
-            android:id="@+id/shuffle"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:background="?attr/selectableItemBackgroundBorderless"
-            android:clickable="true"
-            android:src="@mipmap/ic_shuffle_white_24dp"/>
+        <!--<ImageView-->
+            <!--android:id="@+id/shuffle"-->
+            <!--android:layout_width="wrap_content"-->
+            <!--android:layout_height="wrap_content"-->
+            <!--android:background="?attr/selectableItemBackgroundBorderless"-->
+            <!--android:clickable="true"-->
+            <!--android:src="@mipmap/ic_shuffle_white_24dp"/>-->
 
-    </LinearLayout>
+    <!--</LinearLayout>-->
 
     <LinearLayout
         android:id="@+id/controls"
@@ -119,18 +119,18 @@
             android:src="@mipmap/ic_skip_previous_white_24dp"/>
 
         <ImageView
-            android:id="@+id/rewind"
+            android:id="@+id/repeat"
             style="@style/Widget.AppCompat.Button.Borderless"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:src="@mipmap/ic_fast_rewind_white_24dp"/>
+            android:src="@mipmap/ic_repeat_white_24dp"/>
 
         <ImageView
-            android:id="@+id/forward"
+            android:id="@+id/list"
             style="@style/Widget.AppCompat.Button.Borderless"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:src="@mipmap/ic_fast_forward_white_24dp"/>
+            android:src="@mipmap/ic_playlist"/>
 
         <ImageView
             android:id="@+id/next"
