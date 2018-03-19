@@ -6,6 +6,8 @@ import com.ckw.lightweightmusicplayer.ui.localmusic.LocalMusicActivity;
 import com.ckw.lightweightmusicplayer.ui.localmusic.LocalMusicModule;
 import com.ckw.lightweightmusicplayer.ui.localmusic.activities.AlbumActivity;
 import com.ckw.lightweightmusicplayer.ui.localmusic.activities.AlbumModule;
+import com.ckw.lightweightmusicplayer.ui.localmusic.activities.TestForPlayModule;
+import com.ckw.lightweightmusicplayer.ui.localmusic.activities.TestForPlayMusic;
 import com.ckw.lightweightmusicplayer.ui.playmusic.MusicPlayActivity;
 import com.ckw.lightweightmusicplayer.ui.playmusic.MusicPlayModule;
 
@@ -35,5 +37,9 @@ public abstract class ActivityBindingModule {
     @ActivityScoped
     @ContributesAndroidInjector(modules = MusicPlayModule.class)
     abstract MusicPlayActivity musicPlayActivity();
+
+    @ActivityScoped
+    @ContributesAndroidInjector(modules = TestForPlayModule.class)
+    abstract TestForPlayMusic testForPlayMusic();
 
 }

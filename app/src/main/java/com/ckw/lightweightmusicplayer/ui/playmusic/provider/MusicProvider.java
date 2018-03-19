@@ -143,7 +143,6 @@ public class MusicProvider {
 
         String genre = metadata.getString(MediaMetadataCompat.METADATA_KEY_GENRE);
         String hierarchyAwareMediaID = metadata.getDescription().getMediaId();
-        Log.d("----", "createMediaItem: 获得的hierarchyAwareMediaID"+hierarchyAwareMediaID);
         MediaMetadataCompat copy = new MediaMetadataCompat.Builder(metadata)
                 .putString(MediaMetadataCompat.METADATA_KEY_MEDIA_ID, hierarchyAwareMediaID)
                 .build();

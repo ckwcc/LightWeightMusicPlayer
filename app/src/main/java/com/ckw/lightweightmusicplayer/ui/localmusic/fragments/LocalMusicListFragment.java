@@ -18,6 +18,7 @@ import com.ckw.lightweightmusicplayer.base.BaseFragment;
 import com.ckw.lightweightmusicplayer.repository.Album;
 import com.ckw.lightweightmusicplayer.repository.Artist;
 import com.ckw.lightweightmusicplayer.repository.Song;
+import com.ckw.lightweightmusicplayer.ui.localmusic.activities.TestForPlayMusic;
 import com.ckw.lightweightmusicplayer.ui.localmusic.viewholder.LocalArtistViewHolder;
 import com.ckw.lightweightmusicplayer.ui.localmusic.viewholder.LocalSongViewHolder;
 import com.ckw.lightweightmusicplayer.ui.playmusic.MusicPlayActivity;
@@ -115,7 +116,8 @@ public class LocalMusicListFragment extends BaseFragment implements EasyPermissi
             mAdapter.setOnItemClickListener(new RecyclerArrayAdapter.OnItemClickListener() {
                 @Override
                 public void onItemClick(int position) {
-                    ActivityUtils.startActivity(MusicPlayActivity.class);
+//                    ActivityUtils.startActivity(MusicPlayActivity.class);
+                    ActivityUtils.startActivity(TestForPlayMusic.class);
                 }
             });
         }else {

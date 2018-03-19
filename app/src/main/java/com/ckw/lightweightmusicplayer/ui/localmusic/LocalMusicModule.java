@@ -21,4 +21,5 @@ public abstract class LocalMusicModule {
     @FragmentScoped
     @ContributesAndroidInjector
     abstract LocalAlbumFragment localAlbumFragment();
+
 }
