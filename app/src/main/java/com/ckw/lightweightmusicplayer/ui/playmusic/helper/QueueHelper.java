@@ -40,13 +40,11 @@ public class QueueHelper {
     public static List<MediaSessionCompat.QueueItem> getPlayingQueue(String mediaId,
             MusicProvider musicProvider) {
 
+        //这里由于自己的需求，直接获取所有的本地音乐
         Iterable<MediaMetadataCompat> tracks = musicProvider.getLocalMusic();
 
         return convertToQueue(tracks);
     }
-
-
-
 
     public static int getMusicIndexOnQueue(Iterable<MediaSessionCompat.QueueItem> queue,
              String mediaId) {
@@ -72,6 +70,9 @@ public class QueueHelper {
         return -1;
     }
 
+    /*
+    * 将含有MediaMetadataCompat数据转换为queue
+    * */
     private static List<MediaSessionCompat.QueueItem> convertToQueue(
             Iterable<MediaMetadataCompat> tracks) {
         List<MediaSessionCompat.QueueItem> queue = new ArrayList<>();
@@ -102,6 +103,7 @@ public class QueueHelper {
 
     /**
      * Determine if two queues contain identical media id's in order.
+     *判断两个队列是否包含相同的Media id
      *
      * @param list1 containing {@link MediaSessionCompat.QueueItem}'s
      * @param list2 containing {@link MediaSessionCompat.QueueItem}'s
@@ -132,7 +134,7 @@ public class QueueHelper {
 
     /**
      * Determine if queue item matches the currently playing queue item
-     *
+     *  判断 队列中是否包含正在播放的item
      * @param context for retrieving the {@link MediaControllerCompat}
      * @param queueItem to compare to currently playing {@link MediaSessionCompat.QueueItem}
      * @return boolean indicating whether queue item matches currently playing queue item

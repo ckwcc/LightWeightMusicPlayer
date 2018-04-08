@@ -1,11 +1,13 @@
 package com.ckw.lightweightmusicplayer.ui.localmusic.fragments;
 
 import android.Manifest;
+import android.content.ComponentName;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.support.annotation.NonNull;
+import android.support.v4.media.MediaBrowserCompat;
 import android.support.v7.widget.LinearLayoutManager;
 import android.util.Log;
 import android.view.View;
@@ -18,10 +20,10 @@ import com.ckw.lightweightmusicplayer.base.BaseFragment;
 import com.ckw.lightweightmusicplayer.repository.Album;
 import com.ckw.lightweightmusicplayer.repository.Artist;
 import com.ckw.lightweightmusicplayer.repository.Song;
-import com.ckw.lightweightmusicplayer.ui.localmusic.activities.TestForPlayMusic;
 import com.ckw.lightweightmusicplayer.ui.localmusic.viewholder.LocalArtistViewHolder;
 import com.ckw.lightweightmusicplayer.ui.localmusic.viewholder.LocalSongViewHolder;
 import com.ckw.lightweightmusicplayer.ui.playmusic.MusicPlayActivity;
+import com.ckw.lightweightmusicplayer.ui.playmusic.service.MusicService;
 import com.ckw.lightweightmusicplayer.utils.MediaUtils;
 import com.jude.easyrecyclerview.EasyRecyclerView;
 import com.jude.easyrecyclerview.adapter.BaseViewHolder;
@@ -41,10 +43,9 @@ import pub.devrel.easypermissions.EasyPermissions;
  * 本地音乐-歌曲列表 、歌手列表
  */
 
-public class LocalMusicListFragment extends BaseFragment implements EasyPermissions.PermissionCallbacks{
+public class LocalMusicListFragment extends BaseFragment{
     private static final String ARG_TITLE = "title";
     private static final int REQUEST_READ_EXTERNAL_STORAGE = 1;
-
     @BindView(R.id.recyclerView)
     EasyRecyclerView mEasyRecyclerView;
 
@@ -56,6 +57,8 @@ public class LocalMusicListFragment extends BaseFragment implements EasyPermissi
     private List<Artist> mArtists;//歌手
 
     private String mTitle;//歌曲，专辑，歌手
+
+    private MediaBrowserCompat mMediaBrowser;
 
     public static LocalMusicListFragment newInstance(String title) {
         LocalMusicListFragment fragment = new LocalMusicListFragment();
@@ -80,7 +83,11 @@ public class LocalMusicListFragment extends BaseFragment implements EasyPermissi
         mSongs = new ArrayList<>();
         mAlbums = new ArrayList<>();
         mArtists = new ArrayList<>();
-
+        getLocalSongs();
+        mMediaBrowser = new MediaBrowserCompat(getActivity(),
+                new ComponentName(getActivity(), MusicService.class),
+                mConnectionCallback,
+                null);
     }
 
     @Override
@@ -90,7 +97,7 @@ public class LocalMusicListFragment extends BaseFragment implements EasyPermissi
 
     @Override
     protected void operateViews(View view) {
-        requestPermission();
+
     }
 
     private void initEasyRecyclerView() {
@@ -116,8 +123,7 @@ public class LocalMusicListFragment extends BaseFragment implements EasyPermissi
             mAdapter.setOnItemClickListener(new RecyclerArrayAdapter.OnItemClickListener() {
                 @Override
                 public void onItemClick(int position) {
-//                    ActivityUtils.startActivity(MusicPlayActivity.class);
-                    ActivityUtils.startActivity(TestForPlayMusic.class);
+                    ActivityUtils.startActivity(MusicPlayActivity.class);
                 }
             });
         }else {
@@ -138,36 +144,18 @@ public class LocalMusicListFragment extends BaseFragment implements EasyPermissi
 
     }
 
+
+
     @Override
-    public void onPermissionsGranted(int requestCode, @NonNull List<String> perms) {
-        switch (requestCode){
-            case REQUEST_READ_EXTERNAL_STORAGE:
-                getLocalSongs();
-                break;
-        }
+    public void onStart() {
+        super.onStart();
+        mMediaBrowser.connect();
     }
 
     @Override
-    public void onPermissionsDenied(int requestCode, @NonNull List<String> perms) {
-        if (EasyPermissions.somePermissionPermanentlyDenied(this, perms)) {
-            new AppSettingsDialog.Builder(this).build().show();
-        }
-    }
-
-    @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        EasyPermissions.onRequestPermissionsResult(requestCode, permissions, grantResults, this);
-    }
-
-    private void requestPermission() {
-        String[] perms = {Manifest.permission.READ_EXTERNAL_STORAGE};
-        if (EasyPermissions.hasPermissions(getContext(), perms)) {
-            getLocalSongs();
-        } else {
-            EasyPermissions.requestPermissions(this,"本地音乐需要读取内存权限",REQUEST_READ_EXTERNAL_STORAGE,perms);
-        }
-
+    public void onStop() {
+        super.onStop();
+        mMediaBrowser.disconnect();
     }
 
     /*
@@ -220,6 +208,38 @@ public class LocalMusicListFragment extends BaseFragment implements EasyPermissi
             return false;
         }
     });
+
+
+    /*
+    * 浏览器连接的回调
+    * */
+    private MediaBrowserCompat.ConnectionCallback mConnectionCallback = new MediaBrowserCompat.ConnectionCallback(){
+        @Override
+        public void onConnected() {
+            super.onConnected();
+            if(mMediaBrowser.isConnected()){
+                String mediaId = mMediaBrowser.getRoot();
+                mMediaBrowser.unsubscribe(mediaId);
+                mMediaBrowser.subscribe(mediaId, mSubscriptionCallback);
+            }
+        }
+    };
+
+    /*
+    * 浏览器订阅的接口，数据的回调
+    * */
+    private final MediaBrowserCompat.SubscriptionCallback mSubscriptionCallback = new MediaBrowserCompat.SubscriptionCallback() {
+        @Override
+        public void onChildrenLoaded(@NonNull String parentId, @NonNull List<MediaBrowserCompat.MediaItem> children) {
+            super.onChildrenLoaded(parentId, children);
+            Log.d("----", "onChildrenLoaded: 请求数据:"+children.size());
+            //children 即为Service发送回来的媒体数据集合
+            for (MediaBrowserCompat.MediaItem item:children){
+                Log.d("----", "onChildrenLoaded: "+item.getDescription().getTitle()+";url:"+item.getDescription().getMediaUri());
+            }
+            //在onChildrenLoaded可以执行刷新列表UI的操作
+        }
+    };
 
 
 

@@ -141,7 +141,6 @@ public class MusicProvider {
     * */
     private MediaBrowserCompat.MediaItem createMediaItem(MediaMetadataCompat metadata) {
 
-        String genre = metadata.getString(MediaMetadataCompat.METADATA_KEY_GENRE);
         String hierarchyAwareMediaID = metadata.getDescription().getMediaId();
         MediaMetadataCompat copy = new MediaMetadataCompat.Builder(metadata)
                 .putString(MediaMetadataCompat.METADATA_KEY_MEDIA_ID, hierarchyAwareMediaID)

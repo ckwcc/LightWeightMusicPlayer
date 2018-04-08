@@ -181,8 +181,7 @@ public class MusicService extends MediaBrowserServiceCompat implements PlaybackM
     @Nullable
     @Override
     public BrowserRoot onGetRoot(@NonNull String clientPackageName, int clientUid, @Nullable Bundle rootHints) {
-        // To ensure you are not allowing any arbitrary app to browse your app's contents, you
-        // need to check the origin:
+        //原本需要检查连接的来源，这里不做判断了
         return new BrowserRoot(MEDIA_ID_ROOT, null);
     }
 
@@ -191,7 +190,6 @@ public class MusicService extends MediaBrowserServiceCompat implements PlaybackM
         if (MEDIA_ID_EMPTY_ROOT.equals(parentMediaId)) {
             result.sendResult(new ArrayList<MediaBrowserCompat.MediaItem>());
         } else {
-            // if music library is ready, return immediately
             result.sendResult(mMusicProvider.getChildren(parentMediaId));
         }
     }
@@ -231,7 +229,7 @@ public class MusicService extends MediaBrowserServiceCompat implements PlaybackM
     }
 
     /**
-     * A simple handler that stops the service if playback is not active (playing)
+     * 用于停止服务
      */
     private static class DelayedStopHandler extends Handler {
         private final WeakReference<MusicService> mWeakReference;

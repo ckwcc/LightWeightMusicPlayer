@@ -11,4 +11,6 @@ public class Constant {
     public static final String DATA_PARSE_EXCEPTION = "数据解析异常";
     public static final String TIME_OUT = "连接超时";
     public static final String CAN_NOT_CONNECT_TO_SERVER = "无法连接到服务器";
+
+    public static final String LOCAL_SONG_PERMISSION = "localSongPermission";
 }

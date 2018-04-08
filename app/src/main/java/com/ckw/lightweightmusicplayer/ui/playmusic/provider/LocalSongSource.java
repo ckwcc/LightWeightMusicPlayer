@@ -2,6 +2,7 @@ package com.ckw.lightweightmusicplayer.ui.playmusic.provider;
 
 import android.content.Context;
 import android.support.v4.media.MediaMetadataCompat;
+import android.util.Log;
 
 import com.ckw.lightweightmusicplayer.repository.Song;
 import com.ckw.lightweightmusicplayer.utils.MediaUtils;
@@ -40,6 +41,7 @@ public class LocalSongSource implements SongSource{
         String artist = song.getArtist();
         int duration = song.getDuration();
         String source = song.getPath();
+        Log.d("----", "buildFromLocal: getsource："+source);
         String strId = "";
         if(title != null && artist != null){
             strId = title + artist;
@@ -49,6 +51,7 @@ public class LocalSongSource implements SongSource{
         return new MediaMetadataCompat.Builder()
                 .putString(MediaMetadataCompat.METADATA_KEY_MEDIA_ID,id)
                 .putString(SongSource.CUSTOM_METADATA_TRACK_SOURCE, source)
+                .putString(MediaMetadataCompat.METADATA_KEY_MEDIA_URI,source)
                 .putString(MediaMetadataCompat.METADATA_KEY_ALBUM,album)
                 .putString(MediaMetadataCompat.METADATA_KEY_ARTIST,artist)
                 .putLong(MediaMetadataCompat.METADATA_KEY_DURATION,duration)

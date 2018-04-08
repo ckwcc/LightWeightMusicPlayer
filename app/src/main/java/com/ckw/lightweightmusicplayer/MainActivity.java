@@ -1,6 +1,8 @@
 package com.ckw.lightweightmusicplayer;
 
+import android.Manifest;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.os.Bundle;
@@ -21,6 +23,8 @@ import android.widget.RelativeLayout;
 import android.widget.Toast;
 
 import com.blankj.utilcode.util.ActivityUtils;
+import com.blankj.utilcode.util.SPUtils;
+import com.blankj.utilcode.util.ToastUtils;
 import com.ckw.lightweightmusicplayer.base.BaseActivity;
 import com.ckw.lightweightmusicplayer.ui.localmusic.LocalMusicActivity;
 import com.ckw.lightweightmusicplayer.weight.RotaryTableInfo;
@@ -34,11 +38,16 @@ import java.util.ArrayList;
 import java.util.List;
 
 import butterknife.BindView;
+import pub.devrel.easypermissions.AppSettingsDialog;
+import pub.devrel.easypermissions.EasyPermissions;
+
+import static com.ckw.lightweightmusicplayer.common.Constant.LOCAL_SONG_PERMISSION;
 
 public class MainActivity extends BaseActivity
-        implements NavigationView.OnNavigationItemSelectedListener, View.OnClickListener {
+        implements NavigationView.OnNavigationItemSelectedListener, View.OnClickListener ,EasyPermissions.PermissionCallbacks{
 
     public static int themeColor = Color.parseColor("#B24242");
+    private static final int REQUEST_READ_EXTERNAL_STORAGE = 1;
 
     @BindView(R.id.toolbar_id)
     Toolbar mToolBar;
@@ -52,15 +61,8 @@ public class MainActivity extends BaseActivity
     RelativeLayout mLocalMusicContainer;
     @BindView(R.id.rl_favourite_container)
     RelativeLayout mFavouriteContainer;
-    @BindView(R.id.bitview)
-    RotaryTableView mBitView;
 
-    private List<RotaryTableInfo> infos = new ArrayList<>();
-    /**
-     * 抽奖的文字
-     */
-    private String[] mStrs = new String[]{"0","1", "2", "3","4","5"
-           };
+
 
     @Override
     protected void initView(Bundle savedInstanceState) {
@@ -70,6 +72,8 @@ public class MainActivity extends BaseActivity
         toggle.syncState();
 
         mNavigationView.setNavigationItemSelectedListener(this);
+
+        requestPermission();
     }
 
     @Override
@@ -79,7 +83,6 @@ public class MainActivity extends BaseActivity
 
     @Override
     protected void initVariable() {
-        getBitWheelInfos();
     }
 
     @Override
@@ -93,19 +96,6 @@ public class MainActivity extends BaseActivity
         mFavouriteContainer.setOnClickListener(this);
         mPlay.setOnClickListener(this);
 
-        mBitView.setOnWheelCheckListener(new RotaryTableView.OnWheelCheckListener() {
-            @Override
-            public void onCheck(int position) {
-                Log.d("----", "onCheck: 点击了第"+position+"个位置");
-            }
-        });
-
-        mBitView.setOnCenterBitmapClickListener(new RotaryTableView.OnCenterBitmapClickListener() {
-            @Override
-            public void onCenterClick(int position) {
-                Log.d("----", "onCenterClick: 当前的初始位置item数字是："+position);
-            }
-        });
     }
 
     @Override
@@ -229,14 +219,6 @@ public class MainActivity extends BaseActivity
         dialog.show();
     }
 
-    private void getBitWheelInfos() {
-        for (int i = 0; i < mStrs.length; i++) {
-            infos.add(new RotaryTableInfo(mStrs[i], BitmapFactory.decodeResource(getResources(), R.mipmap.ic_cd
-            )));
-        }
-
-        mBitView.setBitInfos(infos);
-    }
 
     /**
      * 设置相应的控件改变颜色
@@ -246,5 +228,50 @@ public class MainActivity extends BaseActivity
         this.themeColor = color;
     }
 
+    private void requestPermission() {
+        String[] perms = {Manifest.permission.READ_EXTERNAL_STORAGE};
+        if (EasyPermissions.hasPermissions(this, perms)) {
+            SPUtils.getInstance().put(LOCAL_SONG_PERMISSION,true);
+        } else {
+            EasyPermissions.requestPermissions(this,"本地音乐需要读取内存权限",REQUEST_READ_EXTERNAL_STORAGE,perms);
+        }
 
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        EasyPermissions.onRequestPermissionsResult(requestCode, permissions, grantResults, this);
+    }
+
+    @Override
+    public void onPermissionsGranted(int requestCode, @NonNull List<String> perms) {
+        SPUtils.getInstance().put(LOCAL_SONG_PERMISSION,true);
+    }
+
+    @Override
+    public void onPermissionsDenied(int requestCode, @NonNull List<String> perms) {
+        if (EasyPermissions.somePermissionPermanentlyDenied(this, perms)) {
+            new AppSettingsDialog.Builder(this)
+                    .setTitle("权限需要")
+                    .setRationale("音乐季需要获得访问您设备上的音乐的权限，现在去设置界面打开它好吗？")
+                    .build()
+                    .show();
+        }
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if (requestCode == AppSettingsDialog.DEFAULT_SETTINGS_REQ_CODE) {
+            String[] perms = {Manifest.permission.READ_EXTERNAL_STORAGE};
+            if (EasyPermissions.hasPermissions(this, perms)) {
+                SPUtils.getInstance().put(LOCAL_SONG_PERMISSION,true);
+            } else {
+                //继续申请，直到同意为止
+                EasyPermissions.requestPermissions(this,"本地音乐需要读取内存权限",REQUEST_READ_EXTERNAL_STORAGE,perms);
+            }
+        }
+    }
 }
