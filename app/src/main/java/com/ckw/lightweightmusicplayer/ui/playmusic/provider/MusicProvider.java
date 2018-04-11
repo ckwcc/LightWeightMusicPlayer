@@ -126,7 +126,7 @@ public class MusicProvider {
     public List<MediaBrowserCompat.MediaItem> getChildren(String mediaId){
         List<MediaBrowserCompat.MediaItem> mediaItems = new ArrayList<>();
 
-        if(MediaIdHelper.MEDIA_ID_ROOT.equals(mediaId)){
+        if(MediaIdHelper.MEDIA_ID_NORMAL.equals(mediaId)){
             for (MediaMetadataCompat mediaMetadataCompat: mLocalMusicList) {
                 mediaItems.add(createMediaItem(mediaMetadataCompat));
             }
@@ -144,6 +144,7 @@ public class MusicProvider {
         String hierarchyAwareMediaID = metadata.getDescription().getMediaId();
         MediaMetadataCompat copy = new MediaMetadataCompat.Builder(metadata)
                 .putString(MediaMetadataCompat.METADATA_KEY_MEDIA_ID, hierarchyAwareMediaID)
+                .putLong(MediaMetadataCompat.METADATA_KEY_DURATION,metadata.getLong(MediaMetadataCompat.METADATA_KEY_DURATION))
                 .build();
         return new MediaBrowserCompat.MediaItem(copy.getDescription(),
                 MediaBrowserCompat.MediaItem.FLAG_PLAYABLE);

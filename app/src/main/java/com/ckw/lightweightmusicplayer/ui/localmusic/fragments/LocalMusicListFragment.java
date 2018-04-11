@@ -1,32 +1,23 @@
 package com.ckw.lightweightmusicplayer.ui.localmusic.fragments;
 
-import android.Manifest;
-import android.content.ComponentName;
+import android.app.Activity;
+import android.content.Context;
 import android.graphics.Color;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Message;
 import android.support.annotation.NonNull;
 import android.support.v4.media.MediaBrowserCompat;
 import android.support.v7.widget.LinearLayoutManager;
 import android.util.Log;
 import android.view.View;
-import android.view.ViewGroup;
 
 import com.blankj.utilcode.util.ActivityUtils;
 import com.blankj.utilcode.util.SizeUtils;
 import com.ckw.lightweightmusicplayer.R;
 import com.ckw.lightweightmusicplayer.base.BaseFragment;
-import com.ckw.lightweightmusicplayer.repository.Album;
-import com.ckw.lightweightmusicplayer.repository.Artist;
-import com.ckw.lightweightmusicplayer.repository.Song;
-import com.ckw.lightweightmusicplayer.ui.localmusic.viewholder.LocalArtistViewHolder;
-import com.ckw.lightweightmusicplayer.ui.localmusic.viewholder.LocalSongViewHolder;
+import com.ckw.lightweightmusicplayer.ui.localmusic.adapter.MusicListAdapter;
+import com.ckw.lightweightmusicplayer.ui.playmusic.MediaBrowserProvider;
 import com.ckw.lightweightmusicplayer.ui.playmusic.MusicPlayActivity;
-import com.ckw.lightweightmusicplayer.ui.playmusic.service.MusicService;
-import com.ckw.lightweightmusicplayer.utils.MediaUtils;
 import com.jude.easyrecyclerview.EasyRecyclerView;
-import com.jude.easyrecyclerview.adapter.BaseViewHolder;
 import com.jude.easyrecyclerview.adapter.RecyclerArrayAdapter;
 import com.jude.easyrecyclerview.decoration.DividerDecoration;
 
@@ -34,8 +25,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 import butterknife.BindView;
-import pub.devrel.easypermissions.AppSettingsDialog;
-import pub.devrel.easypermissions.EasyPermissions;
+
+import static com.ckw.lightweightmusicplayer.ui.playmusic.helper.MediaIdHelper.MEDIA_ID_NORMAL;
+
 
 /**
  * Created by ckw
@@ -44,33 +36,29 @@ import pub.devrel.easypermissions.EasyPermissions;
  */
 
 public class LocalMusicListFragment extends BaseFragment{
-    private static final String ARG_TITLE = "title";
-    private static final int REQUEST_READ_EXTERNAL_STORAGE = 1;
+
     @BindView(R.id.recyclerView)
     EasyRecyclerView mEasyRecyclerView;
 
-    private RecyclerArrayAdapter<Song> mAdapter;
-    private RecyclerArrayAdapter<Artist> mArtistAdapter;
+    private RecyclerArrayAdapter<MediaBrowserCompat.MediaItem> mAdapter;
 
-    private List<Song> mSongs;//歌曲
-    private List<Album> mAlbums;//专辑
-    private List<Artist> mArtists;//歌手
+    private List<MediaBrowserCompat.MediaItem> mSongs;//歌曲
 
-    private String mTitle;//歌曲，专辑，歌手
+    private String mMediaId;//分类id
+
+
 
     private MediaBrowserCompat mMediaBrowser;
 
-    public static LocalMusicListFragment newInstance(String title) {
+    public static LocalMusicListFragment newInstance() {
         LocalMusicListFragment fragment = new LocalMusicListFragment();
         Bundle args = new Bundle();
-        args.putString(ARG_TITLE, title);
         fragment.setArguments(args);
         return fragment;
     }
 
     @Override
     public void initPresenter() {
-
     }
 
     @Override
@@ -81,23 +69,16 @@ public class LocalMusicListFragment extends BaseFragment{
     @Override
     protected void initVariables() {
         mSongs = new ArrayList<>();
-        mAlbums = new ArrayList<>();
-        mArtists = new ArrayList<>();
-        getLocalSongs();
-        mMediaBrowser = new MediaBrowserCompat(getActivity(),
-                new ComponentName(getActivity(), MusicService.class),
-                mConnectionCallback,
-                null);
+
     }
 
     @Override
     protected void handleBundle(Bundle bundle) {
-        mTitle = bundle.getString(ARG_TITLE);
     }
 
     @Override
     protected void operateViews(View view) {
-
+        initEasyRecyclerView();
     }
 
     private void initEasyRecyclerView() {
@@ -109,121 +90,52 @@ public class LocalMusicListFragment extends BaseFragment{
         itemDecoration.setDrawLastItem(false);
         mEasyRecyclerView.addItemDecoration(itemDecoration);
 
-
-
-        if("歌曲".equals(mTitle)){
-            mEasyRecyclerView.setAdapter(mAdapter = new RecyclerArrayAdapter<Song>(getContext()) {
-                @Override
-                public BaseViewHolder OnCreateViewHolder(ViewGroup parent, int viewType) {
-                    return new LocalSongViewHolder(parent,getContext());
-                }
-            });
-            mAdapter.addAll(mSongs);
-
-            mAdapter.setOnItemClickListener(new RecyclerArrayAdapter.OnItemClickListener() {
-                @Override
-                public void onItemClick(int position) {
-                    ActivityUtils.startActivity(MusicPlayActivity.class);
-                }
-            });
-        }else {
-            mEasyRecyclerView.setAdapter(mArtistAdapter = new RecyclerArrayAdapter<Artist>(getContext()) {
-                @Override
-                public BaseViewHolder OnCreateViewHolder(ViewGroup parent, int viewType) {
-                    return new LocalArtistViewHolder(parent,getContext());
-                }
-            });
-            mArtistAdapter.addAll(mArtists);
-
-        }
-
+        mAdapter = new MusicListAdapter(getContext());
+        mAdapter.addAll(mSongs);
+        mEasyRecyclerView.setAdapter(mAdapter);
     }
 
     @Override
     protected void initListener() {
-
+        mAdapter.setOnItemClickListener(new RecyclerArrayAdapter.OnItemClickListener() {
+            @Override
+            public void onItemClick(int position) {
+                ActivityUtils.startActivity(MusicPlayActivity.class);
+            }
+        });
     }
-
 
 
     @Override
     public void onStart() {
         super.onStart();
-        mMediaBrowser.connect();
+        mMediaBrowser = mediaBrowserProvider.getMediaBrowser();
+
+        if(mMediaBrowser.isConnected()){
+            Log.d("----", "onStart: 连接着");
+            onConnected();
+        }else {
+            Log.d("----", "onStart: 没有连接着");
+        }
     }
 
     @Override
     public void onStop() {
         super.onStop();
-        mMediaBrowser.disconnect();
     }
 
-    /*
-    * 获取本地音乐信息
-    * */
-    private void getLocalSongs(){
-        mSongs.clear();
-        mAlbums.clear();
-        mArtists.clear();
-
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                mSongs = MediaUtils.getAudioList(getContext());
-                mAlbums = MediaUtils.getAlbumList(getContext());
-                if (mSongs != null) {
-                    for (Song song : mSongs) {
-                        song.setAlbumObj(getAlbum(song.getAlbumId()));
-                    }
-                }
-
-                mArtists = MediaUtils.getArtistList(getContext());
-
-                Message message = new Message();
-                message.what = 1;
-                handler.sendMessage(message);
-            }
-        }).start();
-
-
+    public void onConnected(){
+        if (isDetached()) {
+            return;
+        }
+        Log.d("----", "onConnected: 发起获取本地数据的请求");
+        mMediaId = MEDIA_ID_NORMAL;
+        mediaBrowserProvider.getMediaBrowser().unsubscribe(mMediaId);
+        mediaBrowserProvider.getMediaBrowser().subscribe(mMediaId,mSubscriptionCallback);
     }
 
-    private Album getAlbum (int albumId) {
-        for (Album album : mAlbums) {
-            if (album.getId() == albumId) {
-                return album;
-            }
-        }
-        return null;
-    }
-
-    Handler handler = new Handler(new Handler.Callback() {
-        @Override
-        public boolean handleMessage(Message msg) {
-            switch (msg.what){
-                case 1:
-                    initEasyRecyclerView();
-                    break;
-            }
-            return false;
-        }
-    });
 
 
-    /*
-    * 浏览器连接的回调
-    * */
-    private MediaBrowserCompat.ConnectionCallback mConnectionCallback = new MediaBrowserCompat.ConnectionCallback(){
-        @Override
-        public void onConnected() {
-            super.onConnected();
-            if(mMediaBrowser.isConnected()){
-                String mediaId = mMediaBrowser.getRoot();
-                mMediaBrowser.unsubscribe(mediaId);
-                mMediaBrowser.subscribe(mediaId, mSubscriptionCallback);
-            }
-        }
-    };
 
     /*
     * 浏览器订阅的接口，数据的回调
@@ -232,14 +144,18 @@ public class LocalMusicListFragment extends BaseFragment{
         @Override
         public void onChildrenLoaded(@NonNull String parentId, @NonNull List<MediaBrowserCompat.MediaItem> children) {
             super.onChildrenLoaded(parentId, children);
-            Log.d("----", "onChildrenLoaded: 请求数据:"+children.size());
             //children 即为Service发送回来的媒体数据集合
-            for (MediaBrowserCompat.MediaItem item:children){
-                Log.d("----", "onChildrenLoaded: "+item.getDescription().getTitle()+";url:"+item.getDescription().getMediaUri());
-            }
             //在onChildrenLoaded可以执行刷新列表UI的操作
+            //这里需要用adapter直接加数据源，用上面的代码，无效，估计是这个EasyRecyclerView框架的问题
+            Log.d("----", "onChildrenLoaded: 本地数据返回："+children.size());
+            mAdapter.clear();
+            mAdapter.addAll(children);
+            mAdapter.notifyDataSetChanged();
+
         }
     };
+
+
 
 
 

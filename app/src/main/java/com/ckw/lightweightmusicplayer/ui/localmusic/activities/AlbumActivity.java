@@ -6,6 +6,7 @@ import android.os.Handler;
 import android.os.Message;
 import android.support.annotation.NonNull;
 import android.support.design.widget.CollapsingToolbarLayout;
+import android.support.v4.media.MediaBrowserCompat;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.ViewGroup;
@@ -17,6 +18,8 @@ import com.ckw.lightweightmusicplayer.R;
 import com.ckw.lightweightmusicplayer.base.BaseActivity;
 import com.ckw.lightweightmusicplayer.repository.Album;
 import com.ckw.lightweightmusicplayer.repository.Song;
+import com.ckw.lightweightmusicplayer.ui.localmusic.adapter.MusicListAdapter;
+import com.ckw.lightweightmusicplayer.ui.localmusic.viewholder.LocalAlbumViewHolder;
 import com.ckw.lightweightmusicplayer.ui.localmusic.viewholder.LocalSongViewHolder;
 import com.ckw.lightweightmusicplayer.utils.MediaUtils;
 import com.jude.easyrecyclerview.EasyRecyclerView;
@@ -45,7 +48,7 @@ public class AlbumActivity extends BaseActivity {
 
     private Album mAlbum;
     private List<Song> mSongs;
-    private RecyclerArrayAdapter<Song> mAdapter;
+    private RecyclerArrayAdapter<MediaBrowserCompat.MediaItem> mAdapter;
 
     @Override
     protected void initView(Bundle savedInstanceState) {
@@ -132,12 +135,9 @@ public class AlbumActivity extends BaseActivity {
         itemDecoration.setDrawLastItem(false);
         mEasyRecyclerView.addItemDecoration(itemDecoration);
 
-        mEasyRecyclerView.setAdapter(mAdapter = new RecyclerArrayAdapter<Song>(this) {
-            @Override
-            public BaseViewHolder OnCreateViewHolder(ViewGroup parent, int viewType) {
-                return new LocalSongViewHolder(parent,getContext());
-            }
-        });
-        mAdapter.addAll(mSongs);
+        mAdapter = new MusicListAdapter(getApplicationContext());
+        mEasyRecyclerView.setAdapter(mAdapter);
+        //TODO
+//        mAdapter.addAll(mSongs);
     }
 }

@@ -2,6 +2,7 @@ package com.ckw.lightweightmusicplayer.ui.localmusic;
 
 import com.ckw.lightweightmusicplayer.di.FragmentScoped;
 import com.ckw.lightweightmusicplayer.ui.localmusic.fragments.LocalAlbumFragment;
+import com.ckw.lightweightmusicplayer.ui.localmusic.fragments.LocalArtistFragment;
 import com.ckw.lightweightmusicplayer.ui.localmusic.fragments.LocalMusicListFragment;
 
 import dagger.Module;
@@ -22,4 +23,7 @@ public abstract class LocalMusicModule {
     @ContributesAndroidInjector
     abstract LocalAlbumFragment localAlbumFragment();
 
+    @FragmentScoped
+    @ContributesAndroidInjector
+    abstract LocalArtistFragment localArtistFragment();
 }

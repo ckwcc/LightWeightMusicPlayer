@@ -13,7 +13,9 @@ import com.ckw.lightweightmusicplayer.R;
 import com.ckw.lightweightmusicplayer.base.BaseActivity;
 import com.ckw.lightweightmusicplayer.ui.localmusic.adapter.LocalMusicAdapter;
 import com.ckw.lightweightmusicplayer.ui.localmusic.fragments.LocalAlbumFragment;
+import com.ckw.lightweightmusicplayer.ui.localmusic.fragments.LocalArtistFragment;
 import com.ckw.lightweightmusicplayer.ui.localmusic.fragments.LocalMusicListFragment;
+import com.ckw.lightweightmusicplayer.ui.playmusic.MediaBrowserProvider;
 import com.ckw.lightweightmusicplayer.ui.playmusic.service.MusicService;
 
 import java.util.ArrayList;
@@ -27,7 +29,7 @@ import cn.hugeterry.coordinatortablayout.CoordinatorTabLayout;
  * on 2018/3/12.
  */
 
-public class LocalMusicActivity extends BaseActivity {
+public class LocalMusicActivity extends BaseActivity implements MediaBrowserProvider{
 
     @BindView(R.id.coordinatortablayout)
     CoordinatorTabLayout mCoordinatorTabLayout;
@@ -36,11 +38,11 @@ public class LocalMusicActivity extends BaseActivity {
     ViewPager mViewPager;
 
 
-
     private List<Fragment> mFragments;
 
     private final String[] mTitles = {"歌曲", "专辑", "歌手"};
     private int[] mImageArray, mColorArray;
+    private LocalMusicListFragment mLocalMusicListFragment;
 
     @Override
     protected void initView(Bundle savedInstanceState) {
@@ -64,11 +66,11 @@ public class LocalMusicActivity extends BaseActivity {
     protected void initVariable() {
         mFragments = new ArrayList<>();
 
-        LocalMusicListFragment localSongFragment  = LocalMusicListFragment.newInstance(mTitles[0]);
+        mLocalMusicListFragment  = LocalMusicListFragment.newInstance();
         LocalAlbumFragment localAlbumFragment = LocalAlbumFragment.newInstance();
-        LocalMusicListFragment localArtistFragment  = LocalMusicListFragment.newInstance(mTitles[2]);
+        LocalArtistFragment localArtistFragment  = LocalArtistFragment.newInstance();
 
-        mFragments.add(localSongFragment);
+        mFragments.add(mLocalMusicListFragment);
         mFragments.add(localAlbumFragment);
         mFragments.add(localArtistFragment);
 
@@ -92,6 +94,14 @@ public class LocalMusicActivity extends BaseActivity {
     @Override
     protected void initListener() {
 
+    }
+
+    @Override
+    protected void onMediaBrowserConnected() {
+        super.onMediaBrowserConnected();
+
+        Log.d("----", "onMediaBrowserConnected: 发起请求");
+        mLocalMusicListFragment.onConnected();
     }
 
     @Override

@@ -5,6 +5,7 @@ import android.os.Handler;
 import android.os.Message;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 
@@ -12,6 +13,7 @@ import com.blankj.utilcode.util.SizeUtils;
 import com.ckw.lightweightmusicplayer.R;
 import com.ckw.lightweightmusicplayer.base.BaseFragment;
 import com.ckw.lightweightmusicplayer.repository.Album;
+import com.ckw.lightweightmusicplayer.ui.localmusic.adapter.AlbumListAdapter;
 import com.ckw.lightweightmusicplayer.ui.localmusic.viewholder.LocalAlbumViewHolder;
 import com.ckw.lightweightmusicplayer.utils.MediaUtils;
 import com.jude.easyrecyclerview.EasyRecyclerView;
@@ -117,14 +119,12 @@ public class LocalAlbumFragment extends BaseFragment{
         itemDecoration.setPaddingHeaderFooter(false);//是否对Header于Footer有效,默认false.
         mEasyRecyclerView.addItemDecoration(itemDecoration);
 
-        mEasyRecyclerView.setAdapter(mAdapter = new RecyclerArrayAdapter<Album>(getContext()) {
-            @Override
-            public BaseViewHolder OnCreateViewHolder(ViewGroup parent, int viewType) {
-                return new LocalAlbumViewHolder(parent,getContext(),getActivity());
-            }
-        });
+        mAdapter = new AlbumListAdapter(getContext(),getActivity());
+
+        mEasyRecyclerView.setAdapter(mAdapter);
 
         mAdapter.addAll(mAlbums);
+
 
     }
 }

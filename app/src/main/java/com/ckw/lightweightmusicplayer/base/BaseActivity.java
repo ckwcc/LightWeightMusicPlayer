@@ -1,12 +1,17 @@
 package com.ckw.lightweightmusicplayer.base;
 
 import android.annotation.TargetApi;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.RemoteException;
 import android.support.annotation.NonNull;
+import android.support.v4.media.MediaBrowserCompat;
+import android.support.v4.media.session.MediaControllerCompat;
+import android.support.v4.media.session.MediaSessionCompat;
 import android.support.v7.app.ActionBar;
 import android.support.v7.widget.Toolbar;
 import android.transition.Fade;
@@ -22,6 +27,8 @@ import android.widget.TextView;
 
 
 import com.ckw.lightweightmusicplayer.R;
+import com.ckw.lightweightmusicplayer.ui.playmusic.MediaBrowserProvider;
+import com.ckw.lightweightmusicplayer.ui.playmusic.service.MusicService;
 
 import javax.annotation.Nullable;
 
@@ -34,13 +41,15 @@ import dagger.android.support.DaggerAppCompatActivity;
  * on 2017/12/7.
  */
 
-public abstract class BaseActivity extends DaggerAppCompatActivity {
+public abstract class BaseActivity extends DaggerAppCompatActivity implements MediaBrowserProvider{
     private static final String TAG = BaseActivity.class.getSimpleName();
     private Toolbar mToolbar;
 
     private InputMethodManager imm;
 
     private Unbinder mUnbinder;
+
+    private MediaBrowserCompat mMediaBrowser;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -63,22 +72,34 @@ public abstract class BaseActivity extends DaggerAppCompatActivity {
 
         initListener();
 
-//        initAnimation();
-
+        initBrowser();
 
     }
+    
 
 
     @Override
     protected void onStart() {
         super.onStart();
-
+        mMediaBrowser.connect();
+        
+        if(mMediaBrowser.isConnected()){
+            Log.d("----", "onStart: baseactivity中连接");
+        }else {
+            Log.d("----", "onStart: 没有连接成功");
+        }
     }
 
     @Override
     protected void onPause() {
         super.onPause();
         hideSoftKeyBoard();
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        mMediaBrowser.disconnect();
     }
 
     @Override
@@ -114,46 +135,41 @@ public abstract class BaseActivity extends DaggerAppCompatActivity {
 
     protected abstract void initListener();
 
-
-    //检查是否可以有动画
-    private boolean checkAnimationEnabled() {
-        return Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP && animationEnabled();
+    @Override
+    public MediaBrowserCompat getMediaBrowser() {
+        return mMediaBrowser;
     }
-
-    //初始化动画
-    private void initAnimation() {
-        if (checkAnimationEnabled()) {
-            setUpAnimation();
-        }
-    }
-
-    /**
-     * 设置需要转场动画---默认是true
-     *
-     * @return true: 需要 false: 不需要
-     */
-    protected boolean animationEnabled() {
-        return true;
-    }
-
-    /**
-     * 设置android 5.0的转场动画
-     */
-    @TargetApi(Build.VERSION_CODES.LOLLIPOP)
-    protected void setUpAnimation() {
-
-        Transition transition_enter = new Slide(Gravity.RIGHT);
-        transition_enter.setDuration(600);
-        getWindow().setEnterTransition(transition_enter);
-
-
-        Transition transition_return = new Fade();
-        transition_return.setDuration(400);
-        getWindow().setReturnTransition(transition_return);
-    }
+    
 
     ///////////////////////////////////////////////////////////////////////////////////////////
+    //音乐相关
+    private void initBrowser() {
+        mMediaBrowser = new MediaBrowserCompat(this,
+                new ComponentName(this, MusicService.class), mConnectionCallback, null);
+    }
 
+    private final MediaBrowserCompat.ConnectionCallback mConnectionCallback =
+            new MediaBrowserCompat.ConnectionCallback() {
+                @Override
+                public void onConnected() {
+                    //说明已经连接上了
+                    Log.d("----", "onConnected: baseActivity连接成功");
+                    try {
+                        connectToSession(mMediaBrowser.getSessionToken());
+                    } catch (RemoteException e) {
+                        e.printStackTrace();
+                    }
+                }
+            };
+
+    private void connectToSession(MediaSessionCompat.Token token) throws RemoteException {
+
+        onMediaBrowserConnected();
+    }
+
+    protected void onMediaBrowserConnected() {
+        // empty implementation, can be overridden by clients.
+    }
     /////////////////////////////////////////////////////////////////////////////////////////
     //ToolBar相关
 

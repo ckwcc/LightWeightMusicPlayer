@@ -3,14 +3,12 @@ package com.ckw.lightweightmusicplayer;
 import android.Manifest;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AlertDialog;
-import android.util.Log;
 import android.view.View;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -20,28 +18,21 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.RelativeLayout;
-import android.widget.Toast;
 
 import com.blankj.utilcode.util.ActivityUtils;
-import com.blankj.utilcode.util.SPUtils;
-import com.blankj.utilcode.util.ToastUtils;
 import com.ckw.lightweightmusicplayer.base.BaseActivity;
 import com.ckw.lightweightmusicplayer.ui.localmusic.LocalMusicActivity;
-import com.ckw.lightweightmusicplayer.weight.RotaryTableInfo;
-import com.ckw.lightweightmusicplayer.weight.RotaryTableView;
 import com.flask.colorpicker.ColorPickerView;
 import com.flask.colorpicker.OnColorSelectedListener;
 import com.flask.colorpicker.builder.ColorPickerClickListener;
 import com.flask.colorpicker.builder.ColorPickerDialogBuilder;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import butterknife.BindView;
 import pub.devrel.easypermissions.AppSettingsDialog;
 import pub.devrel.easypermissions.EasyPermissions;
 
-import static com.ckw.lightweightmusicplayer.common.Constant.LOCAL_SONG_PERMISSION;
 
 public class MainActivity extends BaseActivity
         implements NavigationView.OnNavigationItemSelectedListener, View.OnClickListener ,EasyPermissions.PermissionCallbacks{
@@ -231,7 +222,6 @@ public class MainActivity extends BaseActivity
     private void requestPermission() {
         String[] perms = {Manifest.permission.READ_EXTERNAL_STORAGE};
         if (EasyPermissions.hasPermissions(this, perms)) {
-            SPUtils.getInstance().put(LOCAL_SONG_PERMISSION,true);
         } else {
             EasyPermissions.requestPermissions(this,"本地音乐需要读取内存权限",REQUEST_READ_EXTERNAL_STORAGE,perms);
         }
@@ -246,7 +236,6 @@ public class MainActivity extends BaseActivity
 
     @Override
     public void onPermissionsGranted(int requestCode, @NonNull List<String> perms) {
-        SPUtils.getInstance().put(LOCAL_SONG_PERMISSION,true);
     }
 
     @Override
@@ -267,7 +256,6 @@ public class MainActivity extends BaseActivity
         if (requestCode == AppSettingsDialog.DEFAULT_SETTINGS_REQ_CODE) {
             String[] perms = {Manifest.permission.READ_EXTERNAL_STORAGE};
             if (EasyPermissions.hasPermissions(this, perms)) {
-                SPUtils.getInstance().put(LOCAL_SONG_PERMISSION,true);
             } else {
                 //继续申请，直到同意为止
                 EasyPermissions.requestPermissions(this,"本地音乐需要读取内存权限",REQUEST_READ_EXTERNAL_STORAGE,perms);

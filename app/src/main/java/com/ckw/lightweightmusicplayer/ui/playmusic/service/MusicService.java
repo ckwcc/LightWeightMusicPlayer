@@ -1,5 +1,6 @@
 package com.ckw.lightweightmusicplayer.ui.playmusic.service;
 
+import android.Manifest;
 import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -18,6 +19,7 @@ import android.support.v4.media.MediaMetadataCompat;
 import android.support.v4.media.session.MediaButtonReceiver;
 import android.support.v4.media.session.MediaSessionCompat;
 import android.support.v4.media.session.PlaybackStateCompat;
+import android.util.Log;
 
 import com.ckw.lightweightmusicplayer.R;
 import com.ckw.lightweightmusicplayer.ui.playmusic.manager.PlaybackManager;
@@ -37,7 +39,10 @@ import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.List;
 
+import pub.devrel.easypermissions.EasyPermissions;
+
 import static com.ckw.lightweightmusicplayer.ui.playmusic.helper.MediaIdHelper.MEDIA_ID_EMPTY_ROOT;
+import static com.ckw.lightweightmusicplayer.ui.playmusic.helper.MediaIdHelper.MEDIA_ID_NORMAL;
 import static com.ckw.lightweightmusicplayer.ui.playmusic.helper.MediaIdHelper.MEDIA_ID_ROOT;
 
 /**
@@ -70,21 +75,17 @@ public class MusicService extends MediaBrowserServiceCompat implements PlaybackM
     private MediaSessionCompat mSession;
     private Bundle mSessionExtras;
     private final DelayedStopHandler mDelayedStopHandler = new DelayedStopHandler(this);
-    private SessionManager mCastSessionManager;
-    private SessionManagerListener<CastSession> mCastSessionManagerListener;
 
-    private boolean mIsConnectedToCar;
-    private BroadcastReceiver mCarConnectionReceiver;
 
     @Override
     public void onCreate() {
         super.onCreate();
-        mMusicProvider = new MusicProvider(this);
+        Log.d("----", "onCreate: 服务开启");
 
         // To make the app more responsive, fetch and cache catalog information now.
         // This can help improve the response time in the method
         // {@link #onLoadChildren(String, Result<List<MediaItem>>) onLoadChildren()}.
-        mMusicProvider.retrieveMediaAsync();
+
 
         QueueManager queueManager = new QueueManager(mMusicProvider, getResources(),
                 new QueueManager.MetadataUpdateListener() {
@@ -168,11 +169,6 @@ public class MusicService extends MediaBrowserServiceCompat implements PlaybackM
         // Service is being killed, so make sure we release our resources
         mPlaybackManager.handleStopRequest(null);
 
-        if (mCastSessionManager != null) {
-            mCastSessionManager.removeSessionManagerListener(mCastSessionManagerListener,
-                    CastSession.class);
-        }
-
         mDelayedStopHandler.removeCallbacksAndMessages(null);
         mSession.release();
     }
@@ -187,9 +183,18 @@ public class MusicService extends MediaBrowserServiceCompat implements PlaybackM
 
     @Override
     public void onLoadChildren(@NonNull String parentMediaId, @NonNull Result<List<MediaBrowserCompat.MediaItem>> result) {
+//        String[] perms = {Manifest.permission.READ_EXTERNAL_STORAGE};
+//        if (EasyPermissions.hasPermissions(this, perms)) {
+//            mMusicProvider = new MusicProvider(this);
+//            mMusicProvider.retrieveMediaAsync();
+//        }
+        mMusicProvider = new MusicProvider(this);
+        mMusicProvider.retrieveMediaAsync();
+        Log.d("----", "onLoadChildren: 输出这里的parentMediaId:"+parentMediaId);
         if (MEDIA_ID_EMPTY_ROOT.equals(parentMediaId)) {
             result.sendResult(new ArrayList<MediaBrowserCompat.MediaItem>());
-        } else {
+        } else if(MEDIA_ID_NORMAL.equals(parentMediaId)){//返回所有的数据
+            Log.d("----", "onLoadChildren: 获取本地音乐");
             result.sendResult(mMusicProvider.getChildren(parentMediaId));
         }
     }
@@ -227,6 +232,7 @@ public class MusicService extends MediaBrowserServiceCompat implements PlaybackM
     public void onPlaybackStateUpdated(PlaybackStateCompat newState) {
         mSession.setPlaybackState(newState);
     }
+
 
     /**
      * 用于停止服务

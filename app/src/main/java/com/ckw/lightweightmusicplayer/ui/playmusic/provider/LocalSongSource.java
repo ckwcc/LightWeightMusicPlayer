@@ -41,7 +41,6 @@ public class LocalSongSource implements SongSource{
         String artist = song.getArtist();
         int duration = song.getDuration();
         String source = song.getPath();
-        Log.d("----", "buildFromLocal: getsource："+source);
         String strId = "";
         if(title != null && artist != null){
             strId = title + artist;

@@ -1,6 +1,10 @@
 package com.ckw.lightweightmusicplayer.ui.localmusic.viewholder;
 
 import android.content.Context;
+import android.graphics.Bitmap;
+import android.support.v4.media.MediaBrowserCompat;
+import android.support.v4.media.MediaDescriptionCompat;
+import android.support.v4.media.MediaMetadataCompat;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
@@ -19,18 +23,16 @@ import com.jude.easyrecyclerview.adapter.BaseViewHolder;
  * on 2018/3/13.
  */
 
-public class LocalSongViewHolder extends BaseViewHolder<Song> {
+public class LocalSongViewHolder extends BaseViewHolder<MediaBrowserCompat.MediaItem > {
 
     private TextView mSongName;
     private TextView mSongArtist;
     private TextView mSongDuration;
     private ImageView mSongImg;
 
-    private Context mContext;
 
-    public LocalSongViewHolder(ViewGroup parent, Context context) {
+    public LocalSongViewHolder(ViewGroup parent) {
         super(parent, R.layout.item_local_song);
-        this.mContext = context;
         mSongName  = $(R.id.tv_song);
         mSongArtist= $(R.id.tv_artist);
         mSongImg   = $(R.id.iv_song);
@@ -38,18 +40,17 @@ public class LocalSongViewHolder extends BaseViewHolder<Song> {
     }
 
     @Override
-    public void setData(Song data) {
+    public void setData(MediaBrowserCompat.MediaItem  data) {
+        //MediaItem中不支持获取音乐时长，所以时长在这里就不显示了
+        MediaDescriptionCompat description = data.getDescription();
 
-        mSongName.setText(data.getTitle());
-        mSongArtist.setText(data.getArtist());
+        mSongName.setText(description.getTitle());
+        mSongArtist.setText(description.getSubtitle());
 
-        Album album = data.getAlbumObj();
-        if (album != null) {
-            Glide.with(getContext()).load(album.getAlbumArt()).into(mSongImg);
+        Bitmap iconBitmap = description.getIconBitmap();
+        if (iconBitmap != null) {
+            Glide.with(getContext()).load(iconBitmap).into(mSongImg);
         }
-
-        mSongDuration.setText(MediaUtils.formatTime(data.getDuration()));
-
 
 
     }
