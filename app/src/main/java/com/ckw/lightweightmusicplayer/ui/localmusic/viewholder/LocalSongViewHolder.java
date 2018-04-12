@@ -49,7 +49,6 @@ public class LocalSongViewHolder extends BaseViewHolder<MediaBrowserCompat.Media
         mSongArtist.setText(description.getSubtitle());
 
         Uri iconUri = description.getIconUri();
-        Log.d("----", "setData: 本地音乐中的uri："+iconUri);
         if (iconUri != null) {
             Glide.with(getContext()).load(iconUri.toString())
                     .into(mSongImg);

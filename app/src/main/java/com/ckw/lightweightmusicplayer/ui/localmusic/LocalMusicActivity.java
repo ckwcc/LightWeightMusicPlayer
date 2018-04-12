@@ -1,12 +1,9 @@
 package com.ckw.lightweightmusicplayer.ui.localmusic;
 
-import android.content.ComponentName;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
-import android.support.v4.media.MediaBrowserCompat;
 import android.support.v4.view.ViewPager;
-import android.util.Log;
 import android.view.MenuItem;
 
 import com.ckw.lightweightmusicplayer.R;
@@ -16,7 +13,6 @@ import com.ckw.lightweightmusicplayer.ui.localmusic.fragments.LocalAlbumFragment
 import com.ckw.lightweightmusicplayer.ui.localmusic.fragments.LocalArtistFragment;
 import com.ckw.lightweightmusicplayer.ui.localmusic.fragments.LocalMusicListFragment;
 import com.ckw.lightweightmusicplayer.ui.playmusic.MediaBrowserProvider;
-import com.ckw.lightweightmusicplayer.ui.playmusic.service.MusicService;
 
 import java.util.ArrayList;
 import java.util.List;

@@ -7,7 +7,6 @@
 
     <ImageView
         android:id="@+id/iv_album"
-        android:src="@mipmap/ic_music_default"
         android:scaleType="fitXY"
         android:layout_width="match_parent"
         android:layout_height="160dp" />

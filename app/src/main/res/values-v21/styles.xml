@@ -22,4 +22,5 @@
     <style name="ThumbTransitionStyle">
         <item name="android:transitionName">@string/translation_thumb</item>
     </style>
+
 </resources>

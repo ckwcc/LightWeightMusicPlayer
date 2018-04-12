@@ -1,13 +1,10 @@
 package com.ckw.lightweightmusicplayer.ui.localmusic.fragments;
 
-import android.app.Activity;
-import android.content.Context;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.media.MediaBrowserCompat;
 import android.support.v7.widget.LinearLayoutManager;
-import android.util.Log;
 import android.view.View;
 
 import com.blankj.utilcode.util.ActivityUtils;
@@ -15,7 +12,6 @@ import com.blankj.utilcode.util.SizeUtils;
 import com.ckw.lightweightmusicplayer.R;
 import com.ckw.lightweightmusicplayer.base.BaseFragment;
 import com.ckw.lightweightmusicplayer.ui.localmusic.adapter.MusicListAdapter;
-import com.ckw.lightweightmusicplayer.ui.playmusic.MediaBrowserProvider;
 import com.ckw.lightweightmusicplayer.ui.playmusic.MusicPlayActivity;
 import com.jude.easyrecyclerview.EasyRecyclerView;
 import com.jude.easyrecyclerview.adapter.RecyclerArrayAdapter;

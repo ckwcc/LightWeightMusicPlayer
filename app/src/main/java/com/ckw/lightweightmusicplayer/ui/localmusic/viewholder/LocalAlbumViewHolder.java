@@ -49,7 +49,7 @@ public class LocalAlbumViewHolder extends BaseViewHolder<MediaBrowserCompat.Medi
     @Override
     public void setData(final MediaBrowserCompat.MediaItem  data) {
         super.setData(data);
-        MediaDescriptionCompat description = data.getDescription();
+        final MediaDescriptionCompat description = data.getDescription();
         mAlbumName.setText(description.getMediaId());
         mAlbumArtist.setText(description.getTitle());
         int number = Integer.valueOf(description.getSubtitle().toString());
@@ -57,26 +57,31 @@ public class LocalAlbumViewHolder extends BaseViewHolder<MediaBrowserCompat.Medi
             mAlbumNumber.setText(
                     String.format(mContext.getResources().getString(R.string.song_num),number));
         }
-        Log.d("----", "setData:专辑中的uri： "+description.getIconUri());
         if(description.getIconUri() != null){
-
             Glide.with(mContext).load(description.getIconUri().toString()).into(mAlbumImg);
+        }else {
+            Glide.with(mContext).load(mContext.getResources().getDrawable(R.mipmap.ic_music_default)).into(mAlbumImg);
         }
 
         mAlbumImg.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Intent it = new Intent(mContext, AlbumActivity.class);
-                it.putExtra("album", data);
-
+                it.putExtra("albumTitle",description.getMediaId());
+                if(description.getIconUri() != null){
+                    it.putExtra("albumUri",description.getIconUri().toString());
+                }else {
+                    it.putExtra("albumUri",mContext.getResources().getDrawable(R.mipmap.ic_music_default).toString());
+                }
                 ActivityOptionsCompat compat = ActivityOptionsCompat.makeSceneTransitionAnimation(
                         (Activity)mContext, mAlbumImg, mContext.getString(R.string.translation_thumb));
 
-                ActivityOptionsCompat activityOptions = ActivityOptionsCompat.makeSceneTransitionAnimation(
-                        mActivity,
-                        new Pair<View, String>(mAlbumImg,mContext.getString(R.string.translation_thumb)));
-                ActivityCompat.startActivity(mContext, it, activityOptions.toBundle());
+//                ActivityOptionsCompat activityOptions = ActivityOptionsCompat.makeSceneTransitionAnimation(
+//                        mActivity,
+//                        new Pair<View, String>(mAlbumImg,mContext.getString(R.string.translation_thumb)));
+//                ActivityCompat.startActivity(mContext, it, activityOptions.toBundle());
 
+                mContext.startActivity(it, compat.toBundle());
             }
         });
     }

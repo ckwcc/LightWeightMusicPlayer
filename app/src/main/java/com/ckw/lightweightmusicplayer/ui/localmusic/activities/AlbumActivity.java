@@ -9,6 +9,7 @@ import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.v4.media.MediaBrowserCompat;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 
@@ -21,6 +22,7 @@ import com.ckw.lightweightmusicplayer.repository.Song;
 import com.ckw.lightweightmusicplayer.ui.localmusic.adapter.MusicListAdapter;
 import com.ckw.lightweightmusicplayer.ui.localmusic.viewholder.LocalAlbumViewHolder;
 import com.ckw.lightweightmusicplayer.ui.localmusic.viewholder.LocalSongViewHolder;
+import com.ckw.lightweightmusicplayer.ui.playmusic.helper.MediaIdHelper;
 import com.ckw.lightweightmusicplayer.utils.MediaUtils;
 import com.jude.easyrecyclerview.EasyRecyclerView;
 import com.jude.easyrecyclerview.adapter.BaseViewHolder;
@@ -50,35 +52,55 @@ public class AlbumActivity extends BaseActivity {
     private List<Song> mSongs;
     private RecyclerArrayAdapter<MediaBrowserCompat.MediaItem> mAdapter;
 
+
+    private String mediaId;
+    private String mAlbumTitle;
+    private String mAlbumUri;
+
     @Override
     protected void initView(Bundle savedInstanceState) {
-        if(mAlbum != null){
-            new Thread(new Runnable() {
-                @Override
-                public void run() {
-                    mSongs = MediaUtils.getAlbumSongList(AlbumActivity.this,mAlbum.getId());
-                    List<Album> mTotal = MediaUtils.getAlbumList(AlbumActivity.this);
-                    for (Song song : mSongs) {
-                        song.setAlbumObj(getAlbum(song.getAlbumId(),mTotal));
-                    }
+        initRecyclerView();
 
-                    Message message = new Message();
-                    message.what = 1;
-                    handler.sendMessage(message);
-
-                }
-            }).start();
-
-
-            mCollapsingToolbarLayout.setTitle(mAlbum.getAlbum());
-            mCollapsingToolbarLayout.setExpandedTitleColor(getResources().getColor(R.color.colorWhite));
-            Glide.with(this).load(mAlbum.getAlbumArt()).into(mPhotoAlbum);
+        if(mAlbumUri != null ){
+            Glide.with(this).load(mAlbumUri).into(mPhotoAlbum);
         }
+
+        if(mAlbumTitle != null){
+            mCollapsingToolbarLayout.setTitle(mAlbumTitle);
+            mCollapsingToolbarLayout.setExpandedTitleColor(getResources().getColor(R.color.colorWhite));
+        }
+
     }
 
     @Override
+    protected void onMediaBrowserConnected() {
+        super.onMediaBrowserConnected();
+        boolean connected = mMediaBrowser.isConnected();
+        mediaId = MediaIdHelper.MEDIA_ID_ALBUM_DETAIL +"&"+mAlbumTitle;
+        if(connected){
+            mMediaBrowser.unsubscribe(mediaId);
+            mMediaBrowser.subscribe(mediaId,mSubscriptionCallback);
+        }
+    }
+
+    /*
+     * 浏览器订阅的接口，数据的回调
+     * */
+    private final MediaBrowserCompat.SubscriptionCallback mSubscriptionCallback = new MediaBrowserCompat.SubscriptionCallback() {
+        @Override
+        public void onChildrenLoaded(@NonNull String parentId, @NonNull List<MediaBrowserCompat.MediaItem> children) {
+            super.onChildrenLoaded(parentId, children);
+            mAdapter.clear();
+            mAdapter.addAll(children);
+            mAdapter.notifyDataSetChanged();
+
+        }
+    };
+
+    @Override
     protected void handleBundle(@NonNull Bundle bundle) {
-        mAlbum = (Album)bundle.getSerializable("album");
+        mAlbumTitle = bundle.getString("albumTitle");
+        mAlbumUri = bundle.getString("albumUri");
     }
 
     @Override
@@ -106,26 +128,6 @@ public class AlbumActivity extends BaseActivity {
 
     }
 
-    private Album getAlbum (int albumId,List<Album> mTotalAlbumList) {
-        for (Album album : mTotalAlbumList) {
-            if (album.getId() == albumId) {
-                return album;
-            }
-        }
-        return null;
-    }
-
-    private Handler handler = new Handler(new Handler.Callback() {
-        @Override
-        public boolean handleMessage(Message msg) {
-            switch (msg.what){
-                case 1:
-                    initRecyclerView();
-                    break;
-            }
-            return false;
-        }
-    });
 
     private void initRecyclerView() {
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this);

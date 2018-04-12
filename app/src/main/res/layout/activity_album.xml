@@ -27,7 +27,6 @@
 
             <ImageView
                 android:id="@+id/iv_album"
-                android:background="@mipmap/ic_music_default"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:fitsSystemWindows="true"

@@ -49,7 +49,7 @@ public abstract class BaseActivity extends DaggerAppCompatActivity implements Me
 
     private Unbinder mUnbinder;
 
-    private MediaBrowserCompat mMediaBrowser;
+    protected MediaBrowserCompat mMediaBrowser;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {

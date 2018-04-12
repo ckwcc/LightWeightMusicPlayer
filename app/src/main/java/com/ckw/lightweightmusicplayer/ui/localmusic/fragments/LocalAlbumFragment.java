@@ -1,25 +1,17 @@
 package com.ckw.lightweightmusicplayer.ui.localmusic.fragments;
 
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Message;
 import android.support.annotation.NonNull;
 import android.support.v4.media.MediaBrowserCompat;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
-import android.util.Log;
 import android.view.View;
-import android.view.ViewGroup;
 
 import com.blankj.utilcode.util.SizeUtils;
 import com.ckw.lightweightmusicplayer.R;
 import com.ckw.lightweightmusicplayer.base.BaseFragment;
-import com.ckw.lightweightmusicplayer.repository.Album;
 import com.ckw.lightweightmusicplayer.ui.localmusic.adapter.AlbumListAdapter;
-import com.ckw.lightweightmusicplayer.ui.localmusic.viewholder.LocalAlbumViewHolder;
-import com.ckw.lightweightmusicplayer.utils.MediaUtils;
 import com.jude.easyrecyclerview.EasyRecyclerView;
-import com.jude.easyrecyclerview.adapter.BaseViewHolder;
 import com.jude.easyrecyclerview.adapter.RecyclerArrayAdapter;
 import com.jude.easyrecyclerview.decoration.SpaceDecoration;
 
@@ -135,8 +127,6 @@ public class LocalAlbumFragment extends BaseFragment{
         mAdapter = new AlbumListAdapter(getContext(),getActivity());
 
         mEasyRecyclerView.setAdapter(mAdapter);
-
-//        mAdapter.addAll(mAlbums);
 
 
     }

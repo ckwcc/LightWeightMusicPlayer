@@ -7,12 +7,14 @@ import android.os.Handler;
 import android.os.Message;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.media.MediaBrowserCompat;
 import android.support.v4.media.MediaBrowserServiceCompat;
 import android.support.v4.media.MediaMetadataCompat;
 import android.support.v4.media.session.MediaButtonReceiver;
 import android.support.v4.media.session.MediaSessionCompat;
 import android.support.v4.media.session.PlaybackStateCompat;
+import android.util.Log;
 
 import com.ckw.lightweightmusicplayer.R;
 import com.ckw.lightweightmusicplayer.ui.playmusic.manager.PlaybackManager;
@@ -26,10 +28,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 
-import static com.ckw.lightweightmusicplayer.ui.playmusic.helper.MediaIdHelper.MEDIA_ID_ALBUM;
-import static com.ckw.lightweightmusicplayer.ui.playmusic.helper.MediaIdHelper.MEDIA_ID_ALBUM_DETAIL;
+import pub.devrel.easypermissions.EasyPermissions;
+
 import static com.ckw.lightweightmusicplayer.ui.playmusic.helper.MediaIdHelper.MEDIA_ID_EMPTY_ROOT;
-import static com.ckw.lightweightmusicplayer.ui.playmusic.helper.MediaIdHelper.MEDIA_ID_NORMAL;
 import static com.ckw.lightweightmusicplayer.ui.playmusic.helper.MediaIdHelper.MEDIA_ID_ROOT;
 
 /**
@@ -37,7 +38,7 @@ import static com.ckw.lightweightmusicplayer.ui.playmusic.helper.MediaIdHelper.M
  * on 2018/3/15.
  */
 
-public class MusicService extends MediaBrowserServiceCompat implements PlaybackManager.PlaybackServiceCallback{
+public class MusicService extends MediaBrowserServiceCompat implements PlaybackManager.PlaybackServiceCallback,EasyPermissions.PermissionCallbacks{
 
     // Extra on MediaSession that contains the Cast device name currently connected to
     public static final String EXTRA_CONNECTED_CAST = "com.example.android.uamp.CAST_NAME";
@@ -117,6 +118,7 @@ public class MusicService extends MediaBrowserServiceCompat implements PlaybackM
 
     }
 
+
     @Override
     public int onStartCommand(Intent startIntent, int flags, int startId) {
         if (startIntent != null) {
@@ -163,15 +165,20 @@ public class MusicService extends MediaBrowserServiceCompat implements PlaybackM
     @Nullable
     @Override
     public BrowserRoot onGetRoot(@NonNull String clientPackageName, int clientUid, @Nullable Bundle rootHints) {
-        mMusicProvider = new MusicProvider(this);
-        mMusicProvider.retrieveMediaAsync();
         //原本需要检查连接的来源，这里不做判断了
         return new BrowserRoot(MEDIA_ID_ROOT, null);
     }
 
     @Override
     public void onLoadChildren(@NonNull String parentMediaId, @NonNull Result<List<MediaBrowserCompat.MediaItem>> result) {
+        mMusicProvider = new MusicProvider(this);
+        mMusicProvider.retrieveMediaAsync();
 
+        try {
+            Thread.sleep(200);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
         if (MEDIA_ID_EMPTY_ROOT.equals(parentMediaId)) {
             result.sendResult(new ArrayList<MediaBrowserCompat.MediaItem>());
         } else {
@@ -211,6 +218,21 @@ public class MusicService extends MediaBrowserServiceCompat implements PlaybackM
     @Override
     public void onPlaybackStateUpdated(PlaybackStateCompat newState) {
         mSession.setPlaybackState(newState);
+    }
+
+    @Override
+    public void onPermissionsGranted(int requestCode, @NonNull List<String> perms) {
+
+    }
+
+    @Override
+    public void onPermissionsDenied(int requestCode, @NonNull List<String> perms) {
+
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+
     }
 
 

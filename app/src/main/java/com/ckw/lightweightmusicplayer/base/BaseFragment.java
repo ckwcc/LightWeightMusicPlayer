@@ -4,7 +4,6 @@ import android.app.Activity;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -44,7 +43,6 @@ public abstract class BaseFragment extends DaggerFragment implements BaseView{
     @Override
     public void onAttach(Activity activity) {
         super.onAttach(activity);
-        Log.d("----", "onAttach: 调用了attach");
         mediaBrowserProvider = (MediaBrowserProvider) activity;
     }
 
