@@ -99,8 +99,7 @@ public class LocalMusicActivity extends BaseActivity implements MediaBrowserProv
     @Override
     protected void onMediaBrowserConnected() {
         super.onMediaBrowserConnected();
-
-        Log.d("----", "onMediaBrowserConnected: 发起请求");
+        //真正拿到数据是在这里
         mLocalMusicListFragment.onConnected();
     }
 

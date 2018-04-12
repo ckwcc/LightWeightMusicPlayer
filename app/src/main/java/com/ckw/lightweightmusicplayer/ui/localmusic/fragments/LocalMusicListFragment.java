@@ -109,13 +109,11 @@ public class LocalMusicListFragment extends BaseFragment{
     @Override
     public void onStart() {
         super.onStart();
+        //在这里实际上拿到的mMediaBrowser不是空，但是没有连接着，google sample中也是如此
         mMediaBrowser = mediaBrowserProvider.getMediaBrowser();
 
         if(mMediaBrowser.isConnected()){
-            Log.d("----", "onStart: 连接着");
             onConnected();
-        }else {
-            Log.d("----", "onStart: 没有连接着");
         }
     }
 
@@ -128,7 +126,6 @@ public class LocalMusicListFragment extends BaseFragment{
         if (isDetached()) {
             return;
         }
-        Log.d("----", "onConnected: 发起获取本地数据的请求");
         mMediaId = MEDIA_ID_NORMAL;
         mediaBrowserProvider.getMediaBrowser().unsubscribe(mMediaId);
         mediaBrowserProvider.getMediaBrowser().subscribe(mMediaId,mSubscriptionCallback);

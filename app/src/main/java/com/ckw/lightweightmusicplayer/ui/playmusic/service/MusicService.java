@@ -80,7 +80,6 @@ public class MusicService extends MediaBrowserServiceCompat implements PlaybackM
     @Override
     public void onCreate() {
         super.onCreate();
-        Log.d("----", "onCreate: 服务开启");
 
         // To make the app more responsive, fetch and cache catalog information now.
         // This can help improve the response time in the method
@@ -177,24 +176,18 @@ public class MusicService extends MediaBrowserServiceCompat implements PlaybackM
     @Nullable
     @Override
     public BrowserRoot onGetRoot(@NonNull String clientPackageName, int clientUid, @Nullable Bundle rootHints) {
+        mMusicProvider = new MusicProvider(this);
+        mMusicProvider.retrieveMediaAsync();
         //原本需要检查连接的来源，这里不做判断了
         return new BrowserRoot(MEDIA_ID_ROOT, null);
     }
 
     @Override
     public void onLoadChildren(@NonNull String parentMediaId, @NonNull Result<List<MediaBrowserCompat.MediaItem>> result) {
-//        String[] perms = {Manifest.permission.READ_EXTERNAL_STORAGE};
-//        if (EasyPermissions.hasPermissions(this, perms)) {
-//            mMusicProvider = new MusicProvider(this);
-//            mMusicProvider.retrieveMediaAsync();
-//        }
-        mMusicProvider = new MusicProvider(this);
-        mMusicProvider.retrieveMediaAsync();
-        Log.d("----", "onLoadChildren: 输出这里的parentMediaId:"+parentMediaId);
+
         if (MEDIA_ID_EMPTY_ROOT.equals(parentMediaId)) {
             result.sendResult(new ArrayList<MediaBrowserCompat.MediaItem>());
         } else if(MEDIA_ID_NORMAL.equals(parentMediaId)){//返回所有的数据
-            Log.d("----", "onLoadChildren: 获取本地音乐");
             result.sendResult(mMusicProvider.getChildren(parentMediaId));
         }
     }
