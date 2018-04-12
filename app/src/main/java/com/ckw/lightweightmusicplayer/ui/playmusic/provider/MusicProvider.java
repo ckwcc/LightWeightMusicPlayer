@@ -12,6 +12,7 @@ import android.support.v4.media.MediaMetadataCompat;
 import android.util.Log;
 
 import com.ckw.lightweightmusicplayer.R;
+import com.ckw.lightweightmusicplayer.repository.Album;
 import com.ckw.lightweightmusicplayer.repository.Song;
 import com.ckw.lightweightmusicplayer.ui.playmusic.MutableMediaMetadata;
 import com.ckw.lightweightmusicplayer.ui.playmusic.helper.MediaIdHelper;
@@ -34,19 +35,19 @@ public class MusicProvider {
 
     private SongSource mSongSource;
 
-    private List<MediaMetadataCompat> mLocalMusicList;
+    private List<MediaMetadataCompat> mLocalMusicList;//本地所有的音乐
+
+    private ConcurrentMap<String, List<MediaMetadataCompat>> mMusicListByAlbum;//本地专辑集合
 
     private final ConcurrentMap<String, MutableMediaMetadata> mMusicListById;//key是musicId
 
-    public interface Callback {
-        void onMusicCatalogReady(boolean success);
-    }
     
     public MusicProvider(Context context) {
         //提供本地数据
         mSongSource = new LocalSongSource(context);
         mLocalMusicList = new ArrayList<>();
         mMusicListById = new ConcurrentHashMap<>();
+        mMusicListByAlbum = new ConcurrentHashMap<>();
     }
 
     public List<MediaMetadataCompat> getLocalMusic() {
@@ -60,6 +61,14 @@ public class MusicProvider {
      */
     public MediaMetadataCompat getMusic(String musicId) {
         return mMusicListById.containsKey(musicId) ? mMusicListById.get(musicId).metadata : null;
+    }
+
+    /**
+     * Get music tracks of the given albumTitle
+     *
+     */
+    public List<MediaMetadataCompat> getMusicsByAlbum(String album) {
+        return mMusicListByAlbum.get(album);
     }
 
     public synchronized void updateMusicArt(String musicId, Bitmap albumArt, Bitmap icon) {
@@ -110,7 +119,7 @@ public class MusicProvider {
     * */
     private synchronized void retrieveLocalMedia(){
         mLocalMusicList = mSongSource.getLocalList();
-
+        buildListByAlbum();
         Iterator<MediaMetadataCompat> tracks = mSongSource.iterator();
         while (tracks.hasNext()) {
             MediaMetadataCompat item = tracks.next();
@@ -119,22 +128,68 @@ public class MusicProvider {
         }
     }
 
-    
+    /*
+     * 将歌曲通过专辑类别 分类，返回一个（类别：list）的map
+     * */
+    private void buildListByAlbum() {
+        ConcurrentMap<String, List<MediaMetadataCompat>> newMusicListByAlbum = new ConcurrentHashMap<>();
+
+        for (MutableMediaMetadata m : mMusicListById.values()) {
+            String albumTitle = m.metadata.getString(MediaMetadataCompat.METADATA_KEY_ALBUM);
+            List<MediaMetadataCompat> list = newMusicListByAlbum.get(albumTitle);
+            if (list == null) {
+                list = new ArrayList<>();
+                newMusicListByAlbum.put(albumTitle, list);
+            }
+            list.add(m.metadata);
+        }
+        mMusicListByAlbum = newMusicListByAlbum;
+    }
+
+    /**
+     * Get an iterator over the list of genres
+     *
+     */
+    public Iterable<String> getAlbumList() {
+        return mMusicListByAlbum.keySet();
+    }
+
+
     /*
     * 返回本地音乐数据
     * */
     public List<MediaBrowserCompat.MediaItem> getChildren(String mediaId){
         List<MediaBrowserCompat.MediaItem> mediaItems = new ArrayList<>();
 
+        //所有的音乐
         if(MediaIdHelper.MEDIA_ID_NORMAL.equals(mediaId)){
             for (MediaMetadataCompat mediaMetadataCompat: mLocalMusicList) {
                 mediaItems.add(createMediaItem(mediaMetadataCompat));
+            }
+        }else if(MediaIdHelper.MEDIA_ID_ALBUM.equals(mediaId)){
+            for (String albumTitle :
+                    getAlbumList()) {
+                mediaItems.add(createAlbumMediaItem(albumTitle));
             }
         }
         
         return mediaItems;
     }
 
+
+    /*
+    * 构建专辑数据
+    * */
+    private MediaBrowserCompat.MediaItem createAlbumMediaItem(String albumTitle){
+        List<MediaMetadataCompat> albumList = mMusicListByAlbum.get(albumTitle);
+        MediaDescriptionCompat description = new MediaDescriptionCompat.Builder()
+                .setMediaId(albumTitle)
+                .setTitle(albumTitle)
+                .setSubtitle(String.valueOf(albumList.size()))
+                .build();
+        return new MediaBrowserCompat.MediaItem(description,
+                MediaBrowserCompat.MediaItem.FLAG_BROWSABLE);
+    }
 
     /*
     * 构建单个数据

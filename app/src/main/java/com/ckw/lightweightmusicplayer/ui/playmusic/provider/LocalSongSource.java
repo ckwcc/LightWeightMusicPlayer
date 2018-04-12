@@ -4,6 +4,7 @@ import android.content.Context;
 import android.support.v4.media.MediaMetadataCompat;
 import android.util.Log;
 
+import com.ckw.lightweightmusicplayer.repository.Album;
 import com.ckw.lightweightmusicplayer.repository.Song;
 import com.ckw.lightweightmusicplayer.utils.MediaUtils;
 
@@ -29,6 +30,7 @@ public class LocalSongSource implements SongSource{
     private void getLocalSongList(){
         mLocalSong = MediaUtils.getAudioList(mContext);
     }
+
 
 
     /*
@@ -58,6 +60,7 @@ public class LocalSongSource implements SongSource{
                 .build();
     }
 
+
     @Override
     public Iterator<MediaMetadataCompat> iterator() {
         ArrayList<MediaMetadataCompat> tracks = new ArrayList<>();
@@ -77,4 +80,6 @@ public class LocalSongSource implements SongSource{
         }
         return tracks;
     }
+
+
 }
