@@ -3,6 +3,8 @@ package com.ckw.lightweightmusicplayer.ui.localmusic.fragments;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.support.annotation.NonNull;
+import android.support.v4.media.MediaBrowserCompat;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.util.Log;
@@ -26,6 +28,9 @@ import java.util.List;
 
 import butterknife.BindView;
 
+import static com.ckw.lightweightmusicplayer.ui.playmusic.helper.MediaIdHelper.MEDIA_ID_ALBUM;
+import static com.ckw.lightweightmusicplayer.ui.playmusic.helper.MediaIdHelper.MEDIA_ID_NORMAL;
+
 /**
  * Created by ckw
  * on 2018/3/13.
@@ -37,14 +42,53 @@ public class LocalAlbumFragment extends BaseFragment{
     @BindView(R.id.recyclerView_album)
     EasyRecyclerView mEasyRecyclerView;
 
-    private List<Album> mAlbums;//专辑
-    private RecyclerArrayAdapter<Album> mAdapter;
+    private List<MediaBrowserCompat.MediaItem> mAlbums;//专辑
+    private RecyclerArrayAdapter<MediaBrowserCompat.MediaItem> mAdapter;
+    private String mMediaId;
+    private MediaBrowserCompat mMediaBrowser;
 
     public static LocalAlbumFragment newInstance() {
         Bundle args = new Bundle();
         LocalAlbumFragment fragment = new LocalAlbumFragment();
         fragment.setArguments(args);
         return fragment;
+    }
+
+    public void onConnected(){
+        if (isDetached()) {
+            return;
+        }
+        mMediaId = MEDIA_ID_ALBUM;
+        mediaBrowserProvider.getMediaBrowser().unsubscribe(mMediaId);
+        mediaBrowserProvider.getMediaBrowser().subscribe(mMediaId,mSubscriptionCallback);
+    }
+
+    /*
+     * 浏览器订阅的接口，数据的回调
+     * */
+    private final MediaBrowserCompat.SubscriptionCallback mSubscriptionCallback = new MediaBrowserCompat.SubscriptionCallback() {
+        @Override
+        public void onChildrenLoaded(@NonNull String parentId, @NonNull List<MediaBrowserCompat.MediaItem> children) {
+            super.onChildrenLoaded(parentId, children);
+            //children 即为Service发送回来的媒体数据集合
+            //在onChildrenLoaded可以执行刷新列表UI的操作
+            //这里需要用adapter直接加数据源，用上面的代码，无效，估计是这个EasyRecyclerView框架的问题
+            mAdapter.clear();
+            mAdapter.addAll(children);
+            mAdapter.notifyDataSetChanged();
+
+        }
+    };
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        //在这里实际上拿到的mMediaBrowser不是空，但是没有连接着，google sample中也是如此
+        mMediaBrowser = mediaBrowserProvider.getMediaBrowser();
+
+        if(mMediaBrowser.isConnected()){
+            onConnected();
+        }
     }
 
     @Override
@@ -60,7 +104,6 @@ public class LocalAlbumFragment extends BaseFragment{
     @Override
     protected void initVariables() {
         mAlbums = new ArrayList<>();
-        getLocalSongs();
     }
 
     @Override
@@ -70,43 +113,13 @@ public class LocalAlbumFragment extends BaseFragment{
 
     @Override
     protected void operateViews(View view) {
-
+        initEasyRecyclerView();
     }
 
     @Override
     protected void initListener() {
     }
 
-    /*
-   * 获取本地音乐信息
-   * */
-    private void getLocalSongs(){
-        mAlbums.clear();
-
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                mAlbums = MediaUtils.getAlbumList(getContext());
-                Message message = new Message();
-                message.what = 1;
-                handler.sendMessage(message);
-            }
-        }).start();
-
-
-    }
-
-    Handler handler = new Handler(new Handler.Callback() {
-        @Override
-        public boolean handleMessage(Message msg) {
-            switch (msg.what){
-                case 1:
-                    initEasyRecyclerView();
-                    break;
-            }
-            return false;
-        }
-    });
 
     private void initEasyRecyclerView() {
 
@@ -123,7 +136,7 @@ public class LocalAlbumFragment extends BaseFragment{
 
         mEasyRecyclerView.setAdapter(mAdapter);
 
-        mAdapter.addAll(mAlbums);
+//        mAdapter.addAll(mAlbums);
 
 
     }

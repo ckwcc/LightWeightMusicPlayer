@@ -1,16 +1,10 @@
 package com.ckw.lightweightmusicplayer.ui.playmusic.service;
 
-import android.Manifest;
-import android.app.PendingIntent;
-import android.content.BroadcastReceiver;
-import android.content.Context;
+
 import android.content.Intent;
-import android.media.MediaRouter;
-import android.media.session.MediaSessionManager;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
-import android.os.RemoteException;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.media.MediaBrowserCompat;
@@ -19,28 +13,21 @@ import android.support.v4.media.MediaMetadataCompat;
 import android.support.v4.media.session.MediaButtonReceiver;
 import android.support.v4.media.session.MediaSessionCompat;
 import android.support.v4.media.session.PlaybackStateCompat;
-import android.util.Log;
 
 import com.ckw.lightweightmusicplayer.R;
 import com.ckw.lightweightmusicplayer.ui.playmusic.manager.PlaybackManager;
 import com.ckw.lightweightmusicplayer.ui.playmusic.manager.QueueManager;
 import com.ckw.lightweightmusicplayer.ui.playmusic.playback.LocalPlayback;
-import com.ckw.lightweightmusicplayer.ui.playmusic.playback.Playback;
 import com.ckw.lightweightmusicplayer.ui.playmusic.provider.MusicProvider;
 import com.google.android.gms.cast.framework.CastContext;
-import com.google.android.gms.cast.framework.CastSession;
-import com.google.android.gms.cast.framework.MediaNotificationManager;
-import com.google.android.gms.cast.framework.SessionManager;
-import com.google.android.gms.cast.framework.SessionManagerListener;
-import com.google.android.gms.common.ConnectionResult;
-import com.google.android.gms.common.GoogleApiAvailability;
 
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.List;
 
-import pub.devrel.easypermissions.EasyPermissions;
 
+import static com.ckw.lightweightmusicplayer.ui.playmusic.helper.MediaIdHelper.MEDIA_ID_ALBUM;
+import static com.ckw.lightweightmusicplayer.ui.playmusic.helper.MediaIdHelper.MEDIA_ID_ALBUM_DETAIL;
 import static com.ckw.lightweightmusicplayer.ui.playmusic.helper.MediaIdHelper.MEDIA_ID_EMPTY_ROOT;
 import static com.ckw.lightweightmusicplayer.ui.playmusic.helper.MediaIdHelper.MEDIA_ID_NORMAL;
 import static com.ckw.lightweightmusicplayer.ui.playmusic.helper.MediaIdHelper.MEDIA_ID_ROOT;
@@ -187,7 +174,7 @@ public class MusicService extends MediaBrowserServiceCompat implements PlaybackM
 
         if (MEDIA_ID_EMPTY_ROOT.equals(parentMediaId)) {
             result.sendResult(new ArrayList<MediaBrowserCompat.MediaItem>());
-        } else if(MEDIA_ID_NORMAL.equals(parentMediaId)){//返回所有的数据
+        } else {
             result.sendResult(mMusicProvider.getChildren(parentMediaId));
         }
     }

@@ -82,12 +82,7 @@ public abstract class BaseActivity extends DaggerAppCompatActivity implements Me
     protected void onStart() {
         super.onStart();
         mMediaBrowser.connect();
-        
-        if(mMediaBrowser.isConnected()){
-            Log.d("----", "onStart: baseactivity中连接");
-        }else {
-            Log.d("----", "onStart: 没有连接成功");
-        }
+
     }
 
     @Override
@@ -153,7 +148,6 @@ public abstract class BaseActivity extends DaggerAppCompatActivity implements Me
                 @Override
                 public void onConnected() {
                     //说明已经连接上了
-                    Log.d("----", "onConnected: baseActivity连接成功");
                     try {
                         connectToSession(mMediaBrowser.getSessionToken());
                     } catch (RemoteException e) {

@@ -2,6 +2,7 @@ package com.ckw.lightweightmusicplayer.ui.localmusic.adapter;
 
 import android.app.Activity;
 import android.content.Context;
+import android.support.v4.media.MediaBrowserCompat;
 import android.view.ViewGroup;
 
 import com.ckw.lightweightmusicplayer.repository.Album;
@@ -13,7 +14,7 @@ import com.jude.easyrecyclerview.adapter.RecyclerArrayAdapter;
  * Created by ckw
  * on 2018/4/11.
  */
-public class AlbumListAdapter extends RecyclerArrayAdapter<Album> {
+public class AlbumListAdapter extends RecyclerArrayAdapter<MediaBrowserCompat.MediaItem> {
     private Context mContext;
     private Activity mActivity;
 

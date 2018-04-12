@@ -6,7 +6,10 @@ import android.content.Intent;
 import android.os.Build;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.ActivityOptionsCompat;
+import android.support.v4.media.MediaBrowserCompat;
+import android.support.v4.media.MediaDescriptionCompat;
 import android.support.v4.util.Pair;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
@@ -23,7 +26,7 @@ import com.jude.easyrecyclerview.adapter.BaseViewHolder;
  * on 2018/3/13.
  */
 
-public class LocalAlbumViewHolder extends BaseViewHolder<Album> {
+public class LocalAlbumViewHolder extends BaseViewHolder<MediaBrowserCompat.MediaItem> {
 
     private Context mContext;
     private Activity mActivity;
@@ -44,18 +47,20 @@ public class LocalAlbumViewHolder extends BaseViewHolder<Album> {
     }
 
     @Override
-    public void setData(final Album data) {
+    public void setData(final MediaBrowserCompat.MediaItem  data) {
         super.setData(data);
-        mAlbumName.setText(data.getAlbum());
-        mAlbumArtist.setText(data.getArtist());
-        int number = data.getNumSongs();
+        MediaDescriptionCompat description = data.getDescription();
+        mAlbumName.setText(description.getMediaId());
+        mAlbumArtist.setText(description.getTitle());
+        int number = Integer.valueOf(description.getSubtitle().toString());
         if(number > 0){
             mAlbumNumber.setText(
                     String.format(mContext.getResources().getString(R.string.song_num),number));
         }
+        Log.d("----", "setData:专辑中的uri： "+description.getIconUri());
+        if(description.getIconUri() != null){
 
-        if(data.getAlbumArt() != null){
-            Glide.with(mContext).load(data.getAlbumArt()).into(mAlbumImg);
+            Glide.with(mContext).load(description.getIconUri().toString()).into(mAlbumImg);
         }
 
         mAlbumImg.setOnClickListener(new View.OnClickListener() {

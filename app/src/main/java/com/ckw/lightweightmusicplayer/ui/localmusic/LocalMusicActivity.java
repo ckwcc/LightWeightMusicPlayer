@@ -43,6 +43,7 @@ public class LocalMusicActivity extends BaseActivity implements MediaBrowserProv
     private final String[] mTitles = {"歌曲", "专辑", "歌手"};
     private int[] mImageArray, mColorArray;
     private LocalMusicListFragment mLocalMusicListFragment;
+    private LocalAlbumFragment mLocalAlbumListFragment;
 
     @Override
     protected void initView(Bundle savedInstanceState) {
@@ -67,11 +68,11 @@ public class LocalMusicActivity extends BaseActivity implements MediaBrowserProv
         mFragments = new ArrayList<>();
 
         mLocalMusicListFragment  = LocalMusicListFragment.newInstance();
-        LocalAlbumFragment localAlbumFragment = LocalAlbumFragment.newInstance();
+        mLocalAlbumListFragment = LocalAlbumFragment.newInstance();
         LocalArtistFragment localArtistFragment  = LocalArtistFragment.newInstance();
 
         mFragments.add(mLocalMusicListFragment);
-        mFragments.add(localAlbumFragment);
+        mFragments.add(mLocalAlbumListFragment);
         mFragments.add(localArtistFragment);
 
         mImageArray = new int[]{
@@ -101,6 +102,7 @@ public class LocalMusicActivity extends BaseActivity implements MediaBrowserProv
         super.onMediaBrowserConnected();
         //真正拿到数据是在这里
         mLocalMusicListFragment.onConnected();
+        mLocalAlbumListFragment.onConnected();
     }
 
     @Override

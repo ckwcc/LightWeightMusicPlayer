@@ -1,6 +1,8 @@
 package com.ckw.lightweightmusicplayer.ui.playmusic.provider;
 
 import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.support.v4.media.MediaMetadataCompat;
 import android.util.Log;
 
@@ -20,6 +22,7 @@ import java.util.List;
 
 public class LocalSongSource implements SongSource{
     private List<Song> mLocalSong;
+    private List<Album> mTotalAlbumList;
     private Context mContext;
 
     public LocalSongSource(Context context) {
@@ -29,6 +32,19 @@ public class LocalSongSource implements SongSource{
 
     private void getLocalSongList(){
         mLocalSong = MediaUtils.getAudioList(mContext);
+        mTotalAlbumList = MediaUtils.getAlbumList(mContext);
+        for (Song song : mLocalSong) {
+            song.setAlbumObj(getAlbum(song.getAlbumId()));
+        }
+    }
+
+    public Album getAlbum (int albumId) {
+        for (Album album : mTotalAlbumList) {
+            if (album.getId() == albumId) {
+                return album;
+            }
+        }
+        return null;
     }
 
 
@@ -48,13 +64,14 @@ public class LocalSongSource implements SongSource{
             strId = title + artist;
         }
         String id = String.valueOf(strId.hashCode());
-
+        String albumArt = song.getAlbumObj().getAlbumArt();
         return new MediaMetadataCompat.Builder()
                 .putString(MediaMetadataCompat.METADATA_KEY_MEDIA_ID,id)
                 .putString(SongSource.CUSTOM_METADATA_TRACK_SOURCE, source)
                 .putString(MediaMetadataCompat.METADATA_KEY_MEDIA_URI,source)
                 .putString(MediaMetadataCompat.METADATA_KEY_ALBUM,album)
                 .putString(MediaMetadataCompat.METADATA_KEY_ARTIST,artist)
+                .putString(MediaMetadataCompat.METADATA_KEY_ART_URI,albumArt)
                 .putLong(MediaMetadataCompat.METADATA_KEY_DURATION,duration)
                 .putString(MediaMetadataCompat.METADATA_KEY_TITLE, title)
                 .build();

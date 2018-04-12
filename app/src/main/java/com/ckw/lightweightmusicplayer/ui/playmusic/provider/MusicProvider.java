@@ -2,24 +2,18 @@ package com.ckw.lightweightmusicplayer.ui.playmusic.provider;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
-import android.content.res.Resources;
 import android.graphics.Bitmap;
-import android.media.browse.MediaBrowser;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.support.v4.media.MediaBrowserCompat;
 import android.support.v4.media.MediaDescriptionCompat;
 import android.support.v4.media.MediaMetadataCompat;
 import android.util.Log;
 
-import com.ckw.lightweightmusicplayer.R;
-import com.ckw.lightweightmusicplayer.repository.Album;
-import com.ckw.lightweightmusicplayer.repository.Song;
 import com.ckw.lightweightmusicplayer.ui.playmusic.MutableMediaMetadata;
 import com.ckw.lightweightmusicplayer.ui.playmusic.helper.MediaIdHelper;
-import com.ckw.lightweightmusicplayer.utils.MediaUtils;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
@@ -119,13 +113,15 @@ public class MusicProvider {
     * */
     private synchronized void retrieveLocalMedia(){
         mLocalMusicList = mSongSource.getLocalList();
-        buildListByAlbum();
+
         Iterator<MediaMetadataCompat> tracks = mSongSource.iterator();
         while (tracks.hasNext()) {
             MediaMetadataCompat item = tracks.next();
             String musicId = item.getString(MediaMetadataCompat.METADATA_KEY_MEDIA_ID);
             mMusicListById.put(musicId, new MutableMediaMetadata(musicId, item));
         }
+
+        buildListByAlbum();
     }
 
     /*
@@ -133,7 +129,6 @@ public class MusicProvider {
      * */
     private void buildListByAlbum() {
         ConcurrentMap<String, List<MediaMetadataCompat>> newMusicListByAlbum = new ConcurrentHashMap<>();
-
         for (MutableMediaMetadata m : mMusicListById.values()) {
             String albumTitle = m.metadata.getString(MediaMetadataCompat.METADATA_KEY_ALBUM);
             List<MediaMetadataCompat> list = newMusicListByAlbum.get(albumTitle);
@@ -166,13 +161,18 @@ public class MusicProvider {
             for (MediaMetadataCompat mediaMetadataCompat: mLocalMusicList) {
                 mediaItems.add(createMediaItem(mediaMetadataCompat));
             }
-        }else if(MediaIdHelper.MEDIA_ID_ALBUM.equals(mediaId)){
+        }else if(MediaIdHelper.MEDIA_ID_ALBUM.equals(mediaId)){//专辑
             for (String albumTitle :
                     getAlbumList()) {
                 mediaItems.add(createAlbumMediaItem(albumTitle));
             }
+        }else if(mediaId.startsWith(MediaIdHelper.MEDIA_ID_ALBUM_DETAIL)){//专辑详情
+            String[] split = mediaId.split("&");
+            List<MediaMetadataCompat> musicsByAlbum = getMusicsByAlbum(split[1]);
+            for (int i = 0; i < musicsByAlbum.size(); i++) {
+                mediaItems.add(createMediaItem(musicsByAlbum.get(i)));
+            }
         }
-        
         return mediaItems;
     }
 
@@ -182,10 +182,14 @@ public class MusicProvider {
     * */
     private MediaBrowserCompat.MediaItem createAlbumMediaItem(String albumTitle){
         List<MediaMetadataCompat> albumList = mMusicListByAlbum.get(albumTitle);
+        MediaMetadataCompat data = albumList.get(0);
+        Uri imgUri = data.getDescription().getIconUri();//专辑的图片
+        String artist = data.getString(MediaMetadataCompat.METADATA_KEY_ARTIST);
         MediaDescriptionCompat description = new MediaDescriptionCompat.Builder()
-                .setMediaId(albumTitle)
-                .setTitle(albumTitle)
-                .setSubtitle(String.valueOf(albumList.size()))
+                .setMediaId(albumTitle)//专辑名称
+                .setTitle(artist)//专辑作者
+                .setSubtitle(String.valueOf(albumList.size()))//数量
+                .setIconUri(imgUri)//专辑图片
                 .build();
         return new MediaBrowserCompat.MediaItem(description,
                 MediaBrowserCompat.MediaItem.FLAG_BROWSABLE);

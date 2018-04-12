@@ -2,6 +2,7 @@ package com.ckw.lightweightmusicplayer.ui.localmusic.viewholder;
 
 import android.content.Context;
 import android.graphics.Bitmap;
+import android.net.Uri;
 import android.support.v4.media.MediaBrowserCompat;
 import android.support.v4.media.MediaDescriptionCompat;
 import android.support.v4.media.MediaMetadataCompat;
@@ -47,9 +48,11 @@ public class LocalSongViewHolder extends BaseViewHolder<MediaBrowserCompat.Media
         mSongName.setText(description.getTitle());
         mSongArtist.setText(description.getSubtitle());
 
-        Bitmap iconBitmap = description.getIconBitmap();
-        if (iconBitmap != null) {
-            Glide.with(getContext()).load(iconBitmap).into(mSongImg);
+        Uri iconUri = description.getIconUri();
+        Log.d("----", "setData: 本地音乐中的uri："+iconUri);
+        if (iconUri != null) {
+            Glide.with(getContext()).load(iconUri.toString())
+                    .into(mSongImg);
         }
 
 
