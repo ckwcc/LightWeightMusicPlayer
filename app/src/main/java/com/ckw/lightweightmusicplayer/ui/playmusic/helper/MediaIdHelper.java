@@ -13,5 +13,6 @@ public class MediaIdHelper {
     public static final String MEDIA_ID_ALBUM = "__LOCAL_ALBUM__";//音乐专辑
     public static final String MEDIA_ID_ALBUM_DETAIL = "__LOCAL_ALBUM_DETAIL__";//具体某个专辑的歌曲
     public static final String MEDIA_ID_ARTIST = "__LOCAL_ARTIST__";
+    public static final String MEDIA_ID_ARTIST_DETAIL = "__LOCAL_ARTIST_DETAIL__";
 
 }

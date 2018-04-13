@@ -1,4 +1,4 @@
-package com.ckw.lightweightmusicplayer.ui.localmusic.activities;
+package com.ckw.lightweightmusicplayer.ui.localmusic.activities.modules;
 
 import dagger.Module;
 

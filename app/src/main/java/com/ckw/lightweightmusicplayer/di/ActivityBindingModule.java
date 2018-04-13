@@ -5,7 +5,9 @@ import com.ckw.lightweightmusicplayer.MainActivityModule;
 import com.ckw.lightweightmusicplayer.ui.localmusic.LocalMusicActivity;
 import com.ckw.lightweightmusicplayer.ui.localmusic.LocalMusicModule;
 import com.ckw.lightweightmusicplayer.ui.localmusic.activities.AlbumActivity;
-import com.ckw.lightweightmusicplayer.ui.localmusic.activities.AlbumModule;
+import com.ckw.lightweightmusicplayer.ui.localmusic.activities.ArtistActivity;
+import com.ckw.lightweightmusicplayer.ui.localmusic.activities.modules.AlbumModule;
+import com.ckw.lightweightmusicplayer.ui.localmusic.activities.modules.ArtistModule;
 import com.ckw.lightweightmusicplayer.ui.playmusic.MusicPlayActivity;
 import com.ckw.lightweightmusicplayer.ui.playmusic.MusicPlayModule;
 
@@ -31,6 +33,10 @@ public abstract class ActivityBindingModule {
     @ActivityScoped
     @ContributesAndroidInjector(modules = AlbumModule.class)
     abstract AlbumActivity albumActivity();
+
+    @ActivityScoped
+    @ContributesAndroidInjector(modules = ArtistModule.class)
+    abstract ArtistActivity artistActivity();
 
     @ActivityScoped
     @ContributesAndroidInjector(modules = MusicPlayModule.class)

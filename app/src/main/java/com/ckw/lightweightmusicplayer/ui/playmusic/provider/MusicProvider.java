@@ -68,6 +68,10 @@ public class MusicProvider {
         return mMusicListByAlbum.get(album);
     }
 
+    public List<MediaMetadataCompat> getMusicByArtist(String artist){
+        return mMusicListByArtist.get(artist);
+    }
+
     public synchronized void updateMusicArt(String musicId, Bitmap albumArt, Bitmap icon) {
         MediaMetadataCompat metadata = getMusic(musicId);
         metadata = new MediaMetadataCompat.Builder(metadata)
@@ -204,6 +208,12 @@ public class MusicProvider {
             for (String artistName :
                     getArtistList()) {
                 mediaItems.add(createArtistMediaItem(artistName));
+            }
+        }else if(mediaId.startsWith(MediaIdHelper.MEDIA_ID_ARTIST_DETAIL)){//歌手列表详情
+            String[] split = mediaId.split("&");
+            List<MediaMetadataCompat> musicByArtist = getMusicByArtist(split[1]);
+            for (int i = 0; i < musicByArtist.size(); i++) {
+                mediaItems.add(createMediaItem(musicByArtist.get(i)));
             }
         }
         return mediaItems;

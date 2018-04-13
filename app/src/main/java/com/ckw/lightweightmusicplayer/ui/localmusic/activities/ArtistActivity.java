@@ -2,30 +2,17 @@ package com.ckw.lightweightmusicplayer.ui.localmusic.activities;
 
 import android.graphics.Color;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Message;
 import android.support.annotation.NonNull;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.v4.media.MediaBrowserCompat;
 import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
-import android.util.Log;
-import android.view.ViewGroup;
-import android.widget.ImageView;
 
 import com.blankj.utilcode.util.SizeUtils;
-import com.bumptech.glide.Glide;
 import com.ckw.lightweightmusicplayer.R;
 import com.ckw.lightweightmusicplayer.base.BaseActivity;
-import com.ckw.lightweightmusicplayer.repository.Album;
-import com.ckw.lightweightmusicplayer.repository.Song;
 import com.ckw.lightweightmusicplayer.ui.localmusic.adapter.MusicListAdapter;
-import com.ckw.lightweightmusicplayer.ui.localmusic.viewholder.LocalAlbumViewHolder;
-import com.ckw.lightweightmusicplayer.ui.localmusic.viewholder.LocalSongViewHolder;
 import com.ckw.lightweightmusicplayer.ui.playmusic.helper.MediaIdHelper;
-import com.ckw.lightweightmusicplayer.utils.MediaUtils;
 import com.jude.easyrecyclerview.EasyRecyclerView;
-import com.jude.easyrecyclerview.adapter.BaseViewHolder;
 import com.jude.easyrecyclerview.adapter.RecyclerArrayAdapter;
 import com.jude.easyrecyclerview.decoration.DividerDecoration;
 
@@ -35,40 +22,56 @@ import butterknife.BindView;
 
 /**
  * Created by ckw
- * on 2018/3/14.
- * 专辑 详情界面
+ * on 2018/4/13.
  */
+public class ArtistActivity extends BaseActivity{
 
-public class AlbumActivity extends BaseActivity {
-
-    @BindView(R.id.iv_album)
-    ImageView mPhotoAlbum;
-    @BindView(R.id.ctl_album)
+    @BindView(R.id.ctl_artist)
     CollapsingToolbarLayout mCollapsingToolbarLayout;
-    @BindView(R.id.rv_album)
+    @BindView(R.id.rv_artist)
     EasyRecyclerView mEasyRecyclerView;
 
-    private Album mAlbum;
-    private List<Song> mSongs;
     private RecyclerArrayAdapter<MediaBrowserCompat.MediaItem> mAdapter;
 
-
     private String mediaId;
-    private String mAlbumTitle;
-    private String mAlbumUri;
+    private String mArtistName;
 
     @Override
     protected void initView(Bundle savedInstanceState) {
         initRecyclerView();
-
-        if(mAlbumUri != null ){
-            Glide.with(this).load(mAlbumUri).into(mPhotoAlbum);
-        }
-
-        if(mAlbumTitle != null){
-            mCollapsingToolbarLayout.setTitle(mAlbumTitle);
+        if(mArtistName != null){
+            mCollapsingToolbarLayout.setTitle(mArtistName);
             mCollapsingToolbarLayout.setExpandedTitleColor(getResources().getColor(R.color.colorWhite));
         }
+    }
+
+    @Override
+    protected void handleBundle(@NonNull Bundle bundle) {
+        mArtistName = bundle.getString("artistName");
+    }
+
+    @Override
+    protected void initVariable() {
+
+    }
+
+    @Override
+    protected int getLayoutId() {
+        return R.layout.activity_artist;
+    }
+
+    @Override
+    protected void initListener() {
+
+    }
+
+    @Override
+    protected boolean needToolbar() {
+        return true;
+    }
+
+    @Override
+    public void setToolbar() {
 
     }
 
@@ -76,7 +79,7 @@ public class AlbumActivity extends BaseActivity {
     protected void onMediaBrowserConnected() {
         super.onMediaBrowserConnected();
         boolean connected = mMediaBrowser.isConnected();
-        mediaId = MediaIdHelper.MEDIA_ID_ALBUM_DETAIL +"&"+mAlbumTitle;
+        mediaId = MediaIdHelper.MEDIA_ID_ARTIST_DETAIL +"&"+ mArtistName;
         if(connected){
             mMediaBrowser.unsubscribe(mediaId);
             mMediaBrowser.subscribe(mediaId,mSubscriptionCallback);
@@ -96,38 +99,6 @@ public class AlbumActivity extends BaseActivity {
 
         }
     };
-
-    @Override
-    protected void handleBundle(@NonNull Bundle bundle) {
-        mAlbumTitle = bundle.getString("albumTitle");
-        mAlbumUri = bundle.getString("albumUri");
-    }
-
-    @Override
-    protected void initVariable() {
-
-    }
-
-    @Override
-    protected int getLayoutId() {
-        return R.layout.activity_album;
-    }
-
-    @Override
-    protected void initListener() {
-
-    }
-
-    @Override
-    protected boolean needToolbar() {
-        return true;
-    }
-
-    @Override
-    public void setToolbar() {
-
-    }
-
 
     private void initRecyclerView() {
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this);

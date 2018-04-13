@@ -1,5 +1,6 @@
 package com.ckw.lightweightmusicplayer.ui.localmusic.fragments;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.media.MediaBrowserCompat;
@@ -10,6 +11,7 @@ import android.view.View;
 import com.blankj.utilcode.util.SizeUtils;
 import com.ckw.lightweightmusicplayer.R;
 import com.ckw.lightweightmusicplayer.base.BaseFragment;
+import com.ckw.lightweightmusicplayer.ui.localmusic.activities.ArtistActivity;
 import com.ckw.lightweightmusicplayer.ui.localmusic.adapter.AlbumListAdapter;
 import com.ckw.lightweightmusicplayer.ui.localmusic.adapter.ArtistListAdapter;
 import com.jude.easyrecyclerview.EasyRecyclerView;
@@ -68,6 +70,9 @@ public class LocalArtistFragment extends BaseFragment {
             mAdapter.addAll(children);
             mAdapter.notifyDataSetChanged();
 
+            mArtists.clear();
+            mArtists.addAll(children);
+
         }
     };
 
@@ -103,7 +108,16 @@ public class LocalArtistFragment extends BaseFragment {
 
     @Override
     protected void initListener() {
-
+        mAdapter.setOnItemClickListener(new RecyclerArrayAdapter.OnItemClickListener() {
+            @Override
+            public void onItemClick(int position) {
+                MediaBrowserCompat.MediaItem mediaItem = mArtists.get(position);
+                String artistName = mediaItem.getDescription().getMediaId();
+                Intent intent = new Intent(getContext(), ArtistActivity.class);
+                intent.putExtra("artistName",artistName);
+                startActivity(intent);
+            }
+        });
     }
 
     @Override
