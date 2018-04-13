@@ -18,6 +18,8 @@ import com.jude.easyrecyclerview.decoration.SpaceDecoration;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.inject.Inject;
+
 import butterknife.BindView;
 
 import static com.ckw.lightweightmusicplayer.ui.playmusic.helper.MediaIdHelper.MEDIA_ID_ALBUM;
@@ -31,20 +33,20 @@ import static com.ckw.lightweightmusicplayer.ui.playmusic.helper.MediaIdHelper.M
 
 public class LocalAlbumFragment extends BaseFragment{
 
+    @Inject
+    public LocalAlbumFragment() {
+
+    }
+
     @BindView(R.id.recyclerView_album)
     EasyRecyclerView mEasyRecyclerView;
+
+
 
     private List<MediaBrowserCompat.MediaItem> mAlbums;//专辑
     private RecyclerArrayAdapter<MediaBrowserCompat.MediaItem> mAdapter;
     private String mMediaId;
     private MediaBrowserCompat mMediaBrowser;
-
-    public static LocalAlbumFragment newInstance() {
-        Bundle args = new Bundle();
-        LocalAlbumFragment fragment = new LocalAlbumFragment();
-        fragment.setArguments(args);
-        return fragment;
-    }
 
     public void onConnected(){
         if (isDetached()) {

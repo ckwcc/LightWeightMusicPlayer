@@ -74,6 +74,7 @@ public class MusicService extends MediaBrowserServiceCompat implements PlaybackM
         // {@link #onLoadChildren(String, Result<List<MediaItem>>) onLoadChildren()}.
 
 
+        //这里有关mMusicProvider的其他对象，需要在mMusicProvider初始化之后再初始化
         QueueManager queueManager = new QueueManager(mMusicProvider, getResources(),
                 new QueueManager.MetadataUpdateListener() {
                     @Override
@@ -171,10 +172,9 @@ public class MusicService extends MediaBrowserServiceCompat implements PlaybackM
 
     @Override
     public void onLoadChildren(@NonNull String parentMediaId, @NonNull Result<List<MediaBrowserCompat.MediaItem>> result) {
-        mMusicProvider = new MusicProvider(this);
-        mMusicProvider.retrieveMediaAsync();
-
         try {
+            mMusicProvider = new MusicProvider(this);
+            mMusicProvider.retrieveMediaAsync();
             Thread.sleep(200);
         } catch (InterruptedException e) {
             e.printStackTrace();

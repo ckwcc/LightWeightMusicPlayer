@@ -3,6 +3,7 @@ package com.ckw.lightweightmusicplayer.ui.playmusic.provider;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.Bitmap;
+import android.media.browse.MediaBrowser;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.support.v4.media.MediaBrowserCompat;
@@ -31,17 +32,19 @@ public class MusicProvider {
 
     private List<MediaMetadataCompat> mLocalMusicList;//本地所有的音乐
 
-    private ConcurrentMap<String, List<MediaMetadataCompat>> mMusicListByAlbum;//本地专辑集合
-
     private final ConcurrentMap<String, MutableMediaMetadata> mMusicListById;//key是musicId
 
-    
+    private ConcurrentMap<String, List<MediaMetadataCompat>> mMusicListByAlbum;//本地专辑集合
+
+    private ConcurrentMap<String,List<MediaMetadataCompat>> mMusicListByArtist;//本地歌手集合
+
     public MusicProvider(Context context) {
         //提供本地数据
         mSongSource = new LocalSongSource(context);
         mLocalMusicList = new ArrayList<>();
         mMusicListById = new ConcurrentHashMap<>();
         mMusicListByAlbum = new ConcurrentHashMap<>();
+        mMusicListByArtist = new ConcurrentHashMap<>();
     }
 
     public List<MediaMetadataCompat> getLocalMusic() {
@@ -122,6 +125,7 @@ public class MusicProvider {
         }
 
         buildListByAlbum();
+        buildListByArtist();
     }
 
     /*
@@ -141,12 +145,36 @@ public class MusicProvider {
         mMusicListByAlbum = newMusicListByAlbum;
     }
 
+    /*
+    * 将歌曲通过歌手进行分类
+    * */
+    private void buildListByArtist(){
+        ConcurrentMap<String,List<MediaMetadataCompat>> newMusicListByArtist = new ConcurrentHashMap<>();
+        for (MutableMediaMetadata m :
+                mMusicListById.values()) {
+            String artist = m.metadata.getString(MediaMetadataCompat.METADATA_KEY_ARTIST);
+            List<MediaMetadataCompat> list = newMusicListByArtist.get(artist);
+            if(list == null){
+                list = new ArrayList<>();
+                newMusicListByArtist.put(artist,list);
+            }
+            list.add(m.metadata);
+        }
+
+        mMusicListByArtist = newMusicListByArtist;
+    }
+
+
+
     /**
-     * Get an iterator over the list of genres
-     *
+     * Get an iterator over the list of album+
      */
     public Iterable<String> getAlbumList() {
         return mMusicListByAlbum.keySet();
+    }
+
+    public Iterable<String> getArtistList(){
+        return mMusicListByArtist.keySet();
     }
 
 
@@ -172,8 +200,29 @@ public class MusicProvider {
             for (int i = 0; i < musicsByAlbum.size(); i++) {
                 mediaItems.add(createMediaItem(musicsByAlbum.get(i)));
             }
+        }else if(MediaIdHelper.MEDIA_ID_ARTIST.equals(mediaId)){//歌手列表
+            for (String artistName :
+                    getArtistList()) {
+                mediaItems.add(createArtistMediaItem(artistName));
+            }
         }
         return mediaItems;
+    }
+
+    /*
+    * 构建 歌手列表 数据
+    * */
+    private MediaBrowserCompat.MediaItem createArtistMediaItem(String artistName){
+        List<MediaMetadataCompat> songList = mMusicListByArtist.get(artistName);//获得这个歌手的所有歌曲
+        MediaMetadataCompat data = songList.get(0);
+
+        MediaDescriptionCompat descriptionCompat = new MediaDescriptionCompat.Builder()
+                .setMediaId(artistName)//歌手名称
+                .setTitle(String.valueOf(songList.size()))
+                .build();
+
+        return new MediaBrowserCompat.MediaItem(descriptionCompat,
+                MediaBrowserCompat.MediaItem.FLAG_BROWSABLE);
     }
 
 

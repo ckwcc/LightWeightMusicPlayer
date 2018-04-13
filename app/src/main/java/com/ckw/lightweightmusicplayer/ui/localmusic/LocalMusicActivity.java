@@ -17,6 +17,8 @@ import com.ckw.lightweightmusicplayer.ui.playmusic.MediaBrowserProvider;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.inject.Inject;
+
 import butterknife.BindView;
 import cn.hugeterry.coordinatortablayout.CoordinatorTabLayout;
 
@@ -26,6 +28,13 @@ import cn.hugeterry.coordinatortablayout.CoordinatorTabLayout;
  */
 
 public class LocalMusicActivity extends BaseActivity implements MediaBrowserProvider{
+
+    @Inject
+    LocalArtistFragment mLocalArtistFragment;
+    @Inject
+    LocalMusicListFragment mLocalMusicListFragment;
+    @Inject
+    LocalAlbumFragment mLocalAlbumListFragment;
 
     @BindView(R.id.coordinatortablayout)
     CoordinatorTabLayout mCoordinatorTabLayout;
@@ -38,8 +47,8 @@ public class LocalMusicActivity extends BaseActivity implements MediaBrowserProv
 
     private final String[] mTitles = {"歌曲", "专辑", "歌手"};
     private int[] mImageArray, mColorArray;
-    private LocalMusicListFragment mLocalMusicListFragment;
-    private LocalAlbumFragment mLocalAlbumListFragment;
+
+
 
     @Override
     protected void initView(Bundle savedInstanceState) {
@@ -63,13 +72,9 @@ public class LocalMusicActivity extends BaseActivity implements MediaBrowserProv
     protected void initVariable() {
         mFragments = new ArrayList<>();
 
-        mLocalMusicListFragment  = LocalMusicListFragment.newInstance();
-        mLocalAlbumListFragment = LocalAlbumFragment.newInstance();
-        LocalArtistFragment localArtistFragment  = LocalArtistFragment.newInstance();
-
         mFragments.add(mLocalMusicListFragment);
         mFragments.add(mLocalAlbumListFragment);
-        mFragments.add(localArtistFragment);
+        mFragments.add(mLocalArtistFragment);
 
         mImageArray = new int[]{
                 R.drawable.bg_music,
@@ -99,6 +104,7 @@ public class LocalMusicActivity extends BaseActivity implements MediaBrowserProv
         //真正拿到数据是在这里
         mLocalMusicListFragment.onConnected();
         mLocalAlbumListFragment.onConnected();
+        mLocalArtistFragment.onConnected();
     }
 
     @Override

@@ -20,6 +20,8 @@ import com.jude.easyrecyclerview.decoration.DividerDecoration;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.inject.Inject;
+
 import butterknife.BindView;
 
 import static com.ckw.lightweightmusicplayer.ui.playmusic.helper.MediaIdHelper.MEDIA_ID_NORMAL;
@@ -33,6 +35,10 @@ import static com.ckw.lightweightmusicplayer.ui.playmusic.helper.MediaIdHelper.M
 
 public class LocalMusicListFragment extends BaseFragment{
 
+    @Inject
+    public LocalMusicListFragment() {
+    }
+
     @BindView(R.id.recyclerView)
     EasyRecyclerView mEasyRecyclerView;
 
@@ -42,16 +48,8 @@ public class LocalMusicListFragment extends BaseFragment{
 
     private String mMediaId;//分类id
 
-
-
     private MediaBrowserCompat mMediaBrowser;
 
-    public static LocalMusicListFragment newInstance() {
-        LocalMusicListFragment fragment = new LocalMusicListFragment();
-        Bundle args = new Bundle();
-        fragment.setArguments(args);
-        return fragment;
-    }
 
     @Override
     public void initPresenter() {
