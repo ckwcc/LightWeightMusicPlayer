@@ -73,15 +73,13 @@ public class LocalAlbumViewHolder extends BaseViewHolder<MediaBrowserCompat.Medi
                 }else {
                     it.putExtra("albumUri",mContext.getResources().getDrawable(R.mipmap.ic_music_default).toString());
                 }
-                ActivityOptionsCompat compat = ActivityOptionsCompat.makeSceneTransitionAnimation(
-                        (Activity)mContext, mAlbumImg, mContext.getString(R.string.translation_thumb));
 
-//                ActivityOptionsCompat activityOptions = ActivityOptionsCompat.makeSceneTransitionAnimation(
-//                        mActivity,
-//                        new Pair<View, String>(mAlbumImg,mContext.getString(R.string.translation_thumb)));
-//                ActivityCompat.startActivity(mContext, it, activityOptions.toBundle());
 
-                mContext.startActivity(it, compat.toBundle());
+                ActivityOptionsCompat activityOptions = ActivityOptionsCompat.makeSceneTransitionAnimation(
+                        mActivity,
+                        new Pair<View, String>(mAlbumImg,mContext.getString(R.string.translation_thumb)));
+                ActivityCompat.startActivity(mContext, it, activityOptions.toBundle());
+
             }
         });
     }

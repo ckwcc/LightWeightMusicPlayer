@@ -14,7 +14,9 @@
 
     </style>
 
-    <style name="AlbumTheme" parent="MaterialTheme">
+    <style name="AlbumTheme" parent="MaterialTheme.Base">
+        <item name="android:windowIsTranslucent">true</item>
+        <item name="android:windowBackground">@android:color/transparent</item>
         <item name="android:windowDrawsSystemBarBackgrounds">true</item>
         <item name="android:statusBarColor">@android:color/background_dark</item>
     </style>

@@ -3,6 +3,7 @@
     <!-- Base application theme. -->
     <style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar">
         <!-- Customize your theme here. -->
+        <item name="android:windowIsTranslucent">true</item>
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
@@ -24,10 +25,13 @@
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
-
     </style>
 
-    <style name="MaterialTheme" parent="MaterialTheme.Base"/>
+    <!--<style name="MaterialTheme" parent="MaterialTheme.Base"/>-->
+    <style name="MaterialTheme" parent="MaterialTheme.Base">
+
+
+    </style>
 
     <!--toolbar的样式-->
     <style name="tool_bar_theme" parent="ThemeOverlay.AppCompat.Dark.ActionBar">
@@ -40,6 +44,10 @@
         <item name="android:textColor">@color/colorWhite</item>
     </style>
 
+    <style name="AlbumTheme" parent="MaterialTheme.Base">
+        <item name="android:windowIsTranslucent">true</item>
+        <item name="android:windowBackground">@android:color/transparent</item>
+    </style>
     <style name="ThumbTransitionStyle"/>
 
 </resources>
