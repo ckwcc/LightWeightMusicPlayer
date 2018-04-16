@@ -27,10 +27,10 @@ public class LocalSongSource implements SongSource{
 
     public LocalSongSource(Context context) {
         mContext = context;
-        getLocalSongList();
+//        getLocalSongList();
     }
 
-    private void getLocalSongList(){
+    public void getLocalSongList(){
         mLocalSong = MediaUtils.getAudioList(mContext);
         mTotalAlbumList = MediaUtils.getAlbumList(mContext);
         for (Song song : mLocalSong) {
@@ -91,6 +91,7 @@ public class LocalSongSource implements SongSource{
 
     @Override
     public ArrayList<MediaMetadataCompat> getLocalList() {
+        getLocalSongList();
         ArrayList<MediaMetadataCompat> tracks = new ArrayList<>();
         for (int i = 0; i < mLocalSong.size(); i++) {
             tracks.add(buildFromLocal(mLocalSong.get(i)));

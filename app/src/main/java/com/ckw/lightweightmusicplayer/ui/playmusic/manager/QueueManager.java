@@ -36,6 +36,9 @@ import java.util.List;
  * Simple data provider for queues. Keeps track of a current queue and a current index in the
  * queue. Also provides methods to set the current queue based on common queries, relying on a
  * given MusicProvider to provide the actual media metadata.
+ * 提供队列形式的数据，跟踪当前队列和队列中的当前索引。
+ * 同时还提供了基于常见查询设置当前队列的方法，
+ * 依赖于给定的音乐提供者来提供实际的媒体元数据。
  */
 public class QueueManager {
 

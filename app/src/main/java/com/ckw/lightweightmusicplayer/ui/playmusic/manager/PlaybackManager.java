@@ -79,7 +79,7 @@ public class PlaybackManager implements Playback.Callback{
     }
 
     /**
-     * Update the current media player state, optionally showing an error message.
+     * 更新当前媒体播放器状态，可选地显示错误消息。
      *
      * @param error if not null, error message to present to the user.
      */
@@ -139,13 +139,12 @@ public class PlaybackManager implements Playback.Callback{
 
     @Override
     public void onCompletion() {
-        // The media player finished playing the current song, so we go ahead
-        // and start the next.
+        //媒体播放器完成了当前的歌曲，继续下一个。
         if (mQueueManager.skipQueuePosition(1)) {
             handlePlayRequest();
             mQueueManager.updateMetadata();
         } else {
-            // If skipping was not possible, we stop and release the resources:
+            // 如果不可能跳过，我们将停止并释放资源
             handleStopRequest(null);
         }
     }
@@ -166,7 +165,7 @@ public class PlaybackManager implements Playback.Callback{
     }
 
     /**
-     * Switch to a different Playback instance, maintaining all playback state, if possible.
+     * 切换到不同的播放实例，如果可能的话，保持所有播放状态。
      *
      * @param playback switch to this playback
      */

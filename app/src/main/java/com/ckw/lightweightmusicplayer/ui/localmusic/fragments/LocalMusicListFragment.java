@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.media.MediaBrowserCompat;
 import android.support.v7.widget.LinearLayoutManager;
+import android.util.Log;
 import android.view.View;
 
 import com.blankj.utilcode.util.ActivityUtils;
@@ -85,7 +86,6 @@ public class LocalMusicListFragment extends BaseFragment{
         mEasyRecyclerView.addItemDecoration(itemDecoration);
 
         mAdapter = new MusicListAdapter(getContext());
-        mAdapter.addAll(mSongs);
         mEasyRecyclerView.setAdapter(mAdapter);
     }
 
@@ -94,7 +94,10 @@ public class LocalMusicListFragment extends BaseFragment{
         mAdapter.setOnItemClickListener(new RecyclerArrayAdapter.OnItemClickListener() {
             @Override
             public void onItemClick(int position) {
-                ActivityUtils.startActivity(MusicPlayActivity.class);
+                Log.d("----", "onItemClick: 点击了item："+mSongs.get(position).getMediaId());
+                Bundle bundle = new Bundle();
+                bundle.putString("musicId",mSongs.get(position).getMediaId());
+                ActivityUtils.startActivity(bundle,MusicPlayActivity.class);
             }
         });
     }
@@ -134,6 +137,7 @@ public class LocalMusicListFragment extends BaseFragment{
             //children 即为Service发送回来的媒体数据集合
             //在onChildrenLoaded可以执行刷新列表UI的操作
             //这里需要用adapter直接加数据源，用上面的代码，无效，估计是这个EasyRecyclerView框架的问题
+            mSongs = children;
             mAdapter.clear();
             mAdapter.addAll(children);
             mAdapter.notifyDataSetChanged();

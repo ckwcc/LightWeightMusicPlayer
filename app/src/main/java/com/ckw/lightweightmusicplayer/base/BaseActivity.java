@@ -10,8 +10,10 @@ import android.os.Bundle;
 import android.os.RemoteException;
 import android.support.annotation.NonNull;
 import android.support.v4.media.MediaBrowserCompat;
+import android.support.v4.media.MediaMetadataCompat;
 import android.support.v4.media.session.MediaControllerCompat;
 import android.support.v4.media.session.MediaSessionCompat;
+import android.support.v4.media.session.PlaybackStateCompat;
 import android.support.v7.app.ActionBar;
 import android.support.v7.widget.Toolbar;
 import android.transition.Fade;
@@ -157,8 +159,29 @@ public abstract class BaseActivity extends DaggerAppCompatActivity implements Me
             };
 
     private void connectToSession(MediaSessionCompat.Token token) throws RemoteException {
-
+        MediaControllerCompat mediaController = new MediaControllerCompat(this, token);
+        MediaControllerCompat.setMediaController(this, mediaController);
+        mediaController.registerCallback(mMediaControllerCallback);
         onMediaBrowserConnected();
+        onMediaControllerConnected();
+    }
+
+    // Callback that ensures that we are showing the controls
+    private final MediaControllerCompat.Callback mMediaControllerCallback =
+            new MediaControllerCompat.Callback() {
+                @Override
+                public void onPlaybackStateChanged(@NonNull PlaybackStateCompat state) {
+
+                }
+
+                @Override
+                public void onMetadataChanged(MediaMetadataCompat metadata) {
+
+                }
+            };
+
+    protected void onMediaControllerConnected() {
+        // empty implementation, can be overridden by clients.
     }
 
     protected void onMediaBrowserConnected() {

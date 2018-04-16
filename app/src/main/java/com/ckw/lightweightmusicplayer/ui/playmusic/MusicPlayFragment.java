@@ -6,6 +6,8 @@ import android.view.View;
 import com.ckw.lightweightmusicplayer.R;
 import com.ckw.lightweightmusicplayer.base.BaseFragment;
 
+import javax.inject.Inject;
+
 /**
  * Created by ckw
  * on 2018/3/14.
@@ -13,14 +15,11 @@ import com.ckw.lightweightmusicplayer.base.BaseFragment;
 
 public class MusicPlayFragment extends BaseFragment {
 
-    public static MusicPlayFragment newInstance() {
-        
-        Bundle args = new Bundle();
-        
-        MusicPlayFragment fragment = new MusicPlayFragment();
-        fragment.setArguments(args);
-        return fragment;
+
+    @Inject
+    public MusicPlayFragment() {
     }
+
     
     @Override
     public void initPresenter() {
