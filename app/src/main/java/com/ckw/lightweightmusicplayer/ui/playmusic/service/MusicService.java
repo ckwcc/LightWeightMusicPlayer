@@ -38,7 +38,7 @@ import static com.ckw.lightweightmusicplayer.ui.playmusic.helper.MediaIdHelper.M
  * on 2018/3/15.
  */
 
-public class MusicService extends MediaBrowserServiceCompat implements PlaybackManager.PlaybackServiceCallback,EasyPermissions.PermissionCallbacks{
+public class MusicService extends MediaBrowserServiceCompat implements PlaybackManager.PlaybackServiceCallback{
 
     // Extra on MediaSession that contains the Cast device name currently connected to
     public static final String EXTRA_CONNECTED_CAST = "com.example.android.uamp.CAST_NAME";
@@ -220,20 +220,6 @@ public class MusicService extends MediaBrowserServiceCompat implements PlaybackM
         mSession.setPlaybackState(newState);
     }
 
-    @Override
-    public void onPermissionsGranted(int requestCode, @NonNull List<String> perms) {
-
-    }
-
-    @Override
-    public void onPermissionsDenied(int requestCode, @NonNull List<String> perms) {
-
-    }
-
-    @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-
-    }
 
 
     /**

@@ -8,7 +8,7 @@
     android:layout_height="match_parent"
     android:fitsSystemWindows="true">
 
-    <com.andremion.music.MusicCoverView
+    <com.ckw.lightweightmusicplayer.weight.cover_view.MusicCoverView
         android:id="@+id/cover"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -40,7 +40,6 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_centerInParent="true"
-        android:onClick="onFabClick"
         android:scaleType="center"
         android:src="@drawable/ic_pause_animatable"
         android:transitionName="@string/transition_name_fab"/>
@@ -72,35 +71,6 @@
         android:transitionName="@string/transition_name_duration"
         tools:text="04:30"/>
 
-    <!--<LinearLayout-->
-        <!--android:id="@+id/ordering"-->
-        <!--android:layout_width="wrap_content"-->
-        <!--android:layout_height="wrap_content"-->
-        <!--android:layout_below="@id/time"-->
-        <!--android:layout_centerHorizontal="true"-->
-        <!--android:transitionGroup="true">-->
-
-        <!--<ImageView-->
-            <!--android:id="@+id/repeat"-->
-            <!--android:layout_width="wrap_content"-->
-            <!--android:layout_height="wrap_content"-->
-            <!--android:background="?attr/selectableItemBackgroundBorderless"-->
-            <!--android:clickable="true"-->
-            <!--android:src="@mipmap/ic_repeat_white_24dp"/>-->
-
-        <!--<Space-->
-            <!--android:layout_width="@dimen/activity_horizontal_margin"-->
-            <!--android:layout_height="wrap_content"/>-->
-
-        <!--<ImageView-->
-            <!--android:id="@+id/shuffle"-->
-            <!--android:layout_width="wrap_content"-->
-            <!--android:layout_height="wrap_content"-->
-            <!--android:background="?attr/selectableItemBackgroundBorderless"-->
-            <!--android:clickable="true"-->
-            <!--android:src="@mipmap/ic_shuffle_white_24dp"/>-->
-
-    <!--</LinearLayout>-->
 
     <LinearLayout
         android:id="@+id/controls"

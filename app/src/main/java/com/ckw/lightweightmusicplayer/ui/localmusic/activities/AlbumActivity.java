@@ -1,18 +1,25 @@
 package com.ckw.lightweightmusicplayer.ui.localmusic.activities;
 
+import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.support.annotation.NonNull;
 import android.support.design.widget.CollapsingToolbarLayout;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v4.media.MediaBrowserCompat;
+import android.support.v4.util.Pair;
+import android.support.v4.view.ViewCompat;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
+import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 
+import com.blankj.utilcode.util.ActivityUtils;
 import com.blankj.utilcode.util.SizeUtils;
 import com.bumptech.glide.Glide;
 import com.ckw.lightweightmusicplayer.R;
@@ -22,13 +29,16 @@ import com.ckw.lightweightmusicplayer.repository.Song;
 import com.ckw.lightweightmusicplayer.ui.localmusic.adapter.MusicListAdapter;
 import com.ckw.lightweightmusicplayer.ui.localmusic.viewholder.LocalAlbumViewHolder;
 import com.ckw.lightweightmusicplayer.ui.localmusic.viewholder.LocalSongViewHolder;
+import com.ckw.lightweightmusicplayer.ui.playmusic.MusicPlayActivity;
 import com.ckw.lightweightmusicplayer.ui.playmusic.helper.MediaIdHelper;
 import com.ckw.lightweightmusicplayer.utils.MediaUtils;
+import com.ckw.lightweightmusicplayer.weight.cover_view.MusicCoverView;
 import com.jude.easyrecyclerview.EasyRecyclerView;
 import com.jude.easyrecyclerview.adapter.BaseViewHolder;
 import com.jude.easyrecyclerview.adapter.RecyclerArrayAdapter;
 import com.jude.easyrecyclerview.decoration.DividerDecoration;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import butterknife.BindView;
@@ -48,10 +58,9 @@ public class AlbumActivity extends BaseActivity {
     @BindView(R.id.rv_album)
     EasyRecyclerView mEasyRecyclerView;
 
-    private Album mAlbum;
-    private List<Song> mSongs;
     private RecyclerArrayAdapter<MediaBrowserCompat.MediaItem> mAdapter;
 
+    private List<MediaBrowserCompat.MediaItem> mSongs;
 
     private String mediaId;
     private String mAlbumTitle;
@@ -90,6 +99,8 @@ public class AlbumActivity extends BaseActivity {
         @Override
         public void onChildrenLoaded(@NonNull String parentId, @NonNull List<MediaBrowserCompat.MediaItem> children) {
             super.onChildrenLoaded(parentId, children);
+            mSongs.clear();
+            mSongs.addAll(children);
             mAdapter.clear();
             mAdapter.addAll(children);
             mAdapter.notifyDataSetChanged();
@@ -105,7 +116,7 @@ public class AlbumActivity extends BaseActivity {
 
     @Override
     protected void initVariable() {
-
+        mSongs = new ArrayList<>();
     }
 
     @Override
@@ -115,7 +126,16 @@ public class AlbumActivity extends BaseActivity {
 
     @Override
     protected void initListener() {
-
+        mAdapter.setOnItemClickListener(new RecyclerArrayAdapter.OnItemClickListener() {
+            @Override
+            public void onItemClick(int position) {
+                if(mSongs != null){
+                    Bundle bundle = new Bundle();
+                    bundle.putString("musicId",mSongs.get(position).getMediaId());
+                    ActivityUtils.startActivity(bundle,MusicPlayActivity.class);
+                }
+            }
+        });
     }
 
     @Override

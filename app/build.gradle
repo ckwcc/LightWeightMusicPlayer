@@ -75,7 +75,7 @@ dependencies {
 
 
     //音乐相关 https://github.com/andremion/Music-Cover-View
-    compile 'com.github.andremion:musiccoverview:1.0.0'
+//    compile 'com.github.andremion:musiccoverview:1.0.0'
 
     compile 'com.google.android.exoplayer:exoplayer:2.6.1'
     compile 'com.google.android.gms:play-services-cast-framework:11.8.0'

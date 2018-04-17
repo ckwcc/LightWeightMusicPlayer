@@ -3,10 +3,7 @@ package com.ckw.lightweightmusicplayer.ui.playmusic;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.FragmentManager;
-import android.support.v4.media.MediaMetadataCompat;
 import android.support.v4.media.session.MediaControllerCompat;
-import android.support.v4.media.session.PlaybackStateCompat;
-import android.util.Log;
 
 import com.blankj.utilcode.util.FragmentUtils;
 import com.ckw.lightweightmusicplayer.R;
@@ -27,13 +24,18 @@ public class MusicPlayActivity extends BaseActivity {
     private FragmentManager manager;
 
     private String mediaId;
+    private MediaControllerCompat.TransportControls mController;
 
     @Override
     protected void onMediaControllerConnected() {
         super.onMediaControllerConnected();
         if(mediaId != null){
-            MediaControllerCompat.getMediaController(this).getTransportControls()
+            mController = MediaControllerCompat.getMediaController(this).getTransportControls();
+            mController
                     .playFromMediaId(mediaId, null);
+
+            musicPlayFragment.setController(mController);
+            musicPlayFragment.setMusicCoverViewStart();
         }
     }
 
@@ -41,7 +43,6 @@ public class MusicPlayActivity extends BaseActivity {
     @Override
     protected void initView(Bundle savedInstanceState) {
         FragmentUtils.add(manager,musicPlayFragment,R.id.cl_content);
-
 
     }
 

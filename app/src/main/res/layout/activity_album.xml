@@ -36,6 +36,8 @@
                 style="@style/ThumbTransitionStyle"
                 tools:ignore="ContentDescription" />
 
+
+
             <android.support.v7.widget.Toolbar
                 android:id="@+id/toolbar_id"
                 android:layout_width="match_parent"
