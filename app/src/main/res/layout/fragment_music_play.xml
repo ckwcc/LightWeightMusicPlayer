@@ -41,7 +41,7 @@
         android:layout_height="wrap_content"
         android:layout_centerInParent="true"
         android:scaleType="center"
-        android:src="@drawable/ic_pause_animatable"
+        app:srcCompat="@android:drawable/ic_media_pause"
         android:transitionName="@string/transition_name_fab"/>
 
     <Space

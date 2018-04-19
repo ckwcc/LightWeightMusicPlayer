@@ -1,13 +1,17 @@
 package com.ckw.lightweightmusicplayer.ui.playmusic;
 
+import android.content.ComponentName;
 import android.os.Bundle;
+import android.os.RemoteException;
 import android.support.annotation.NonNull;
 import android.support.v4.app.FragmentManager;
+import android.support.v4.media.MediaBrowserCompat;
 import android.support.v4.media.session.MediaControllerCompat;
 
 import com.blankj.utilcode.util.FragmentUtils;
 import com.ckw.lightweightmusicplayer.R;
 import com.ckw.lightweightmusicplayer.base.BaseActivity;
+import com.ckw.lightweightmusicplayer.ui.playmusic.service.MusicService;
 
 import javax.inject.Inject;
 
@@ -25,16 +29,19 @@ public class MusicPlayActivity extends BaseActivity {
 
     private String mediaId;
     private MediaControllerCompat.TransportControls mController;
+    private MediaControllerCompat mediaControllerCompat;
+
 
     @Override
     protected void onMediaControllerConnected() {
         super.onMediaControllerConnected();
         if(mediaId != null){
+            mediaControllerCompat = MediaControllerCompat.getMediaController(this);
             mController = MediaControllerCompat.getMediaController(this).getTransportControls();
             mController
                     .playFromMediaId(mediaId, null);
 
-            musicPlayFragment.setController(mController);
+            musicPlayFragment.setMediaControllerCompat(mediaControllerCompat);
             musicPlayFragment.setMusicCoverViewStart();
         }
     }
