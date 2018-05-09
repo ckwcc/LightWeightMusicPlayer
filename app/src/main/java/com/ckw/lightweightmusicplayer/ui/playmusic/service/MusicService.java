@@ -5,9 +5,9 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.os.RemoteException;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.v4.app.ActivityCompat;
 import android.support.v4.media.MediaBrowserCompat;
 import android.support.v4.media.MediaBrowserServiceCompat;
 import android.support.v4.media.MediaMetadataCompat;
@@ -17,6 +17,7 @@ import android.support.v4.media.session.PlaybackStateCompat;
 import android.util.Log;
 
 import com.ckw.lightweightmusicplayer.R;
+import com.ckw.lightweightmusicplayer.ui.playmusic.manager.MediaNotificationManager;
 import com.ckw.lightweightmusicplayer.ui.playmusic.manager.PlaybackManager;
 import com.ckw.lightweightmusicplayer.ui.playmusic.manager.QueueManager;
 import com.ckw.lightweightmusicplayer.ui.playmusic.playback.LocalPlayback;
@@ -64,6 +65,7 @@ public class MusicService extends MediaBrowserServiceCompat implements PlaybackM
     private Bundle mSessionExtras;
     private final DelayedStopHandler mDelayedStopHandler = new DelayedStopHandler(this);
 
+    private MediaNotificationManager mMediaNotificationManager;
 
     @Override
     public void onCreate() {
@@ -104,6 +106,11 @@ public class MusicService extends MediaBrowserServiceCompat implements PlaybackM
         LocalPlayback playback = new LocalPlayback(this, mMusicProvider);
         mPlaybackManager = new PlaybackManager(this, getResources(), mMusicProvider, queueManager, playback);
 
+        try {
+            mMediaNotificationManager = new MediaNotificationManager(this);
+        } catch (RemoteException e) {
+            throw new IllegalStateException("Could not create a MediaNotificationManager", e);
+        }
         // Start a new MediaSession
         mSession = new MediaSessionCompat(this, "MusicService");
         setSessionToken(mSession.getSessionToken());
@@ -153,11 +160,12 @@ public class MusicService extends MediaBrowserServiceCompat implements PlaybackM
         stopSelf();
     }
 
+
     @Override
     public void onDestroy() {
         // Service is being killed, so make sure we release our resources
         mPlaybackManager.handleStopRequest(null);
-
+        mMediaNotificationManager.stopNotification();
         mDelayedStopHandler.removeCallbacksAndMessages(null);
         mSession.release();
     }
@@ -202,14 +210,12 @@ public class MusicService extends MediaBrowserServiceCompat implements PlaybackM
 
     @Override
     public void onNotificationRequired() {
-
+        mMediaNotificationManager.startNotification();
     }
 
     @Override
     public void onPlaybackStop() {
         mSession.setActive(false);
-        // Reset the delayed stop handler, so after STOP_DELAY it will be executed again,
-        // potentially stopping the service.
         mDelayedStopHandler.removeCallbacksAndMessages(null);
         mDelayedStopHandler.sendEmptyMessageDelayed(0, STOP_DELAY);
         stopForeground(true);

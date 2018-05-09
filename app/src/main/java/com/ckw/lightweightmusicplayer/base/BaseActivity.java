@@ -163,10 +163,10 @@ public abstract class BaseActivity extends DaggerAppCompatActivity implements Me
         mediaController = new MediaControllerCompat(this, token);
         MediaControllerCompat.setMediaController(this, mediaController);
         onMediaBrowserConnected();
-        onMediaControllerConnected();
+        onMediaControllerConnected(mediaController.getSessionToken());
     }
 
-    protected void onMediaControllerConnected() {
+    protected void onMediaControllerConnected(MediaSessionCompat.Token token) {
         // empty implementation, can be overridden by clients.
     }
 

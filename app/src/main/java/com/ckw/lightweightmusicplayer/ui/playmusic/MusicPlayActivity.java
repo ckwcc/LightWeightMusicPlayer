@@ -1,9 +1,12 @@
 package com.ckw.lightweightmusicplayer.ui.playmusic;
 
 import android.os.Bundle;
+import android.os.RemoteException;
 import android.support.annotation.NonNull;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.media.session.MediaControllerCompat;
+import android.support.v4.media.session.MediaSessionCompat;
+import android.util.Log;
 
 import com.blankj.utilcode.util.FragmentUtils;
 import com.ckw.lightweightmusicplayer.R;
@@ -18,6 +21,12 @@ import javax.inject.Inject;
 
 public class MusicPlayActivity extends BaseActivity {
 
+    public static final String EXTRA_START_FULLSCREEN =
+            "com.example.android.uamp.EXTRA_START_FULLSCREEN";
+
+    public static final String EXTRA_CURRENT_MEDIA_DESCRIPTION =
+            "com.example.android.uamp.CURRENT_MEDIA_DESCRIPTION";
+
     @Inject
     MusicPlayFragment musicPlayFragment;
 
@@ -29,10 +38,16 @@ public class MusicPlayActivity extends BaseActivity {
 
 
     @Override
-    protected void onMediaControllerConnected() {
-        super.onMediaControllerConnected();
+    protected void onMediaControllerConnected(MediaSessionCompat.Token token) {
+        super.onMediaControllerConnected(token);
         if(mediaId != null){
-            mediaControllerCompat = MediaControllerCompat.getMediaController(this);
+            try {
+                 mediaControllerCompat = new MediaControllerCompat(
+                        MusicPlayActivity.this, token);
+            } catch (RemoteException e) {
+                e.printStackTrace();
+            }
+//            mediaControllerCompat = MediaControllerCompat.getMediaController(this);
             mController = MediaControllerCompat.getMediaController(this).getTransportControls();
             mController
                     .playFromMediaId(mediaId, null);
