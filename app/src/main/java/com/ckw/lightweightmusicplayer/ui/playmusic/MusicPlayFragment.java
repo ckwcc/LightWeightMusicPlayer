@@ -1,33 +1,33 @@
 package com.ckw.lightweightmusicplayer.ui.playmusic;
 
-import android.content.ComponentName;
 import android.os.Bundle;
-import android.os.RemoteException;
+import android.os.Handler;
 import android.os.SystemClock;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
-import android.support.v4.media.MediaBrowserCompat;
-import android.support.v4.media.MediaDescriptionCompat;
 import android.support.v4.media.MediaMetadataCompat;
 import android.support.v4.media.session.MediaControllerCompat;
-import android.support.v4.media.session.MediaSessionCompat;
 import android.support.v4.media.session.PlaybackStateCompat;
+import android.text.format.DateUtils;
 import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.TextView;
 
 import com.ckw.lightweightmusicplayer.R;
 import com.ckw.lightweightmusicplayer.base.BaseFragment;
-import com.ckw.lightweightmusicplayer.ui.playmusic.service.MusicService;
 import com.ckw.lightweightmusicplayer.weight.ProgressView;
 import com.ckw.lightweightmusicplayer.weight.cover_view.MusicCoverView;
+
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.TimeUnit;
 
 import javax.inject.Inject;
 
 import butterknife.BindView;
 
-import static android.view.View.INVISIBLE;
-import static android.view.View.VISIBLE;
 
 /**
  * Created by ckw
@@ -36,6 +36,8 @@ import static android.view.View.VISIBLE;
 
 public class MusicPlayFragment extends BaseFragment {
 
+    private static final long PROGRESS_UPDATE_INTERNAL = 1000;
+    private static final long PROGRESS_UPDATE_INITIAL_INTERVAL = 100;
 
     @Inject
     public MusicPlayFragment() {
@@ -45,6 +47,10 @@ public class MusicPlayFragment extends BaseFragment {
     MusicCoverView musicCoverView;//旋转view
     @BindView(R.id.progress)
     ProgressView mProgressView;//进度条
+    @BindView(R.id.time)
+    TextView mCurrentTime;
+    @BindView(R.id.duration)
+    TextView mTotalTime;
     @BindView(R.id.fab)
     FloatingActionButton mFab;//开始/暂停
     @BindView(R.id.previous)
@@ -53,6 +59,17 @@ public class MusicPlayFragment extends BaseFragment {
     ImageView mSkipToNext;//下一首
     @BindView(R.id.repeat)
     ImageView mRepeatMode;//循环模式
+
+    private final ScheduledExecutorService mExecutorService =
+            Executors.newSingleThreadScheduledExecutor();
+    private ScheduledFuture<?> mScheduleFuture;
+    private final Handler mHandler = new Handler();
+    private final Runnable mUpdateProgressTask = new Runnable() {
+        @Override
+        public void run() {
+            updateProgress();
+        }
+    };
 
     private PlaybackStateCompat mLastPlaybackState;
 
@@ -67,6 +84,10 @@ public class MusicPlayFragment extends BaseFragment {
         mController = mediaControllerCompat.getTransportControls();
         this.mediaControllerCompat.registerCallback(mMediaControllerCallback);
 
+        MediaMetadataCompat metadata = this.mediaControllerCompat.getMetadata();
+        if(metadata != null){
+            updateDuration(metadata);
+        }
     }
 
     public void setMusicCoverViewStart(){
@@ -88,7 +109,13 @@ public class MusicPlayFragment extends BaseFragment {
 
     }
 
-    // Callback that ensures that we are showing the controls
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        stopSeekbarUpdate();
+        mExecutorService.shutdown();
+    }
+
     private final MediaControllerCompat.Callback mMediaControllerCallback =
             new MediaControllerCompat.Callback() {
                 @Override
@@ -98,7 +125,7 @@ public class MusicPlayFragment extends BaseFragment {
 
                 @Override
                 public void onMetadataChanged(MediaMetadataCompat metadata) {
-
+                    updateDuration(metadata);
                 }
             };
 
@@ -110,23 +137,53 @@ public class MusicPlayFragment extends BaseFragment {
         mLastPlaybackState = state;
         switch (state.getState()){
             case PlaybackStateCompat.STATE_PLAYING:
-                mFab.setImageResource(android.R.drawable.ic_media_pause);
-//                scheduleSeekbarUpdate();
+                if(mFab != null){
+                    mFab.setImageResource(android.R.drawable.ic_media_pause);
+                }
+                scheduleSeekbarUpdate();
                 break;
             case PlaybackStateCompat.STATE_PAUSED:
-                mFab.setImageResource(android.R.drawable.ic_media_play);
-//                stopSeekbarUpdate();
+                if(mFab != null){
+                    mFab.setImageResource(android.R.drawable.ic_media_play);
+                }
                 break;
             case PlaybackStateCompat.STATE_NONE:
             case PlaybackStateCompat.STATE_STOPPED:
-//                stopSeekbarUpdate();
                 break;
             case PlaybackStateCompat.STATE_BUFFERING:
-//                stopSeekbarUpdate();
                 break;
             default:
 
         }
+    }
+
+    private void scheduleSeekbarUpdate() {
+        stopSeekbarUpdate();
+        if (!mExecutorService.isShutdown()) {
+            mScheduleFuture = mExecutorService.scheduleAtFixedRate(
+                    new Runnable() {
+                        @Override
+                        public void run() {
+                            mHandler.post(mUpdateProgressTask);
+                        }
+                    }, PROGRESS_UPDATE_INITIAL_INTERVAL,
+                    PROGRESS_UPDATE_INTERNAL, TimeUnit.MILLISECONDS);
+        }
+    }
+
+    private void stopSeekbarUpdate() {
+        if (mScheduleFuture != null) {
+            mScheduleFuture.cancel(false);
+        }
+    }
+
+    private void updateDuration(MediaMetadataCompat metadata) {
+        if (metadata == null) {
+            return;
+        }
+        int duration = (int) metadata.getLong(MediaMetadataCompat.METADATA_KEY_DURATION);
+        mProgressView.setMax(duration);
+        mTotalTime.setText(DateUtils.formatElapsedTime(duration/1000));
     }
 
     private void updateProgress() {
@@ -135,15 +192,16 @@ public class MusicPlayFragment extends BaseFragment {
         }
         long currentPosition = mLastPlaybackState.getPosition();
         if (mLastPlaybackState.getState() == PlaybackStateCompat.STATE_PLAYING) {
-            // Calculate the elapsed time between the last position update and now and unless
-            // paused, we can assume (delta * speed) + current position is approximately the
-            // latest position. This ensure that we do not repeatedly call the getPlaybackState()
-            // on MediaControllerCompat.
+
             long timeDelta = SystemClock.elapsedRealtime() -
                     mLastPlaybackState.getLastPositionUpdateTime();
             currentPosition += (int) timeDelta * mLastPlaybackState.getPlaybackSpeed();
         }
-        mProgressView.setProgress((int) currentPosition);
+        mCurrentTime.setText(DateUtils.formatElapsedTime(currentPosition / 1000));
+        if(mProgressView != null){
+            Log.d("----", "updateProgress: 当前的位置："+currentPosition);
+            mProgressView.setProgress((int) currentPosition);
+        }
     }
 
 
@@ -193,10 +251,16 @@ public class MusicPlayFragment extends BaseFragment {
                         mController.pause();
                         musicCoverView.stop();
                         isPlaying = false;
+                        if(mFab != null){
+                            mFab.setImageResource(android.R.drawable.ic_media_play);
+                        }
                     }else {
                         mController.play();
                         musicCoverView.start();
                         isPlaying = true;
+                        if(mFab != null){
+                            mFab.setImageResource(android.R.drawable.ic_media_pause);
+                        }
                     }
                 }
             }
@@ -214,6 +278,7 @@ public class MusicPlayFragment extends BaseFragment {
                 isPlaying = false;
             }
         });
+
     }
 
    

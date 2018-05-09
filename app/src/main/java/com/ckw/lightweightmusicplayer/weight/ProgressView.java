@@ -72,7 +72,7 @@ public class ProgressView extends View {
         TypedValue outValue = new TypedValue();
         context.getTheme().resolveAttribute(R.attr.colorAccent, outValue, true);
         mForegroundColor = outValue.data;
-        context.getTheme().resolveAttribute(R.attr.colorControlHighlight, outValue, true);//colorControlHighlight
+        context.getTheme().resolveAttribute(R.attr.colorPrimary, outValue, true);//colorControlHighlight
         mBackgroundColor = outValue.data;
 
         mProgress = 0;
