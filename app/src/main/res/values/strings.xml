@@ -36,4 +36,8 @@
 
     <string name="error_no_metadata">Unable to retrieve metadata.</string>
 
+    <string name="casting_to_device">Casting to %1$s</string>
+    <string name="notification_channel">UAMP_Channel_ID</string>
+    <string name="notification_channel_description">Channel ID for UAMP</string>
+
 </resources>

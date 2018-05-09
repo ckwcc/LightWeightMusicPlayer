@@ -6,6 +6,7 @@ import android.os.SystemClock;
 import android.support.annotation.NonNull;
 import android.support.v4.media.session.MediaSessionCompat;
 import android.support.v4.media.session.PlaybackStateCompat;
+import android.util.Log;
 
 import com.ckw.lightweightmusicplayer.ui.playmusic.playback.Playback;
 import com.ckw.lightweightmusicplayer.ui.playmusic.provider.MusicProvider;
@@ -215,7 +216,6 @@ public class PlaybackManager implements Playback.Callback{
         @Override
         public void onPlay() {
             if (mQueueManager.getCurrentMusic() == null) {
-
             }
             handlePlayRequest();
         }

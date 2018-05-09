@@ -10,6 +10,7 @@ import android.support.v4.media.MediaMetadataCompat;
 import android.support.v4.media.session.MediaSessionCompat;
 import android.support.v4.media.session.PlaybackStateCompat;
 import android.text.TextUtils;
+import android.util.Log;
 
 import com.ckw.lightweightmusicplayer.ui.playmusic.provider.MusicProvider;
 import com.ckw.lightweightmusicplayer.ui.playmusic.provider.SongSource;
@@ -100,11 +101,10 @@ public final class LocalPlayback implements Playback {
                 public void onReceive(Context context, Intent intent) {
                     if (AudioManager.ACTION_AUDIO_BECOMING_NOISY.equals(intent.getAction())) {
                         if (isPlaying()) {
-                            //TODO
-//                            Intent i = new Intent(context, MusicService.class);
-//                            i.setAction(MusicService.ACTION_CMD);
-//                            i.putExtra(MusicService.CMD_NAME, MusicService.CMD_PAUSE);
-//                            mContext.startService(i);
+                            Intent i = new Intent(context, MusicService.class);
+                            i.setAction(MusicService.ACTION_CMD);
+                            i.putExtra(MusicService.CMD_NAME, MusicService.CMD_PAUSE);
+                            mContext.startService(i);
                         }
                     }
                 }

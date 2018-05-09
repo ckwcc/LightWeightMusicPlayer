@@ -59,6 +59,10 @@ public class MusicPlayFragment extends BaseFragment {
     ImageView mSkipToNext;//下一首
     @BindView(R.id.repeat)
     ImageView mRepeatMode;//循环模式
+    @BindView(R.id.tv_song_name)
+    TextView mSongName;
+    @BindView(R.id.tv_song_artist)
+    TextView mSongArtist;
 
     private final ScheduledExecutorService mExecutorService =
             Executors.newSingleThreadScheduledExecutor();
@@ -78,16 +82,23 @@ public class MusicPlayFragment extends BaseFragment {
     private MediaControllerCompat mediaControllerCompat;
     private MediaControllerCompat.TransportControls mController;
 
-
     public void setMediaControllerCompat(MediaControllerCompat mediaControllerCompat) {
         this.mediaControllerCompat = mediaControllerCompat;
         mController = mediaControllerCompat.getTransportControls();
         this.mediaControllerCompat.registerCallback(mMediaControllerCallback);
-
+        
         MediaMetadataCompat metadata = this.mediaControllerCompat.getMetadata();
+        PlaybackStateCompat state = this.mediaControllerCompat.getPlaybackState();
+
+        if(state != null){
+            updatePlaybackState(state);
+        }
+
         if(metadata != null){
             updateDuration(metadata);
         }
+
+        updateProgress();
     }
 
     public void setMusicCoverViewStart(){
@@ -114,94 +125,6 @@ public class MusicPlayFragment extends BaseFragment {
         super.onDestroy();
         stopSeekbarUpdate();
         mExecutorService.shutdown();
-    }
-
-    private final MediaControllerCompat.Callback mMediaControllerCallback =
-            new MediaControllerCompat.Callback() {
-                @Override
-                public void onPlaybackStateChanged(@NonNull PlaybackStateCompat state) {
-                    updatePlaybackState(state);
-                }
-
-                @Override
-                public void onMetadataChanged(MediaMetadataCompat metadata) {
-                    updateDuration(metadata);
-                }
-            };
-
-    private void updatePlaybackState(PlaybackStateCompat state) {
-        if (state == null) {
-            return;
-        }
-
-        mLastPlaybackState = state;
-        switch (state.getState()){
-            case PlaybackStateCompat.STATE_PLAYING:
-                if(mFab != null){
-                    mFab.setImageResource(android.R.drawable.ic_media_pause);
-                }
-                scheduleSeekbarUpdate();
-                break;
-            case PlaybackStateCompat.STATE_PAUSED:
-                if(mFab != null){
-                    mFab.setImageResource(android.R.drawable.ic_media_play);
-                }
-                break;
-            case PlaybackStateCompat.STATE_NONE:
-            case PlaybackStateCompat.STATE_STOPPED:
-                break;
-            case PlaybackStateCompat.STATE_BUFFERING:
-                break;
-            default:
-
-        }
-    }
-
-    private void scheduleSeekbarUpdate() {
-        stopSeekbarUpdate();
-        if (!mExecutorService.isShutdown()) {
-            mScheduleFuture = mExecutorService.scheduleAtFixedRate(
-                    new Runnable() {
-                        @Override
-                        public void run() {
-                            mHandler.post(mUpdateProgressTask);
-                        }
-                    }, PROGRESS_UPDATE_INITIAL_INTERVAL,
-                    PROGRESS_UPDATE_INTERNAL, TimeUnit.MILLISECONDS);
-        }
-    }
-
-    private void stopSeekbarUpdate() {
-        if (mScheduleFuture != null) {
-            mScheduleFuture.cancel(false);
-        }
-    }
-
-    private void updateDuration(MediaMetadataCompat metadata) {
-        if (metadata == null) {
-            return;
-        }
-        int duration = (int) metadata.getLong(MediaMetadataCompat.METADATA_KEY_DURATION);
-        mProgressView.setMax(duration);
-        mTotalTime.setText(DateUtils.formatElapsedTime(duration/1000));
-    }
-
-    private void updateProgress() {
-        if (mLastPlaybackState == null) {
-            return;
-        }
-        long currentPosition = mLastPlaybackState.getPosition();
-        if (mLastPlaybackState.getState() == PlaybackStateCompat.STATE_PLAYING) {
-
-            long timeDelta = SystemClock.elapsedRealtime() -
-                    mLastPlaybackState.getLastPositionUpdateTime();
-            currentPosition += (int) timeDelta * mLastPlaybackState.getPlaybackSpeed();
-        }
-        mCurrentTime.setText(DateUtils.formatElapsedTime(currentPosition / 1000));
-        if(mProgressView != null){
-            Log.d("----", "updateProgress: 当前的位置："+currentPosition);
-            mProgressView.setProgress((int) currentPosition);
-        }
     }
 
 
@@ -281,5 +204,116 @@ public class MusicPlayFragment extends BaseFragment {
 
     }
 
-   
+
+    private final MediaControllerCompat.Callback mMediaControllerCallback =
+            new MediaControllerCompat.Callback() {
+                @Override
+                public void onPlaybackStateChanged(@NonNull PlaybackStateCompat state) {
+                    updatePlaybackState(state);
+                }
+
+                @Override
+                public void onMetadataChanged(MediaMetadataCompat metadata) {
+                    updateDuration(metadata);
+                }
+            };
+
+    /*
+    * 更新播放状态
+    * */
+    private void updatePlaybackState(PlaybackStateCompat state) {
+        if (state == null) {
+            return;
+        }
+
+        mLastPlaybackState = state;
+        switch (state.getState()){
+            case PlaybackStateCompat.STATE_PLAYING:
+                if(mFab != null){
+                    mFab.setImageResource(android.R.drawable.ic_media_pause);
+                }
+                scheduleSeekbarUpdate();
+                break;
+            case PlaybackStateCompat.STATE_PAUSED:
+                if(mFab != null){
+                    mFab.setImageResource(android.R.drawable.ic_media_play);
+                }
+                break;
+            case PlaybackStateCompat.STATE_NONE:
+            case PlaybackStateCompat.STATE_STOPPED:
+                break;
+            case PlaybackStateCompat.STATE_BUFFERING:
+                break;
+            default:
+
+        }
+    }
+
+    /*
+     * 更新进度条
+     * */
+    private void updateProgress() {
+        if (mLastPlaybackState == null) {
+            return;
+        }
+        long currentPosition = mLastPlaybackState.getPosition();
+        if (mLastPlaybackState.getState() == PlaybackStateCompat.STATE_PLAYING) {
+
+            long timeDelta = SystemClock.elapsedRealtime() -
+                    mLastPlaybackState.getLastPositionUpdateTime();
+            currentPosition += (int) timeDelta * mLastPlaybackState.getPlaybackSpeed();
+        }
+        mCurrentTime.setText(DateUtils.formatElapsedTime(currentPosition / 1000));
+        if(mProgressView != null){
+            mProgressView.setProgress((int) currentPosition);
+        }
+    }
+
+    /*
+    * 控制进度条
+    * */
+    private void scheduleSeekbarUpdate() {
+        stopSeekbarUpdate();
+        if (!mExecutorService.isShutdown()) {
+            mScheduleFuture = mExecutorService.scheduleAtFixedRate(
+                    new Runnable() {
+                        @Override
+                        public void run() {
+                            mHandler.post(mUpdateProgressTask);
+                        }
+                    }, PROGRESS_UPDATE_INITIAL_INTERVAL,
+                    PROGRESS_UPDATE_INTERNAL, TimeUnit.MILLISECONDS);
+        }
+    }
+
+    private void stopSeekbarUpdate() {
+        if (mScheduleFuture != null) {
+            mScheduleFuture.cancel(false);
+        }
+    }
+
+    /*
+    * 更新时间信息
+    * */
+    private void updateDuration(MediaMetadataCompat metadata) {
+        if (metadata == null) {
+            return;
+        }
+        int duration = (int) metadata.getLong(MediaMetadataCompat.METADATA_KEY_DURATION);
+        String artist = metadata.getString(MediaMetadataCompat.METADATA_KEY_ARTIST);
+        String title = metadata.getString(MediaMetadataCompat.METADATA_KEY_TITLE);
+        if(mSongName != null){
+            mSongName.setText(title);
+        }
+        if(mSongArtist != null){
+            mSongArtist.setText(artist);
+        }
+        if(mProgressView != null){
+            mProgressView.setMax(duration);
+        }
+        if(mTotalTime != null){
+            mTotalTime.setText(DateUtils.formatElapsedTime(duration/1000));
+        }
+    }
+
 }
