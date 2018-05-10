@@ -82,12 +82,13 @@ public class MusicPlayFragment extends BaseFragment {
     private MediaControllerCompat mediaControllerCompat;
     private MediaControllerCompat.TransportControls mController;
 
-    public void setMediaControllerCompat(MediaControllerCompat mediaControllerCompat) {
+    public void setMediaControllerCompat(MediaControllerCompat mediaControllerCompat,boolean shouldPlay) {
         this.mediaControllerCompat = mediaControllerCompat;
         mController = mediaControllerCompat.getTransportControls();
         this.mediaControllerCompat.registerCallback(mMediaControllerCallback);
         
         MediaMetadataCompat metadata = this.mediaControllerCompat.getMetadata();
+
         PlaybackStateCompat state = this.mediaControllerCompat.getPlaybackState();
 
         if(state != null){
@@ -98,12 +99,19 @@ public class MusicPlayFragment extends BaseFragment {
             updateDuration(metadata);
         }
 
-        updateProgress();
+        if(shouldPlay){
+            updateProgress();
+        }else {
+            musicCoverView.stop();
+        }
+
+        if (state != null && (state.getState() == PlaybackStateCompat.STATE_PLAYING ||
+                state.getState() == PlaybackStateCompat.STATE_BUFFERING)) {
+            scheduleSeekbarUpdate();
+        }
     }
 
-    public void setMusicCoverViewStart(){
-        musicCoverView.start();
-    }
+
 
     @Override
     public void initPresenter() {
@@ -169,20 +177,29 @@ public class MusicPlayFragment extends BaseFragment {
         mFab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if(mController != null){
-                    if(isPlaying){
-                        mController.pause();
-                        musicCoverView.stop();
-                        isPlaying = false;
-                        if(mFab != null){
-                            mFab.setImageResource(android.R.drawable.ic_media_play);
-                        }
-                    }else {
-                        mController.play();
-                        musicCoverView.start();
-                        isPlaying = true;
-                        if(mFab != null){
-                            mFab.setImageResource(android.R.drawable.ic_media_pause);
+                if(mediaControllerCompat != null){
+                    PlaybackStateCompat state = mediaControllerCompat.getPlaybackState();
+                    if (state != null) {
+                        switch (state.getState()) {
+                            case PlaybackStateCompat.STATE_PLAYING: // fall through
+                            case PlaybackStateCompat.STATE_BUFFERING:
+                                mController.pause();
+                                stopSeekbarUpdate();
+                                if(mFab != null){
+                                    mFab.setImageResource(android.R.drawable.ic_media_play);
+                                }
+                                musicCoverView.stop();
+                                break;
+                            case PlaybackStateCompat.STATE_PAUSED:
+                            case PlaybackStateCompat.STATE_STOPPED:
+                                mController.play();
+                                scheduleSeekbarUpdate();
+                                if(mFab != null){
+                                    mFab.setImageResource(android.R.drawable.ic_media_pause);
+                                }
+                                musicCoverView.start();
+                                break;
+                            default:
                         }
                     }
                 }
@@ -197,13 +214,33 @@ public class MusicPlayFragment extends BaseFragment {
 
             @Override
             public void onRotateEnd(MusicCoverView coverView) {
-
                 isPlaying = false;
             }
         });
 
     }
 
+    @Override
+    public void onResume() {
+        super.onResume();
+        if (!isPlaying){
+            if(mFab != null){
+                mFab.setImageResource(android.R.drawable.ic_media_play);
+            }
+        }else {
+            if(mFab != null){
+                mFab.setImageResource(android.R.drawable.ic_media_pause);
+            }
+        }
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        if (mediaControllerCompat != null){
+            mediaControllerCompat.unregisterCallback(mMediaControllerCallback);
+        }
+    }
 
     private final MediaControllerCompat.Callback mMediaControllerCallback =
             new MediaControllerCompat.Callback() {
@@ -235,14 +272,17 @@ public class MusicPlayFragment extends BaseFragment {
                 scheduleSeekbarUpdate();
                 break;
             case PlaybackStateCompat.STATE_PAUSED:
+                stopSeekbarUpdate();
                 if(mFab != null){
                     mFab.setImageResource(android.R.drawable.ic_media_play);
                 }
                 break;
             case PlaybackStateCompat.STATE_NONE:
             case PlaybackStateCompat.STATE_STOPPED:
+                stopSeekbarUpdate();
                 break;
             case PlaybackStateCompat.STATE_BUFFERING:
+                stopSeekbarUpdate();
                 break;
             default:
 
@@ -253,6 +293,7 @@ public class MusicPlayFragment extends BaseFragment {
      * 更新进度条
      * */
     private void updateProgress() {
+        musicCoverView.start();
         if (mLastPlaybackState == null) {
             return;
         }

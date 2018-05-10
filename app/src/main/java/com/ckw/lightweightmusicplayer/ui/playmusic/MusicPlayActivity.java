@@ -33,6 +33,7 @@ public class MusicPlayActivity extends BaseActivity {
     private FragmentManager manager;
 
     private String mediaId;
+    private boolean shouldPlay;
     private MediaControllerCompat.TransportControls mController;
     private MediaControllerCompat mediaControllerCompat;
 
@@ -44,16 +45,16 @@ public class MusicPlayActivity extends BaseActivity {
             try {
                  mediaControllerCompat = new MediaControllerCompat(
                         MusicPlayActivity.this, token);
+                 mController = mediaControllerCompat.getTransportControls();
+                 if(shouldPlay){
+                     mController
+                             .playFromMediaId(mediaId, null);
+                 }
+                musicPlayFragment.setMediaControllerCompat(mediaControllerCompat,shouldPlay);
             } catch (RemoteException e) {
                 e.printStackTrace();
             }
-//            mediaControllerCompat = MediaControllerCompat.getMediaController(this);
-            mController = MediaControllerCompat.getMediaController(this).getTransportControls();
-            mController
-                    .playFromMediaId(mediaId, null);
 
-            musicPlayFragment.setMediaControllerCompat(mediaControllerCompat);
-            musicPlayFragment.setMusicCoverViewStart();
         }
     }
 
@@ -67,6 +68,7 @@ public class MusicPlayActivity extends BaseActivity {
     @Override
     protected void handleBundle(@NonNull Bundle bundle) {
         mediaId = bundle.getString("musicId");
+        shouldPlay = bundle.getBoolean("play");
     }
 
     @Override
@@ -92,5 +94,12 @@ public class MusicPlayActivity extends BaseActivity {
     @Override
     public void setToolbar() {
 
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        Log.d("----", "onStop: 调用了stop");
+        shouldPlay = false;
     }
 }

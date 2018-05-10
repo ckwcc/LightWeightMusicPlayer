@@ -96,6 +96,7 @@ public class LocalMusicListFragment extends BaseFragment{
             public void onItemClick(int position) {
                 Bundle bundle = new Bundle();
                 bundle.putString("musicId",mSongs.get(position).getMediaId());
+                bundle.putBoolean("play",true);
                 ActivityUtils.startActivity(bundle,MusicPlayActivity.class);
             }
         });
