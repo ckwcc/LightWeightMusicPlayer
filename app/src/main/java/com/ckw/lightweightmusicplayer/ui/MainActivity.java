@@ -1,4 +1,4 @@
-package com.ckw.lightweightmusicplayer;
+package com.ckw.lightweightmusicplayer.ui;
 
 import android.Manifest;
 import android.content.DialogInterface;
@@ -8,7 +8,11 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
+import android.support.v4.media.MediaBrowserCompat;
 import android.support.v7.app.AlertDialog;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.View;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -18,20 +22,30 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.RelativeLayout;
+import android.widget.TextView;
 
 import com.blankj.utilcode.util.ActivityUtils;
+import com.blankj.utilcode.util.SPUtils;
+import com.ckw.lightweightmusicplayer.R;
 import com.ckw.lightweightmusicplayer.base.BaseActivity;
+import com.ckw.lightweightmusicplayer.repository.RecentBean;
+import com.ckw.lightweightmusicplayer.repository.RecentlyPlayed;
 import com.ckw.lightweightmusicplayer.ui.localmusic.LocalMusicActivity;
+import com.ckw.lightweightmusicplayer.ui.playmusic.MediaBrowserProvider;
+import com.ckw.lightweightmusicplayer.ui.playmusic.MusicPlayActivity;
 import com.flask.colorpicker.ColorPickerView;
 import com.flask.colorpicker.OnColorSelectedListener;
 import com.flask.colorpicker.builder.ColorPickerClickListener;
 import com.flask.colorpicker.builder.ColorPickerDialogBuilder;
+import com.google.gson.Gson;
 
 import java.util.List;
 
 import butterknife.BindView;
 import pub.devrel.easypermissions.AppSettingsDialog;
 import pub.devrel.easypermissions.EasyPermissions;
+
+import static com.ckw.lightweightmusicplayer.ui.playmusic.helper.MediaIdHelper.MEDIA_ID_NORMAL;
 
 
 public class MainActivity extends BaseActivity
@@ -50,10 +64,15 @@ public class MainActivity extends BaseActivity
     FloatingActionButton mPlay;
     @BindView(R.id.rl_local_container)
     RelativeLayout mLocalMusicContainer;
-    @BindView(R.id.rl_favourite_container)
-    RelativeLayout mFavouriteContainer;
 
+    @BindView(R.id.tv_recent_nothing)
+    TextView mTvRecent;
+    @BindView(R.id.rv_recent_list)
+    RecyclerView mRvRecent;
 
+    private String mMediaId;//分类id
+    private RecentAdapter mRecentAdapter;
+    private List<RecentBean> mRecentList;
 
     @Override
     protected void initView(Bundle savedInstanceState) {
@@ -65,6 +84,8 @@ public class MainActivity extends BaseActivity
         mNavigationView.setNavigationItemSelectedListener(this);
 
         requestPermission();
+
+        initRecentView();
     }
 
     @Override
@@ -84,7 +105,6 @@ public class MainActivity extends BaseActivity
     @Override
     protected void initListener() {
         mLocalMusicContainer.setOnClickListener(this);
-        mFavouriteContainer.setOnClickListener(this);
         mPlay.setOnClickListener(this);
 
     }
@@ -96,12 +116,14 @@ public class MainActivity extends BaseActivity
             case R.id.rl_local_container://本地音乐
                 ActivityUtils.startActivity(LocalMusicActivity.class);
                 break;
-            case R.id.rl_favourite_container://我喜欢的
-                showChangeSkin();
-                break;
             case R.id.fab:
-                Snackbar.make(v, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
+                if(mRecentList != null){
+                    String mediaId = mRecentList.get(0).getMediaId();
+                    Bundle bundle = new Bundle();
+                    bundle.putString("musicId",mediaId);
+                    bundle.putBoolean("play",true);
+                    ActivityUtils.startActivity(bundle,MusicPlayActivity.class);
+                }
                 break;
         }
     }
@@ -117,11 +139,17 @@ public class MainActivity extends BaseActivity
     }
 
 
+    @Override
+    protected void onMediaBrowserConnected() {
+        super.onMediaBrowserConnected();
+       onConnected();
+    }
 
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.main, menu);
+        //暂时不想要了
+//        getMenuInflater().inflate(R.menu.main, menu);
         return true;
     }
 
@@ -159,6 +187,41 @@ public class MainActivity extends BaseActivity
     }
 
     @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        EasyPermissions.onRequestPermissionsResult(requestCode, permissions, grantResults, this);
+    }
+
+    @Override
+    public void onPermissionsGranted(int requestCode, @NonNull List<String> perms) {
+    }
+
+    @Override
+    public void onPermissionsDenied(int requestCode, @NonNull List<String> perms) {
+        if (EasyPermissions.somePermissionPermanentlyDenied(this, perms)) {
+            new AppSettingsDialog.Builder(this)
+                    .setTitle("权限需要")
+                    .setRationale("音乐季需要获得访问您设备上的音乐的权限，现在去设置界面打开它好吗？")
+                    .build()
+                    .show();
+        }
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if (requestCode == AppSettingsDialog.DEFAULT_SETTINGS_REQ_CODE) {
+            String[] perms = {Manifest.permission.READ_EXTERNAL_STORAGE};
+            if (EasyPermissions.hasPermissions(this, perms)) {
+            } else {
+                //继续申请，直到同意为止
+                EasyPermissions.requestPermissions(this,"本地音乐需要读取内存权限",REQUEST_READ_EXTERNAL_STORAGE,perms);
+            }
+        }
+    }
+
+    @Override
     public void onBackPressed() {
         if (mDrawerLayout.isDrawerOpen(GravityCompat.START)) {
             mDrawerLayout.closeDrawer(GravityCompat.START);
@@ -166,6 +229,24 @@ public class MainActivity extends BaseActivity
             super.onBackPressed();
         }
     }
+
+    private void initRecentView() {
+        String recent = SPUtils.getInstance().getString("recent");
+        Gson gson = new Gson();
+
+        RecentlyPlayed recentlyPlayed = gson.fromJson(recent, RecentlyPlayed.class);
+        if(recentlyPlayed != null && recentlyPlayed.getRecentlyPlayed() != null && recentlyPlayed.getRecentlyPlayed().size() > 0){
+            mTvRecent.setVisibility(View.GONE);
+            mRecentList = recentlyPlayed.getRecentlyPlayed();
+            LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this,LinearLayoutManager.HORIZONTAL,false);
+            mRvRecent.setLayoutManager(linearLayoutManager);
+            mRecentAdapter = new RecentAdapter(recentlyPlayed.getRecentlyPlayed(),this);
+            mRvRecent.setAdapter(mRecentAdapter);
+        }else {
+            mTvRecent.setVisibility(View.VISIBLE);
+        }
+    }
+
 
 
     /**
@@ -228,38 +309,35 @@ public class MainActivity extends BaseActivity
 
     }
 
-    @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        EasyPermissions.onRequestPermissionsResult(requestCode, permissions, grantResults, this);
-    }
 
-    @Override
-    public void onPermissionsGranted(int requestCode, @NonNull List<String> perms) {
-    }
 
-    @Override
-    public void onPermissionsDenied(int requestCode, @NonNull List<String> perms) {
-        if (EasyPermissions.somePermissionPermanentlyDenied(this, perms)) {
-            new AppSettingsDialog.Builder(this)
-                    .setTitle("权限需要")
-                    .setRationale("音乐季需要获得访问您设备上的音乐的权限，现在去设置界面打开它好吗？")
-                    .build()
-                    .show();
-        }
-    }
+    /*
+     * 浏览器订阅的接口，数据的回调
+     * */
+    private final MediaBrowserCompat.SubscriptionCallback mSubscriptionCallback = new MediaBrowserCompat.SubscriptionCallback() {
+        @Override
+        public void onChildrenLoaded(@NonNull String parentId, @NonNull List<MediaBrowserCompat.MediaItem> children) {
+            super.onChildrenLoaded(parentId, children);
+            //这里做最近列表的刷新
+            String recent = SPUtils.getInstance().getString("recent");
+            Gson gson = new Gson();
 
-    @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-
-        if (requestCode == AppSettingsDialog.DEFAULT_SETTINGS_REQ_CODE) {
-            String[] perms = {Manifest.permission.READ_EXTERNAL_STORAGE};
-            if (EasyPermissions.hasPermissions(this, perms)) {
-            } else {
-                //继续申请，直到同意为止
-                EasyPermissions.requestPermissions(this,"本地音乐需要读取内存权限",REQUEST_READ_EXTERNAL_STORAGE,perms);
+            RecentlyPlayed recentlyPlayed = gson.fromJson(recent, RecentlyPlayed.class);
+            if(recentlyPlayed != null && recentlyPlayed.getRecentlyPlayed() != null && recentlyPlayed.getRecentlyPlayed().size() > 0){
+                mTvRecent.setVisibility(View.GONE);
+                mRecentList = recentlyPlayed.getRecentlyPlayed();
+                mRecentAdapter.setData(mRecentList);
+                mRecentAdapter.notifyDataSetChanged();
+            }else {
+                mTvRecent.setVisibility(View.VISIBLE);
             }
+
         }
+    };
+
+    private void onConnected(){
+        mMediaId = MEDIA_ID_NORMAL;
+        getMediaBrowser().unsubscribe(mMediaId);
+        getMediaBrowser().subscribe(mMediaId,mSubscriptionCallback);
     }
 }

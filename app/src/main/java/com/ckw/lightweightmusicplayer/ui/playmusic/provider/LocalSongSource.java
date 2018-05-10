@@ -27,7 +27,6 @@ public class LocalSongSource implements SongSource{
 
     public LocalSongSource(Context context) {
         mContext = context;
-//        getLocalSongList();
     }
 
     public void getLocalSongList(){

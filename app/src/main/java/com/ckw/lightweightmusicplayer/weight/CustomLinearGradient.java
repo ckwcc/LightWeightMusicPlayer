@@ -9,7 +9,7 @@ import android.graphics.Shader;
 import android.util.AttributeSet;
 import android.view.View;
 
-import com.ckw.lightweightmusicplayer.MainActivity;
+import com.ckw.lightweightmusicplayer.ui.MainActivity;
 
 
 

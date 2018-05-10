@@ -9,15 +9,22 @@ import android.util.Log;
 import android.view.View;
 
 import com.blankj.utilcode.util.ActivityUtils;
+import com.blankj.utilcode.util.SPUtils;
 import com.blankj.utilcode.util.SizeUtils;
 import com.ckw.lightweightmusicplayer.R;
 import com.ckw.lightweightmusicplayer.base.BaseFragment;
+import com.ckw.lightweightmusicplayer.repository.RecentBean;
+import com.ckw.lightweightmusicplayer.repository.RecentlyPlayed;
+import com.ckw.lightweightmusicplayer.repository.Song;
 import com.ckw.lightweightmusicplayer.ui.localmusic.adapter.MusicListAdapter;
 import com.ckw.lightweightmusicplayer.ui.playmusic.MusicPlayActivity;
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 import com.jude.easyrecyclerview.EasyRecyclerView;
 import com.jude.easyrecyclerview.adapter.RecyclerArrayAdapter;
 import com.jude.easyrecyclerview.decoration.DividerDecoration;
 
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -94,12 +101,54 @@ public class LocalMusicListFragment extends BaseFragment{
         mAdapter.setOnItemClickListener(new RecyclerArrayAdapter.OnItemClickListener() {
             @Override
             public void onItemClick(int position) {
+                //添加最近播放列表
+                String recent = SPUtils.getInstance().getString("recent");
+                Gson gson = new Gson();
+                RecentlyPlayed recentlyPlayed = gson.fromJson(recent, RecentlyPlayed.class);
+                if(recentlyPlayed != null && recentlyPlayed.getRecentlyPlayed() != null && recentlyPlayed.getRecentlyPlayed().size() > 0){
+                    boolean checkMediaId = checkMediaId(mSongs.get(position).getMediaId(), recentlyPlayed.getRecentlyPlayed());
+                    if(!checkMediaId){
+                        MediaBrowserCompat.MediaItem mediaItem = mSongs.get(position);
+                        RecentBean recentBean = new RecentBean();
+                        recentBean.setMediaId(mediaItem.getMediaId());
+                        recentBean.setTitle(mediaItem.getDescription().getTitle().toString());
+                        recentBean.setArtist(mediaItem.getDescription().getSubtitle().toString());
+                        recentlyPlayed.getRecentlyPlayed().add(0,recentBean);
+                    }
+                    String toJson = gson.toJson(recentlyPlayed);
+                    SPUtils.getInstance().put("recent",toJson);
+                }else {
+                    List<RecentBean> list = new ArrayList<>();
+                    RecentlyPlayed played = new RecentlyPlayed();
+                    played.setRecentlyPlayed(list);
+                    MediaBrowserCompat.MediaItem mediaItem = mSongs.get(position);
+                    RecentBean recentBean = new RecentBean();
+                    recentBean.setMediaId(mediaItem.getMediaId());
+                    recentBean.setTitle(mediaItem.getDescription().getTitle().toString());
+                    recentBean.setArtist(mediaItem.getDescription().getSubtitle().toString());
+                    played.getRecentlyPlayed().add(0,recentBean);
+                    String toJson = gson.toJson(played);
+                    SPUtils.getInstance().put("recent",toJson);
+                }
+
+
                 Bundle bundle = new Bundle();
                 bundle.putString("musicId",mSongs.get(position).getMediaId());
                 bundle.putBoolean("play",true);
                 ActivityUtils.startActivity(bundle,MusicPlayActivity.class);
             }
         });
+    }
+
+    private boolean checkMediaId(String mediaId,List<RecentBean> list){
+        for (int i = 0; i < list.size(); i++) {
+            RecentBean bean = list.get(i);
+            String currentId = bean.getMediaId();
+            if(currentId.equals(mediaId)){
+                return true;
+            }
+        }
+        return false;
     }
 
 

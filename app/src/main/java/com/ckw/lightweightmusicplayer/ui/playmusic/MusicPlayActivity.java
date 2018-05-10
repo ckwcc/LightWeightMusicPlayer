@@ -1,5 +1,6 @@
 package com.ckw.lightweightmusicplayer.ui.playmusic;
 
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.RemoteException;
 import android.support.annotation.NonNull;
@@ -11,6 +12,7 @@ import android.util.Log;
 import com.blankj.utilcode.util.FragmentUtils;
 import com.ckw.lightweightmusicplayer.R;
 import com.ckw.lightweightmusicplayer.base.BaseActivity;
+
 
 import javax.inject.Inject;
 
@@ -37,7 +39,6 @@ public class MusicPlayActivity extends BaseActivity {
     private MediaControllerCompat.TransportControls mController;
     private MediaControllerCompat mediaControllerCompat;
 
-
     @Override
     protected void onMediaControllerConnected(MediaSessionCompat.Token token) {
         super.onMediaControllerConnected(token);
@@ -46,6 +47,7 @@ public class MusicPlayActivity extends BaseActivity {
                  mediaControllerCompat = new MediaControllerCompat(
                         MusicPlayActivity.this, token);
                  mController = mediaControllerCompat.getTransportControls();
+                Log.d("----", "onMediaControllerConnected: 拿到的id："+mediaId+";是否应该播放："+shouldPlay);
                  if(shouldPlay){
                      mController
                              .playFromMediaId(mediaId, null);
@@ -99,7 +101,6 @@ public class MusicPlayActivity extends BaseActivity {
     @Override
     protected void onStop() {
         super.onStop();
-        Log.d("----", "onStop: 调用了stop");
         shouldPlay = false;
     }
 }

@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:background="@color/colorListItem"
+    android:layout_margin="8dp"
+    android:layout_width="100dp"
+    android:layout_height="130dp">
+
+    <ImageView
+        android:id="@+id/iv_album"
+        android:src="@mipmap/ic_music_default"
+        android:layout_centerHorizontal="true"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
+
+    <RelativeLayout
+        android:layout_below="@+id/iv_album"
+        android:background="@color/colorDark"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+        <TextView
+            android:id="@+id/tv_song_name"
+            android:textColor="@color/colorWhite"
+            tools:text="歌名"
+            android:textSize="12sp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
+        <TextView
+            android:id="@+id/tv_song_artist"
+            tools:text="歌手"
+            android:textColor="@color/colorWhite"
+            android:textSize="10sp"
+            android:layout_below="@+id/tv_song_name"
+            android:layout_alignStart="@+id/tv_song_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+    </RelativeLayout>
+
+
+</RelativeLayout>

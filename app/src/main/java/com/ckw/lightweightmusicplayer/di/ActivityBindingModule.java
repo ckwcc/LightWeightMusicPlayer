@@ -1,7 +1,7 @@
 package com.ckw.lightweightmusicplayer.di;
 
-import com.ckw.lightweightmusicplayer.MainActivity;
-import com.ckw.lightweightmusicplayer.MainActivityModule;
+import com.ckw.lightweightmusicplayer.ui.MainActivity;
+import com.ckw.lightweightmusicplayer.ui.MainActivityModule;
 import com.ckw.lightweightmusicplayer.ui.localmusic.LocalMusicActivity;
 import com.ckw.lightweightmusicplayer.ui.localmusic.LocalMusicModule;
 import com.ckw.lightweightmusicplayer.ui.localmusic.activities.AlbumActivity;
