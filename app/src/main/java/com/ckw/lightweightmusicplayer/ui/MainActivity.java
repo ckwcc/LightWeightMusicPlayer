@@ -12,7 +12,6 @@ import android.support.v4.media.MediaBrowserCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.View;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -26,22 +25,25 @@ import android.widget.TextView;
 
 import com.blankj.utilcode.util.ActivityUtils;
 import com.blankj.utilcode.util.SPUtils;
+import com.blankj.utilcode.util.ToastUtils;
 import com.ckw.lightweightmusicplayer.R;
 import com.ckw.lightweightmusicplayer.base.BaseActivity;
 import com.ckw.lightweightmusicplayer.repository.RecentBean;
 import com.ckw.lightweightmusicplayer.repository.RecentlyPlayed;
 import com.ckw.lightweightmusicplayer.ui.localmusic.LocalMusicActivity;
-import com.ckw.lightweightmusicplayer.ui.playmusic.MediaBrowserProvider;
 import com.ckw.lightweightmusicplayer.ui.playmusic.MusicPlayActivity;
+import com.ckw.lightweightmusicplayer.weight.CustomLinearGradient;
 import com.flask.colorpicker.ColorPickerView;
 import com.flask.colorpicker.OnColorSelectedListener;
 import com.flask.colorpicker.builder.ColorPickerClickListener;
 import com.flask.colorpicker.builder.ColorPickerDialogBuilder;
 import com.google.gson.Gson;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import butterknife.BindView;
+import me.drakeet.materialdialog.MaterialDialog;
 import pub.devrel.easypermissions.AppSettingsDialog;
 import pub.devrel.easypermissions.EasyPermissions;
 
@@ -51,6 +53,7 @@ import static com.ckw.lightweightmusicplayer.ui.playmusic.helper.MediaIdHelper.M
 public class MainActivity extends BaseActivity
         implements NavigationView.OnNavigationItemSelectedListener, View.OnClickListener ,EasyPermissions.PermissionCallbacks{
 
+    //在CustomLinearGradient中使用
     public static int themeColor = Color.parseColor("#B24242");
     private static final int REQUEST_READ_EXTERNAL_STORAGE = 1;
 
@@ -64,7 +67,10 @@ public class MainActivity extends BaseActivity
     FloatingActionButton mPlay;
     @BindView(R.id.rl_local_container)
     RelativeLayout mLocalMusicContainer;
-
+    //头部颜色渐变
+    @BindView(R.id.custom_linear_gradient)
+    CustomLinearGradient mCustomLinearGradient;
+    //最近播放
     @BindView(R.id.tv_recent_nothing)
     TextView mTvRecent;
     @BindView(R.id.rv_recent_list)
@@ -95,6 +101,8 @@ public class MainActivity extends BaseActivity
 
     @Override
     protected void initVariable() {
+        themeColor = SPUtils.getInstance().getInt("themeColor",Color.parseColor("#B24242"));
+        mRecentList = new ArrayList<>();
     }
 
     @Override
@@ -117,12 +125,14 @@ public class MainActivity extends BaseActivity
                 ActivityUtils.startActivity(LocalMusicActivity.class);
                 break;
             case R.id.fab:
-                if(mRecentList != null){
+                if(mRecentList != null && mRecentList.size() > 0){
                     String mediaId = mRecentList.get(0).getMediaId();
                     Bundle bundle = new Bundle();
                     bundle.putString("musicId",mediaId);
                     bundle.putBoolean("play",true);
                     ActivityUtils.startActivity(bundle,MusicPlayActivity.class);
+                }else {
+                    Snackbar.make(mPlay,"最近播放列表为空",Snackbar.LENGTH_SHORT).show();
                 }
                 break;
         }
@@ -142,7 +152,10 @@ public class MainActivity extends BaseActivity
     @Override
     protected void onMediaBrowserConnected() {
         super.onMediaBrowserConnected();
-       onConnected();
+        String[] perms = {Manifest.permission.READ_EXTERNAL_STORAGE};
+        if (EasyPermissions.hasPermissions(this, perms)) {
+            onConnected();
+        }
     }
 
 
@@ -176,7 +189,7 @@ public class MainActivity extends BaseActivity
                 ActivityUtils.startActivity(LocalMusicActivity.class);
                 break;
             case R.id.nav_time_close://定时关闭
-
+                timerDialog();
                 break;
             case R.id.nav_change_skin://个性换肤
                 showChangeSkin();
@@ -184,6 +197,49 @@ public class MainActivity extends BaseActivity
         }
         mDrawerLayout.closeDrawer(GravityCompat.START);
         return true;
+    }
+
+    private void timerDialog() {
+//        new AlertDialog.Builder(this)
+//                .setTitle(R.string.drawer_item_timer)
+//                .setItems(getResources().getStringArray(R.array.timer_text), new DialogInterface.OnClickListener() {
+//                            @Override
+//                            public void onClick(DialogInterface dialog, int which) {
+//                                int[] times = getResources().getIntArray(R.array.timer_int);
+//                                startTimer(times[which]);
+//                            }
+//                        }
+//                )
+//                .show();
+
+        final MaterialDialog mMaterialDialog = new MaterialDialog(this);
+        mMaterialDialog.setTitle(getResources().getString(R.string.drawer_item_timer));
+        mMaterialDialog.setMessage("Hello world!");
+//        mMaterialDialog.setContentView()
+        mMaterialDialog.setPositiveButton("确认", new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mMaterialDialog.dismiss();
+            }
+        });
+        mMaterialDialog.setNegativeButton("取消", new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mMaterialDialog.dismiss();
+            }
+        });
+
+        mMaterialDialog.show();
+    }
+
+
+    private void startTimer(int minute) {
+//        QuitTimer.get().start(minute * 60 * 1000);
+//        if (minute > 0) {
+//            ToastUtils.show(activity.getString(R.string.timer_set, String.valueOf(minute)));
+//        } else {
+//            ToastUtils.show(R.string.timer_cancel);
+//        }
     }
 
     @Override
@@ -214,6 +270,7 @@ public class MainActivity extends BaseActivity
         if (requestCode == AppSettingsDialog.DEFAULT_SETTINGS_REQ_CODE) {
             String[] perms = {Manifest.permission.READ_EXTERNAL_STORAGE};
             if (EasyPermissions.hasPermissions(this, perms)) {
+                onConnected();
             } else {
                 //继续申请，直到同意为止
                 EasyPermissions.requestPermissions(this,"本地音乐需要读取内存权限",REQUEST_READ_EXTERNAL_STORAGE,perms);
@@ -231,17 +288,19 @@ public class MainActivity extends BaseActivity
     }
 
     private void initRecentView() {
+        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this,LinearLayoutManager.HORIZONTAL,false);
+        mRvRecent.setLayoutManager(linearLayoutManager);
+        mRecentAdapter = new RecentAdapter(mRecentList,this);
+        mRvRecent.setAdapter(mRecentAdapter);
+
         String recent = SPUtils.getInstance().getString("recent");
         Gson gson = new Gson();
 
         RecentlyPlayed recentlyPlayed = gson.fromJson(recent, RecentlyPlayed.class);
         if(recentlyPlayed != null && recentlyPlayed.getRecentlyPlayed() != null && recentlyPlayed.getRecentlyPlayed().size() > 0){
             mTvRecent.setVisibility(View.GONE);
-            mRecentList = recentlyPlayed.getRecentlyPlayed();
-            LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this,LinearLayoutManager.HORIZONTAL,false);
-            mRvRecent.setLayoutManager(linearLayoutManager);
-            mRecentAdapter = new RecentAdapter(recentlyPlayed.getRecentlyPlayed(),this);
-            mRvRecent.setAdapter(mRecentAdapter);
+            mRecentList.addAll(recentlyPlayed.getRecentlyPlayed());
+            mRecentAdapter.notifyDataSetChanged();
         }else {
             mTvRecent.setVisibility(View.VISIBLE);
         }
@@ -298,11 +357,15 @@ public class MainActivity extends BaseActivity
      */
     private void setHomeActivityColor(int color) {
         this.themeColor = color;
+        SPUtils.getInstance().put("themeColor",themeColor);
+        mCustomLinearGradient.setStartColor(themeColor);
+        mCustomLinearGradient.invalidate();
     }
 
     private void requestPermission() {
         String[] perms = {Manifest.permission.READ_EXTERNAL_STORAGE};
         if (EasyPermissions.hasPermissions(this, perms)) {
+            onConnected();
         } else {
             EasyPermissions.requestPermissions(this,"本地音乐需要读取内存权限",REQUEST_READ_EXTERNAL_STORAGE,perms);
         }

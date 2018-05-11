@@ -4,6 +4,7 @@ import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.media.browse.MediaBrowser;
+import android.net.ProxyInfo;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.support.v4.media.MediaBrowserCompat;
@@ -11,6 +12,7 @@ import android.support.v4.media.MediaDescriptionCompat;
 import android.support.v4.media.MediaMetadataCompat;
 import android.util.Log;
 
+import com.blankj.utilcode.util.PermissionUtils;
 import com.ckw.lightweightmusicplayer.ui.playmusic.MutableMediaMetadata;
 import com.ckw.lightweightmusicplayer.ui.playmusic.helper.MediaIdHelper;
 
@@ -28,6 +30,8 @@ import java.util.concurrent.ConcurrentMap;
 
 public class MusicProvider {
 
+    private Context mContext;
+
     private SongSource mSongSource;
 
     private List<MediaMetadataCompat> mLocalMusicList;//本地所有的音乐
@@ -39,6 +43,7 @@ public class MusicProvider {
     private ConcurrentMap<String,List<MediaMetadataCompat>> mMusicListByArtist;//本地歌手集合
 
     public MusicProvider(Context context) {
+        mContext = context;
         //提供本地数据
         mSongSource = new LocalSongSource(context);
         mLocalMusicList = new ArrayList<>();
@@ -119,6 +124,7 @@ public class MusicProvider {
     * 获取本地音乐
     * */
     private synchronized void retrieveLocalMedia(){
+
         mLocalMusicList = mSongSource.getLocalList();
 
         Iterator<MediaMetadataCompat> tracks = mSongSource.iterator();

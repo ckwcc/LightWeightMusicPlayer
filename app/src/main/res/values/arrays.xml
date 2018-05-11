@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="timer_text">
+        <item>不开启</item>
+        <item>10分钟后</item>
+        <item>20分钟后</item>
+        <item>30分钟后</item>
+        <item>45分钟后</item>
+        <item>60分钟后</item>
+        <item>90分钟后</item>
+    </string-array>
+
+    <integer-array name="timer_int">
+        <item>0</item>
+        <item>10</item>
+        <item>20</item>
+        <item>30</item>
+        <item>45</item>
+        <item>60</item>
+        <item>90</item>
+    </integer-array>
+</resources>
