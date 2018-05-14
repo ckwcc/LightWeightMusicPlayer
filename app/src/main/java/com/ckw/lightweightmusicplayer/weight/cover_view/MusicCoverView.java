@@ -69,7 +69,7 @@ public class MusicCoverView extends ImageView implements Animatable {
 
     private static final float FULL_ANGLE = 360;
     private static final float HALF_ANGLE = FULL_ANGLE / 2;
-    private static final int DURATION = 5000;
+    private static final int DURATION = 8000;
     private static final float DURATION_PER_DEGREES = DURATION / FULL_ANGLE;
 
     private final ValueAnimator mStartRotateAnimator;

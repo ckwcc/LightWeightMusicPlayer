@@ -1,5 +1,6 @@
 package com.ckw.lightweightmusicplayer.ui.playmusic;
 
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.SystemClock;
@@ -14,6 +15,7 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.bumptech.glide.Glide;
 import com.ckw.lightweightmusicplayer.R;
 import com.ckw.lightweightmusicplayer.base.BaseFragment;
 import com.ckw.lightweightmusicplayer.weight.ProgressView;
@@ -82,7 +84,7 @@ public class MusicPlayFragment extends BaseFragment {
     private MediaControllerCompat mediaControllerCompat;
     private MediaControllerCompat.TransportControls mController;
 
-    public void setMediaControllerCompat(MediaControllerCompat mediaControllerCompat,boolean shouldPlay) {
+    public void setMediaControllerCompat(MediaControllerCompat mediaControllerCompat,boolean shouldPlay,String iconUri) {
         this.mediaControllerCompat = mediaControllerCompat;
         mController = mediaControllerCompat.getTransportControls();
         this.mediaControllerCompat.registerCallback(mMediaControllerCallback);
@@ -97,6 +99,12 @@ public class MusicPlayFragment extends BaseFragment {
 
         if(metadata != null){
             updateDuration(metadata);
+        }
+
+        if(iconUri != null && !iconUri.equals("")){
+            //图片显示的大小还有问题，后期考虑换一种显示view
+//            Glide.with(getContext()).load(iconUri)
+//                    .into(musicCoverView);
         }
 
         if(shouldPlay){
@@ -167,13 +175,6 @@ public class MusicPlayFragment extends BaseFragment {
             }
         });
 
-        mRepeatMode.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                //TODO
-            }
-        });
-
         mFab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -183,6 +184,7 @@ public class MusicPlayFragment extends BaseFragment {
                         switch (state.getState()) {
                             case PlaybackStateCompat.STATE_PLAYING: // fall through
                             case PlaybackStateCompat.STATE_BUFFERING:
+                                isPlaying = false;
                                 mController.pause();
                                 stopSeekbarUpdate();
                                 if(mFab != null){
@@ -192,6 +194,7 @@ public class MusicPlayFragment extends BaseFragment {
                                 break;
                             case PlaybackStateCompat.STATE_PAUSED:
                             case PlaybackStateCompat.STATE_STOPPED:
+                                isPlaying = true;
                                 mController.play();
                                 scheduleSeekbarUpdate();
                                 if(mFab != null){

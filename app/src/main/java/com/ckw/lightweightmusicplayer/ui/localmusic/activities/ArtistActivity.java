@@ -1,17 +1,21 @@
 package com.ckw.lightweightmusicplayer.ui.localmusic.activities;
 
 import android.graphics.Color;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.v4.media.MediaBrowserCompat;
 import android.support.v7.widget.LinearLayoutManager;
 
+import com.blankj.utilcode.util.ActivityUtils;
 import com.blankj.utilcode.util.SizeUtils;
 import com.ckw.lightweightmusicplayer.R;
 import com.ckw.lightweightmusicplayer.base.BaseActivity;
 import com.ckw.lightweightmusicplayer.ui.localmusic.adapter.MusicListAdapter;
+import com.ckw.lightweightmusicplayer.ui.playmusic.MusicPlayActivity;
 import com.ckw.lightweightmusicplayer.ui.playmusic.helper.MediaIdHelper;
+import com.ckw.lightweightmusicplayer.utils.RecentUtils;
 import com.jude.easyrecyclerview.EasyRecyclerView;
 import com.jude.easyrecyclerview.adapter.RecyclerArrayAdapter;
 import com.jude.easyrecyclerview.decoration.DividerDecoration;
@@ -62,7 +66,26 @@ public class ArtistActivity extends BaseActivity{
 
     @Override
     protected void initListener() {
+        if(mAdapter != null){
+            mAdapter.setOnItemClickListener(new RecyclerArrayAdapter.OnItemClickListener() {
+                @Override
+                public void onItemClick(int position) {
+                    MediaBrowserCompat.MediaItem item = mAdapter.getItem(position);
+                    if(item != null){
+                        RecentUtils.addToRecent(item);
+                        Uri iconUri = item.getDescription().getIconUri();
 
+                        Bundle bundle = new Bundle();
+                        bundle.putString("musicId",item.getMediaId());
+                        if(iconUri != null){
+                            bundle.putString("iconUri",iconUri.toString());
+                        }
+                        bundle.putBoolean("play",true);
+                        ActivityUtils.startActivity(bundle,MusicPlayActivity.class);
+                    }
+                }
+            });
+        }
     }
 
     @Override

@@ -63,12 +63,13 @@ public abstract class BaseActivity extends DaggerAppCompatActivity implements Me
 
         initVariable();
 
-        initListener();
 
         initBrowser();
 
         //view与数据绑定
         initView(savedInstanceState);
+
+        initListener();
     }
     
 

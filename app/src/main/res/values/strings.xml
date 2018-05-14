@@ -4,10 +4,12 @@
 
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
+    <string name="confirm">确认</string>
+    <string name="cancle">取消</string>
     <string name="action_settings">设置</string>
     <string name="drawer_item_home">主页</string>
     <string name="drawer_item_local">本地音乐</string>
-    <string name="drawer_item_folder">文件夹</string>
+    <string name="drawer_item_folder">清除最近播放</string>
     <string name="drawer_item_timer">定时关闭</string>
     <string name="drawer_item_skin">个性换肤</string>
 
@@ -15,8 +17,13 @@
     <string name="see_all">查看全部</string>
     <string name="play_list">播放列表</string>
     <string name="empty_tip">空空如也</string>
+    <string name="recent_empty_tip">最近播放列表为空</string>
 
     <string name="song_num">%d首歌曲</string>
+    <string name="need_permission">权限需要</string>
+    <string name="permission_tip">音乐季需要获得访问您设备上的音乐的权限，现在去设置界面打开它好吗？</string>
+    <string name="need_permission_tip">本地音乐需要读取内存权限</string>
+    <string name="choose_theme_color">请选择主题颜色</string>
 
     <string name="translation_thumb">thumb</string>
 

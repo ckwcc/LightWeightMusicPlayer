@@ -33,6 +33,7 @@ public class MusicPlayActivity extends BaseActivity {
     private FragmentManager manager;
 
     private String mediaId;
+    private String mIconUri;
     private boolean shouldPlay;
     private MediaControllerCompat.TransportControls mController;
     private MediaControllerCompat mediaControllerCompat;
@@ -49,7 +50,7 @@ public class MusicPlayActivity extends BaseActivity {
                      mController
                              .playFromMediaId(mediaId, null);
                  }
-                musicPlayFragment.setMediaControllerCompat(mediaControllerCompat,shouldPlay);
+                musicPlayFragment.setMediaControllerCompat(mediaControllerCompat,shouldPlay,mIconUri);
             } catch (RemoteException e) {
                 e.printStackTrace();
             }
@@ -67,6 +68,7 @@ public class MusicPlayActivity extends BaseActivity {
     @Override
     protected void handleBundle(@NonNull Bundle bundle) {
         mediaId = bundle.getString("musicId");
+        mIconUri = bundle.getString("iconUri");
         shouldPlay = bundle.getBoolean("play");
     }
 

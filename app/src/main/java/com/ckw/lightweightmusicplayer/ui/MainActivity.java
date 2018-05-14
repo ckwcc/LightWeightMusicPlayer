@@ -25,13 +25,13 @@ import android.widget.TextView;
 
 import com.blankj.utilcode.util.ActivityUtils;
 import com.blankj.utilcode.util.SPUtils;
-import com.blankj.utilcode.util.ToastUtils;
 import com.ckw.lightweightmusicplayer.R;
 import com.ckw.lightweightmusicplayer.base.BaseActivity;
 import com.ckw.lightweightmusicplayer.repository.RecentBean;
 import com.ckw.lightweightmusicplayer.repository.RecentlyPlayed;
 import com.ckw.lightweightmusicplayer.ui.localmusic.LocalMusicActivity;
 import com.ckw.lightweightmusicplayer.ui.playmusic.MusicPlayActivity;
+import com.ckw.lightweightmusicplayer.utils.RecentUtils;
 import com.ckw.lightweightmusicplayer.weight.CustomLinearGradient;
 import com.flask.colorpicker.ColorPickerView;
 import com.flask.colorpicker.OnColorSelectedListener;
@@ -127,12 +127,17 @@ public class MainActivity extends BaseActivity
             case R.id.fab:
                 if(mRecentList != null && mRecentList.size() > 0){
                     String mediaId = mRecentList.get(0).getMediaId();
+                    String album = mRecentList.get(0).getAlbum();
+
                     Bundle bundle = new Bundle();
                     bundle.putString("musicId",mediaId);
+                    if (album != null) {
+                        bundle.putString("iconUri",album);
+                    }
                     bundle.putBoolean("play",true);
                     ActivityUtils.startActivity(bundle,MusicPlayActivity.class);
                 }else {
-                    Snackbar.make(mPlay,"最近播放列表为空",Snackbar.LENGTH_SHORT).show();
+                    Snackbar.make(mPlay,R.string.recent_empty_tip,Snackbar.LENGTH_SHORT).show();
                 }
                 break;
         }
@@ -193,6 +198,12 @@ public class MainActivity extends BaseActivity
                 break;
             case R.id.nav_change_skin://个性换肤
                 showChangeSkin();
+                break;
+            case R.id.nav_clear_recent:
+                RecentUtils.clearRecent();
+                mRecentList.clear();
+                mRecentAdapter.notifyDataSetChanged();
+                mTvRecent.setVisibility(View.VISIBLE);
                 break;
         }
         mDrawerLayout.closeDrawer(GravityCompat.START);
@@ -256,8 +267,8 @@ public class MainActivity extends BaseActivity
     public void onPermissionsDenied(int requestCode, @NonNull List<String> perms) {
         if (EasyPermissions.somePermissionPermanentlyDenied(this, perms)) {
             new AppSettingsDialog.Builder(this)
-                    .setTitle("权限需要")
-                    .setRationale("音乐季需要获得访问您设备上的音乐的权限，现在去设置界面打开它好吗？")
+                    .setTitle(R.string.need_permission)
+                    .setRationale(R.string.permission_tip)
                     .build()
                     .show();
         }
@@ -273,7 +284,7 @@ public class MainActivity extends BaseActivity
                 onConnected();
             } else {
                 //继续申请，直到同意为止
-                EasyPermissions.requestPermissions(this,"本地音乐需要读取内存权限",REQUEST_READ_EXTERNAL_STORAGE,perms);
+                EasyPermissions.requestPermissions(this,getResources().getString(R.string.need_permission_tip),REQUEST_READ_EXTERNAL_STORAGE,perms);
             }
         }
     }
@@ -314,7 +325,7 @@ public class MainActivity extends BaseActivity
     private void showChangeSkin(){
         final AlertDialog dialog = ColorPickerDialogBuilder
                 .with(this)
-                .setTitle("请选择主题颜色")
+                .setTitle(R.string.choose_theme_color)
                 .initialColor(this.themeColor)
                 .wheelType(ColorPickerView.WHEEL_TYPE.FLOWER)
                 .density(9)
@@ -325,13 +336,13 @@ public class MainActivity extends BaseActivity
                     public void onColorSelected(int color) {
                     }
                 })
-                .setPositiveButton("ok", new ColorPickerClickListener() {
+                .setPositiveButton(R.string.confirm, new ColorPickerClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int color, Integer[] allColors) {
                         setHomeActivityColor(color);
                     }
                 })
-                .setNegativeButton("cancel", new DialogInterface.OnClickListener() {
+                .setNegativeButton(R.string.cancle, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         dialog.dismiss();
@@ -367,7 +378,7 @@ public class MainActivity extends BaseActivity
         if (EasyPermissions.hasPermissions(this, perms)) {
             onConnected();
         } else {
-            EasyPermissions.requestPermissions(this,"本地音乐需要读取内存权限",REQUEST_READ_EXTERNAL_STORAGE,perms);
+            EasyPermissions.requestPermissions(this,getResources().getString(R.string.need_permission_tip),REQUEST_READ_EXTERNAL_STORAGE,perms);
         }
 
     }

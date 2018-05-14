@@ -12,11 +12,6 @@
             android:icon="@mipmap/ic_local"
             android:title="@string/drawer_item_local" />
 
-        <!--<item-->
-            <!--android:id="@+id/nav_folder"-->
-            <!--android:icon="@mipmap/ic_folder"-->
-            <!--android:title="@string/drawer_item_folder" />-->
-
         <item
             android:id="@+id/nav_time_close"
             android:icon="@mipmap/ic_recent"
@@ -28,6 +23,11 @@
             android:icon="@mipmap/ic_clothes"
             android:title="@string/drawer_item_skin"
             />
+
+        <item
+        android:id="@+id/nav_clear_recent"
+        android:icon="@mipmap/ic_clear"
+        android:title="@string/drawer_item_folder" />
 
     </group>
 

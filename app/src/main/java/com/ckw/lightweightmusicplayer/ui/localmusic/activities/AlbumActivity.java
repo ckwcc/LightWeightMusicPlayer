@@ -2,6 +2,7 @@ package com.ckw.lightweightmusicplayer.ui.localmusic.activities;
 
 import android.content.Intent;
 import android.graphics.Color;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -32,6 +33,7 @@ import com.ckw.lightweightmusicplayer.ui.localmusic.viewholder.LocalSongViewHold
 import com.ckw.lightweightmusicplayer.ui.playmusic.MusicPlayActivity;
 import com.ckw.lightweightmusicplayer.ui.playmusic.helper.MediaIdHelper;
 import com.ckw.lightweightmusicplayer.utils.MediaUtils;
+import com.ckw.lightweightmusicplayer.utils.RecentUtils;
 import com.ckw.lightweightmusicplayer.weight.cover_view.MusicCoverView;
 import com.jude.easyrecyclerview.EasyRecyclerView;
 import com.jude.easyrecyclerview.adapter.BaseViewHolder;
@@ -126,16 +128,27 @@ public class AlbumActivity extends BaseActivity {
 
     @Override
     protected void initListener() {
-        mAdapter.setOnItemClickListener(new RecyclerArrayAdapter.OnItemClickListener() {
-            @Override
-            public void onItemClick(int position) {
-                if(mSongs != null){
-                    Bundle bundle = new Bundle();
-                    bundle.putString("musicId",mSongs.get(position).getMediaId());
-                    ActivityUtils.startActivity(bundle,MusicPlayActivity.class);
+        if(mAdapter != null){
+            mAdapter.setOnItemClickListener(new RecyclerArrayAdapter.OnItemClickListener() {
+                @Override
+                public void onItemClick(int position) {
+                    if(mSongs != null){
+
+                        RecentUtils.addToRecent(mSongs.get(position));
+
+                        Uri iconUri = mSongs.get(position).getDescription().getIconUri();
+
+                        Bundle bundle = new Bundle();
+                        bundle.putString("musicId",mSongs.get(position).getMediaId());
+                        if(iconUri != null){
+                            bundle.putString("iconUri",iconUri.toString());
+                        }
+                        bundle.putBoolean("play",true);
+                        ActivityUtils.startActivity(bundle,MusicPlayActivity.class);
+                    }
                 }
-            }
-        });
+            });
+        }
     }
 
     @Override
@@ -157,7 +170,7 @@ public class AlbumActivity extends BaseActivity {
         itemDecoration.setDrawLastItem(false);
         mEasyRecyclerView.addItemDecoration(itemDecoration);
 
-        mAdapter = new MusicListAdapter(getApplicationContext());
+        mAdapter = new MusicListAdapter(this);
         mEasyRecyclerView.setAdapter(mAdapter);
     }
 }

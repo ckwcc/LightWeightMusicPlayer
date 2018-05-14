@@ -10,6 +10,7 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.bumptech.glide.Glide;
 import com.ckw.lightweightmusicplayer.R;
 import com.ckw.lightweightmusicplayer.repository.RecentBean;
 
@@ -46,6 +47,11 @@ public class RecentAdapter extends RecyclerView.Adapter<RecentAdapter.ViewHolder
         RecentBean recentBean = mData.get(position);
         holder.tvSongName.setText(recentBean.getTitle());
         holder.tvSongArtist.setText(recentBean.getArtist());
+        String album = recentBean.getAlbum();
+        if(album != null && !"".equals(album)){
+            Glide.with(mContext).load(album)
+                    .into(holder.ivAlbum);
+        }
     }
 
     @Override
