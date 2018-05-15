@@ -16,4 +16,41 @@
         </attr>
         <attr name="trackColor" format="color"/>
     </declare-styleable>
+
+    <declare-styleable name="EasyCountDownTextureView">
+        <attr name="easyCountRectWidth"
+            format="dimension"/>
+        <attr name="easyCountRectHeight"
+            format="dimension"/>
+        <attr name="easyCountRectRadius"
+            format="dimension"/>
+        <attr name="easyCountRectBorderSize"
+            format="dimension"/>
+        <attr name="easyCountRectBorderColor"
+            format="color"/>
+        <attr name="easyCountRectBorderStroke"
+            format="dimension"/>
+        <attr name="easyCountRectSpacing"
+            format="dimension"/>
+        <attr name="easyCountTimeColor"
+            format="color"/>
+        <attr name="easyCountTimeSize"
+            format="dimension"/>
+        <attr name="easyCountTimeStroke"
+            format="dimension"/>
+        <attr name="easyCountColonColor"
+            format="color"/>
+        <attr name="easyCountColonSize"
+            format="dimension"/>
+        <attr name="easyCountColonStroke"
+            format="dimension"/>
+        <attr name="easyCountBackgroundColor"
+            format="color"/>
+        <attr name="easyCountHour"
+            format="integer"/>
+        <attr name="easyCountMinute"
+            format="integer"/>
+        <attr name="easyCountSecond"
+            format="integer"/>
+    </declare-styleable>
 </resources>

@@ -22,7 +22,7 @@
     <string name="song_num">%d首歌曲</string>
     <string name="need_permission">权限需要</string>
     <string name="permission_tip">音乐季需要获得访问您设备上的音乐的权限，现在去设置界面打开它好吗？</string>
-    <string name="need_permission_tip">本地音乐需要读取内存权限</string>
+    <string name="need_permission_tip">本地音乐需要读取手机内存权限</string>
     <string name="choose_theme_color">请选择主题颜色</string>
 
     <string name="translation_thumb">thumb</string>

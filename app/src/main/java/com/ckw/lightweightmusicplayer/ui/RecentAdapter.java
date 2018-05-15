@@ -1,7 +1,6 @@
 package com.ckw.lightweightmusicplayer.ui;
 
 import android.content.Context;
-import android.media.Image;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -25,6 +24,12 @@ public class RecentAdapter extends RecyclerView.Adapter<RecentAdapter.ViewHolder
     private List<RecentBean> mData;
     private Context mContext;
 
+    private ItemClickListener mItemClickListener;
+
+    public void setItemClickListener(ItemClickListener mItemClickListener) {
+        this.mItemClickListener = mItemClickListener;
+    }
+
     public RecentAdapter(List<RecentBean> mData, Context mContext) {
         this.mData = mData;
         this.mContext = mContext;
@@ -43,7 +48,7 @@ public class RecentAdapter extends RecyclerView.Adapter<RecentAdapter.ViewHolder
     }
 
     @Override
-    public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
+    public void onBindViewHolder(@NonNull ViewHolder holder, final int position) {
         RecentBean recentBean = mData.get(position);
         holder.tvSongName.setText(recentBean.getTitle());
         holder.tvSongArtist.setText(recentBean.getArtist());
@@ -52,6 +57,13 @@ public class RecentAdapter extends RecyclerView.Adapter<RecentAdapter.ViewHolder
             Glide.with(mContext).load(album)
                     .into(holder.ivAlbum);
         }
+
+        holder.itemView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mItemClickListener.setOnItemClick(position,v);
+            }
+        });
     }
 
     @Override
@@ -71,4 +83,7 @@ public class RecentAdapter extends RecyclerView.Adapter<RecentAdapter.ViewHolder
             tvSongArtist = itemView.findViewById(R.id.tv_song_artist);
         }
     }
+
+
+
 }

@@ -4,14 +4,19 @@ import android.Manifest;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Color;
+import android.net.Uri;
 import android.os.Bundle;
+import android.os.RemoteException;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v4.media.MediaBrowserCompat;
+import android.support.v4.media.session.MediaControllerCompat;
+import android.support.v4.media.session.MediaSessionCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -25,6 +30,7 @@ import android.widget.TextView;
 
 import com.blankj.utilcode.util.ActivityUtils;
 import com.blankj.utilcode.util.SPUtils;
+import com.blankj.utilcode.util.ToastUtils;
 import com.ckw.lightweightmusicplayer.R;
 import com.ckw.lightweightmusicplayer.base.BaseActivity;
 import com.ckw.lightweightmusicplayer.repository.RecentBean;
@@ -33,6 +39,7 @@ import com.ckw.lightweightmusicplayer.ui.localmusic.LocalMusicActivity;
 import com.ckw.lightweightmusicplayer.ui.playmusic.MusicPlayActivity;
 import com.ckw.lightweightmusicplayer.utils.RecentUtils;
 import com.ckw.lightweightmusicplayer.weight.CustomLinearGradient;
+import com.ckw.lightweightmusicplayer.weight.EasyCountDownTextureView;
 import com.flask.colorpicker.ColorPickerView;
 import com.flask.colorpicker.OnColorSelectedListener;
 import com.flask.colorpicker.builder.ColorPickerClickListener;
@@ -51,7 +58,7 @@ import static com.ckw.lightweightmusicplayer.ui.playmusic.helper.MediaIdHelper.M
 
 
 public class MainActivity extends BaseActivity
-        implements NavigationView.OnNavigationItemSelectedListener, View.OnClickListener ,EasyPermissions.PermissionCallbacks{
+        implements NavigationView.OnNavigationItemSelectedListener, View.OnClickListener ,EasyPermissions.PermissionCallbacks, ItemClickListener, EasyCountDownTextureView.EasyCountDownListener {
 
     //在CustomLinearGradient中使用
     public static int themeColor = Color.parseColor("#B24242");
@@ -70,6 +77,8 @@ public class MainActivity extends BaseActivity
     //头部颜色渐变
     @BindView(R.id.custom_linear_gradient)
     CustomLinearGradient mCustomLinearGradient;
+    @BindView(R.id.easy_count_down_view)
+    EasyCountDownTextureView mCountDownView;
     //最近播放
     @BindView(R.id.tv_recent_nothing)
     TextView mTvRecent;
@@ -79,6 +88,8 @@ public class MainActivity extends BaseActivity
     private String mMediaId;//分类id
     private RecentAdapter mRecentAdapter;
     private List<RecentBean> mRecentList;
+
+    private MediaControllerCompat.TransportControls mController;
 
     @Override
     protected void initView(Bundle savedInstanceState) {
@@ -114,33 +125,20 @@ public class MainActivity extends BaseActivity
     protected void initListener() {
         mLocalMusicContainer.setOnClickListener(this);
         mPlay.setOnClickListener(this);
-
+        mRecentAdapter.setItemClickListener(this);
     }
 
     @Override
-    public void onClick(View v) {
-        int id = v.getId();
-        switch (id){
-            case R.id.rl_local_container://本地音乐
-                ActivityUtils.startActivity(LocalMusicActivity.class);
-                break;
-            case R.id.fab:
-                if(mRecentList != null && mRecentList.size() > 0){
-                    String mediaId = mRecentList.get(0).getMediaId();
-                    String album = mRecentList.get(0).getAlbum();
+    public void setOnItemClick(int position, View view) {
+        RecentBean recentBean = mRecentList.get(position);
+        String album = recentBean.getAlbum();
+        String mediaId = recentBean.getMediaId();
 
-                    Bundle bundle = new Bundle();
-                    bundle.putString("musicId",mediaId);
-                    if (album != null) {
-                        bundle.putString("iconUri",album);
-                    }
-                    bundle.putBoolean("play",true);
-                    ActivityUtils.startActivity(bundle,MusicPlayActivity.class);
-                }else {
-                    Snackbar.make(mPlay,R.string.recent_empty_tip,Snackbar.LENGTH_SHORT).show();
-                }
-                break;
-        }
+        Bundle bundle = new Bundle();
+        bundle.putString("musicId",mediaId);
+        bundle.putString("iconUri",album);
+        bundle.putBoolean("play",true);
+        ActivityUtils.startActivity(bundle,MusicPlayActivity.class);
     }
 
     @Override
@@ -163,6 +161,17 @@ public class MainActivity extends BaseActivity
         }
     }
 
+    @Override
+    protected void onMediaControllerConnected(MediaSessionCompat.Token token) {
+        super.onMediaControllerConnected(token);
+        try {
+            MediaControllerCompat mediaControllerCompat = new MediaControllerCompat(
+                    MainActivity.this, token);
+            mController = mediaControllerCompat.getTransportControls();
+        } catch (RemoteException e) {
+            e.printStackTrace();
+        }
+    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -191,7 +200,13 @@ public class MainActivity extends BaseActivity
 
                 break;
             case R.id.nav_local://本地音乐
-                ActivityUtils.startActivity(LocalMusicActivity.class);
+                String[] perms = {Manifest.permission.READ_EXTERNAL_STORAGE};
+                if (EasyPermissions.hasPermissions(this, perms)) {
+                    ActivityUtils.startActivity(LocalMusicActivity.class);
+                } else {
+                    //继续申请，直到同意为止
+                    EasyPermissions.requestPermissions(this,getResources().getString(R.string.need_permission_tip),REQUEST_READ_EXTERNAL_STORAGE,perms);
+                }
                 break;
             case R.id.nav_time_close://定时关闭
                 timerDialog();
@@ -210,47 +225,61 @@ public class MainActivity extends BaseActivity
         return true;
     }
 
-    private void timerDialog() {
-//        new AlertDialog.Builder(this)
-//                .setTitle(R.string.drawer_item_timer)
-//                .setItems(getResources().getStringArray(R.array.timer_text), new DialogInterface.OnClickListener() {
-//                            @Override
-//                            public void onClick(DialogInterface dialog, int which) {
-//                                int[] times = getResources().getIntArray(R.array.timer_int);
-//                                startTimer(times[which]);
-//                            }
-//                        }
-//                )
-//                .show();
+    @Override
+    public void onClick(View v) {
+        int id = v.getId();
+        switch (id){
+            case R.id.rl_local_container://本地音乐
+                String[] perms = {Manifest.permission.READ_EXTERNAL_STORAGE};
+                if (EasyPermissions.hasPermissions(this, perms)) {
+                    ActivityUtils.startActivity(LocalMusicActivity.class);
+                } else {
+                    //继续申请，直到同意为止
+                    EasyPermissions.requestPermissions(this,getResources().getString(R.string.need_permission_tip),REQUEST_READ_EXTERNAL_STORAGE,perms);
+                }
+                break;
+            case R.id.fab:
+                if(mRecentList != null && mRecentList.size() > 0){
+                    String mediaId = mRecentList.get(0).getMediaId();
+                    String album = mRecentList.get(0).getAlbum();
 
-        final MaterialDialog mMaterialDialog = new MaterialDialog(this);
-        mMaterialDialog.setTitle(getResources().getString(R.string.drawer_item_timer));
-        mMaterialDialog.setMessage("Hello world!");
-//        mMaterialDialog.setContentView()
-        mMaterialDialog.setPositiveButton("确认", new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                mMaterialDialog.dismiss();
-            }
-        });
-        mMaterialDialog.setNegativeButton("取消", new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                mMaterialDialog.dismiss();
-            }
-        });
-
-        mMaterialDialog.show();
+                    Bundle bundle = new Bundle();
+                    bundle.putString("musicId",mediaId);
+                    if (album != null) {
+                        bundle.putString("iconUri",album);
+                    }
+                    bundle.putBoolean("play",true);
+                    ActivityUtils.startActivity(bundle,MusicPlayActivity.class);
+                }else {
+                    Snackbar.make(mPlay,R.string.recent_empty_tip,Snackbar.LENGTH_SHORT).show();
+                }
+                break;
+        }
     }
 
 
-    private void startTimer(int minute) {
-//        QuitTimer.get().start(minute * 60 * 1000);
-//        if (minute > 0) {
-//            ToastUtils.show(activity.getString(R.string.timer_set, String.valueOf(minute)));
-//        } else {
-//            ToastUtils.show(R.string.timer_cancel);
-//        }
+    @Override
+    public void onCountDownStart() {
+
+    }
+
+    @Override
+    public void onCountDownTimeError() {
+
+    }
+
+    @Override
+    public void onCountDownStop(long millisInFuture) {
+
+    }
+
+    /*
+    * 倒计时完成
+    * */
+    @Override
+    public void onCountDownCompleted() {
+        mCountDownView.setVisibility(View.INVISIBLE);
+        mController.stop();
     }
 
     @Override
@@ -298,6 +327,9 @@ public class MainActivity extends BaseActivity
         }
     }
 
+    /*
+    * 初始化最近播放列表
+    * */
     private void initRecentView() {
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this,LinearLayoutManager.HORIZONTAL,false);
         mRvRecent.setLayoutManager(linearLayoutManager);
@@ -317,6 +349,77 @@ public class MainActivity extends BaseActivity
         }
     }
 
+    /*
+     * 定时关闭功能
+     * */
+    private void timerDialog() {
+        final MaterialDialog mMaterialDialog = new MaterialDialog(this);
+        mMaterialDialog.setTitle(getResources().getString(R.string.drawer_item_timer));
+        View view = LayoutInflater.from(this).inflate(R.layout.view_select_time,null);
+        mMaterialDialog.setContentView(view);
+        TextView tvTenMin = view.findViewById(R.id.tv_ten_min);
+        TextView tvTwentyMin = view.findViewById(R.id.tv_twenty_min);
+        TextView tvThirtyMin = view.findViewById(R.id.tv_thirty_min);
+        TextView tvFortyFiveMin = view.findViewById(R.id.forty_five_min);
+        TextView tvOneHour = view.findViewById(R.id.tv_one_hour);
+        TextView tvCancel = view.findViewById(R.id.tv_cancel);
+        tvTenMin.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mCountDownView.setTime(10*60*1000);
+                mCountDownView.setVisibility(View.VISIBLE);
+                mCountDownView.setEasyCountDownListener(MainActivity.this);
+                mCountDownView.start();
+                mMaterialDialog.dismiss();
+            }
+        });
+        tvTwentyMin.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mCountDownView.setTime(20*60*1000);
+                mCountDownView.setVisibility(View.VISIBLE);
+                mCountDownView.start();
+                mMaterialDialog.dismiss();
+            }
+        });
+        tvThirtyMin.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mCountDownView.setTime(30*60*1000);
+                mCountDownView.setVisibility(View.VISIBLE);
+                mCountDownView.start();
+                mMaterialDialog.dismiss();
+            }
+        });
+        tvFortyFiveMin.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mCountDownView.setTime(45*60*1000);
+                mCountDownView.setVisibility(View.VISIBLE);
+                mCountDownView.start();
+                mMaterialDialog.dismiss();
+            }
+        });
+        tvOneHour.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mCountDownView.setTime(60*60*1000);
+                mCountDownView.setVisibility(View.VISIBLE);
+                mCountDownView.start();
+                mMaterialDialog.dismiss();
+            }
+        });
+        tvCancel.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mCountDownView.stop();
+                mCountDownView.setVisibility(View.INVISIBLE);
+                mMaterialDialog.dismiss();
+            }
+        });
+
+        mMaterialDialog.show();
+    }
 
 
     /**
@@ -373,6 +476,9 @@ public class MainActivity extends BaseActivity
         mCustomLinearGradient.invalidate();
     }
 
+    /*
+    * 权限申请
+    * */
     private void requestPermission() {
         String[] perms = {Manifest.permission.READ_EXTERNAL_STORAGE};
         if (EasyPermissions.hasPermissions(this, perms)) {
@@ -382,8 +488,6 @@ public class MainActivity extends BaseActivity
         }
 
     }
-
-
 
     /*
      * 浏览器订阅的接口，数据的回调
@@ -414,4 +518,6 @@ public class MainActivity extends BaseActivity
         getMediaBrowser().unsubscribe(mMediaId);
         getMediaBrowser().subscribe(mMediaId,mSubscriptionCallback);
     }
+
+
 }
