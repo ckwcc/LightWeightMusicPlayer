@@ -1,4 +1,4 @@
-package com.ckw.lightweightmusicplayer.ui;
+package com.ckw.lightweightmusicplayer.ui.main;
 
 import android.view.View;
 

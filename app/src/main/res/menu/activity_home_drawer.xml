@@ -25,9 +25,15 @@
             />
 
         <item
-        android:id="@+id/nav_clear_recent"
-        android:icon="@mipmap/ic_clear"
-        android:title="@string/drawer_item_folder" />
+            android:id="@+id/nav_clear_recent"
+            android:icon="@mipmap/ic_clear"
+            android:title="@string/drawer_item_folder" />
+
+        <item
+            android:id="@+id/nav_about_me"
+            android:icon="@mipmap/ic_about"
+            android:title="@string/drawer_item_about"
+            />
 
     </group>
 

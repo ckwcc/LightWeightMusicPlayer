@@ -12,6 +12,7 @@
     <string name="drawer_item_folder">清除最近播放</string>
     <string name="drawer_item_timer">定时关闭</string>
     <string name="drawer_item_skin">个性换肤</string>
+    <string name="drawer_item_about">关于音乐季</string>
 
     <string name="recent_play">最近播放</string>
     <string name="see_all">查看全部</string>

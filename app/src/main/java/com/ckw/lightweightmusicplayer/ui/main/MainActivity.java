@@ -1,10 +1,9 @@
-package com.ckw.lightweightmusicplayer.ui;
+package com.ckw.lightweightmusicplayer.ui.main;
 
 import android.Manifest;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Color;
-import android.net.Uri;
 import android.os.Bundle;
 import android.os.RemoteException;
 import android.support.annotation.NonNull;
@@ -30,11 +29,11 @@ import android.widget.TextView;
 
 import com.blankj.utilcode.util.ActivityUtils;
 import com.blankj.utilcode.util.SPUtils;
-import com.blankj.utilcode.util.ToastUtils;
 import com.ckw.lightweightmusicplayer.R;
 import com.ckw.lightweightmusicplayer.base.BaseActivity;
 import com.ckw.lightweightmusicplayer.repository.RecentBean;
 import com.ckw.lightweightmusicplayer.repository.RecentlyPlayed;
+import com.ckw.lightweightmusicplayer.ui.about.AboutMeActivity;
 import com.ckw.lightweightmusicplayer.ui.localmusic.LocalMusicActivity;
 import com.ckw.lightweightmusicplayer.ui.playmusic.MusicPlayActivity;
 import com.ckw.lightweightmusicplayer.utils.RecentUtils;
@@ -219,6 +218,9 @@ public class MainActivity extends BaseActivity
                 mRecentList.clear();
                 mRecentAdapter.notifyDataSetChanged();
                 mTvRecent.setVisibility(View.VISIBLE);
+                break;
+            case R.id.nav_about_me:
+                ActivityUtils.startActivity(AboutMeActivity.class);
                 break;
         }
         mDrawerLayout.closeDrawer(GravityCompat.START);

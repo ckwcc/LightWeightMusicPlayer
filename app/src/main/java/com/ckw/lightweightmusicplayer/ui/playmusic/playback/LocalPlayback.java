@@ -172,7 +172,9 @@ public final class LocalPlayback implements Playback {
 
     @Override
     public void setPlayMode(int repeatMode) {
-        mExoPlayer.setRepeatMode(repeatMode);
+        if(mExoPlayer != null){
+            mExoPlayer.setRepeatMode(repeatMode);
+        }
     }
 
     @Override
