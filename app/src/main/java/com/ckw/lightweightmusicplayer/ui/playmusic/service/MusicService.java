@@ -14,7 +14,6 @@ import android.support.v4.media.MediaMetadataCompat;
 import android.support.v4.media.session.MediaButtonReceiver;
 import android.support.v4.media.session.MediaSessionCompat;
 import android.support.v4.media.session.PlaybackStateCompat;
-import android.util.Log;
 
 import com.ckw.lightweightmusicplayer.R;
 import com.ckw.lightweightmusicplayer.ui.playmusic.manager.MediaNotificationManager;
@@ -27,9 +26,6 @@ import com.google.android.gms.cast.framework.CastContext;
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.List;
-
-
-import pub.devrel.easypermissions.EasyPermissions;
 
 import static com.ckw.lightweightmusicplayer.ui.playmusic.helper.MediaIdHelper.MEDIA_ID_EMPTY_ROOT;
 import static com.ckw.lightweightmusicplayer.ui.playmusic.helper.MediaIdHelper.MEDIA_ID_ROOT;
@@ -225,7 +221,6 @@ public class MusicService extends MediaBrowserServiceCompat implements PlaybackM
     public void onPlaybackStateUpdated(PlaybackStateCompat newState) {
         mSession.setPlaybackState(newState);
     }
-
 
 
     /**

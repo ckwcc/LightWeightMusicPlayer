@@ -10,7 +10,6 @@ import android.support.v4.media.MediaMetadataCompat;
 import android.support.v4.media.session.MediaSessionCompat;
 import android.support.v4.media.session.PlaybackStateCompat;
 import android.text.TextUtils;
-import android.util.Log;
 
 import com.ckw.lightweightmusicplayer.ui.playmusic.provider.MusicProvider;
 import com.ckw.lightweightmusicplayer.ui.playmusic.provider.SongSource;
@@ -172,6 +171,11 @@ public final class LocalPlayback implements Playback {
     }
 
     @Override
+    public void setPlayMode(int repeatMode) {
+        mExoPlayer.setRepeatMode(repeatMode);
+    }
+
+    @Override
     public void start() {
 
     }
@@ -195,6 +199,7 @@ public final class LocalPlayback implements Playback {
                     ? PlaybackStateCompat.STATE_STOPPED
                     : PlaybackStateCompat.STATE_NONE;
         }
+
         switch (mExoPlayer.getPlaybackState()) {
             case ExoPlayer.STATE_IDLE:
                 return PlaybackStateCompat.STATE_PAUSED;
@@ -209,6 +214,8 @@ public final class LocalPlayback implements Playback {
             default:
                 return PlaybackStateCompat.STATE_NONE;
         }
+
+
     }
 
     @Override
@@ -233,6 +240,7 @@ public final class LocalPlayback implements Playback {
 
     @Override
     public void play(MediaSessionCompat.QueueItem item) {
+
         mPlayOnFocusGain = true;
         tryToGetAudioFocus();
         registerAudioNoisyReceiver();
@@ -280,7 +288,6 @@ public final class LocalPlayback implements Playback {
             MediaSource mediaSource =
                     new ExtractorMediaSource(
                             Uri.parse(source), dataSourceFactory, extractorsFactory, null, null);
-
             // Prepares media to play (happens on background thread) and triggers
             // {@code onPlayerStateChanged} callback when the stream is ready to play.
             mExoPlayer.prepare(mediaSource);
@@ -377,6 +384,7 @@ public final class LocalPlayback implements Playback {
     * 播放器事件监听
     * */
     private final class ExoPlayerEventListener implements ExoPlayer.EventListener {
+        
         @Override
         public void onTimelineChanged(Timeline timeline, Object manifest) {
             // Nothing to do.
@@ -409,6 +417,7 @@ public final class LocalPlayback implements Playback {
                         mCallback.onCompletion();
                     }
                     break;
+
             }
         }
 
@@ -452,7 +461,7 @@ public final class LocalPlayback implements Playback {
 
         @Override
         public void onRepeatModeChanged(int repeatMode) {
-            // Nothing to do.
+
         }
 
         @Override

@@ -54,7 +54,6 @@ public class HttpManager {
                         }
                         int code = response.getCode();
                         T data = response.getData();
-                        //TODO 根据具体的业务需求来写
                         switch (code) {
                         /*
                          * 失败

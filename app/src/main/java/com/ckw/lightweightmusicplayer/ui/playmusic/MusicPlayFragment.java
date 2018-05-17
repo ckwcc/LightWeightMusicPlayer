@@ -1,6 +1,5 @@
 package com.ckw.lightweightmusicplayer.ui.playmusic;
 
-import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.SystemClock;
@@ -8,6 +7,7 @@ import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.media.MediaMetadataCompat;
 import android.support.v4.media.session.MediaControllerCompat;
+import android.support.v4.media.session.MediaSessionCompat;
 import android.support.v4.media.session.PlaybackStateCompat;
 import android.text.format.DateUtils;
 import android.util.Log;
@@ -15,12 +15,13 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.bumptech.glide.Glide;
+import com.blankj.utilcode.util.SPUtils;
 import com.ckw.lightweightmusicplayer.R;
 import com.ckw.lightweightmusicplayer.base.BaseFragment;
 import com.ckw.lightweightmusicplayer.weight.ProgressView;
 import com.ckw.lightweightmusicplayer.weight.cover_view.MusicCoverView;
 
+import java.util.List;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
@@ -40,6 +41,9 @@ public class MusicPlayFragment extends BaseFragment {
 
     private static final long PROGRESS_UPDATE_INTERNAL = 1000;
     private static final long PROGRESS_UPDATE_INITIAL_INTERVAL = 100;
+    public static final int REPEAT_MODE_DEFAULT = 2;
+    public static final int REPEAT_MODE_SINGLE = 1;
+    private int mSongDuration;
 
     @Inject
     public MusicPlayFragment() {
@@ -60,7 +64,7 @@ public class MusicPlayFragment extends BaseFragment {
     @BindView(R.id.next)
     ImageView mSkipToNext;//下一首
     @BindView(R.id.repeat)
-    ImageView mRepeatMode;//循环模式
+    ImageView mIvRepeat;//循环模式
     @BindView(R.id.tv_song_name)
     TextView mSongName;
     @BindView(R.id.tv_song_artist)
@@ -88,7 +92,7 @@ public class MusicPlayFragment extends BaseFragment {
         this.mediaControllerCompat = mediaControllerCompat;
         mController = mediaControllerCompat.getTransportControls();
         this.mediaControllerCompat.registerCallback(mMediaControllerCallback);
-        
+
         MediaMetadataCompat metadata = this.mediaControllerCompat.getMetadata();
 
         PlaybackStateCompat state = this.mediaControllerCompat.getPlaybackState();
@@ -117,6 +121,8 @@ public class MusicPlayFragment extends BaseFragment {
                 state.getState() == PlaybackStateCompat.STATE_BUFFERING)) {
             scheduleSeekbarUpdate();
         }
+
+        setRepeatMode(false);
     }
 
 
@@ -151,8 +157,9 @@ public class MusicPlayFragment extends BaseFragment {
 
     @Override
     protected void operateViews(View view) {
-        
+
     }
+
 
     @Override
     protected void initListener() {
@@ -172,6 +179,13 @@ public class MusicPlayFragment extends BaseFragment {
                 if(mController != null){
                     mController.skipToNext();
                 }
+            }
+        });
+
+        mIvRepeat.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                setRepeatMode(true);
             }
         });
 
@@ -247,6 +261,7 @@ public class MusicPlayFragment extends BaseFragment {
 
     private final MediaControllerCompat.Callback mMediaControllerCallback =
             new MediaControllerCompat.Callback() {
+
                 @Override
                 public void onPlaybackStateChanged(@NonNull PlaybackStateCompat state) {
                     updatePlaybackState(state);
@@ -267,6 +282,7 @@ public class MusicPlayFragment extends BaseFragment {
         }
 
         mLastPlaybackState = state;
+
         switch (state.getState()){
             case PlaybackStateCompat.STATE_PLAYING:
                 if(mFab != null){
@@ -301,11 +317,21 @@ public class MusicPlayFragment extends BaseFragment {
             return;
         }
         long currentPosition = mLastPlaybackState.getPosition();
+
         if (mLastPlaybackState.getState() == PlaybackStateCompat.STATE_PLAYING) {
 
             long timeDelta = SystemClock.elapsedRealtime() -
                     mLastPlaybackState.getLastPositionUpdateTime();
             currentPosition += (int) timeDelta * mLastPlaybackState.getPlaybackSpeed();
+        }
+
+        if(currentPosition > (mSongDuration + 1000) && SPUtils.getInstance().getInt("repeat", REPEAT_MODE_DEFAULT) == REPEAT_MODE_SINGLE){
+            //这里的目的是为了让单曲循环时，控制进度条和正在播放的时间正确
+            currentPosition = 0;
+            mController.pause();
+            mController.play();
+        }else if(currentPosition > (mSongDuration + 1000) && SPUtils.getInstance().getInt("repeat", REPEAT_MODE_DEFAULT) == REPEAT_MODE_DEFAULT){
+            mController.skipToNext();
         }
         mCurrentTime.setText(DateUtils.formatElapsedTime(currentPosition / 1000));
         if(mProgressView != null){
@@ -343,7 +369,7 @@ public class MusicPlayFragment extends BaseFragment {
         if (metadata == null) {
             return;
         }
-        int duration = (int) metadata.getLong(MediaMetadataCompat.METADATA_KEY_DURATION);
+        mSongDuration = (int) metadata.getLong(MediaMetadataCompat.METADATA_KEY_DURATION);
         String artist = metadata.getString(MediaMetadataCompat.METADATA_KEY_ARTIST);
         String title = metadata.getString(MediaMetadataCompat.METADATA_KEY_TITLE);
         if(mSongName != null){
@@ -353,11 +379,41 @@ public class MusicPlayFragment extends BaseFragment {
             mSongArtist.setText(artist);
         }
         if(mProgressView != null){
-            mProgressView.setMax(duration);
+            mProgressView.setMax(mSongDuration);
         }
         if(mTotalTime != null){
-            mTotalTime.setText(DateUtils.formatElapsedTime(duration/1000));
+            mTotalTime.setText(DateUtils.formatElapsedTime(mSongDuration /1000));
         }
+    }
+
+    /*
+    * 设置循环模式
+    * */
+    private void setRepeatMode(boolean isClick){
+        if(isClick){//通过点击
+            int repeat = SPUtils.getInstance().getInt("repeat", REPEAT_MODE_DEFAULT);
+            if(REPEAT_MODE_DEFAULT == (repeat)){//一开始是默认的，点击之后变成单曲
+                mIvRepeat.setImageResource(R.mipmap.ic_repeat_single);
+                SPUtils.getInstance().put("repeat",REPEAT_MODE_SINGLE);
+                mController.setRepeatMode(PlaybackStateCompat.REPEAT_MODE_ONE);
+            }else {
+                mIvRepeat.setImageResource(R.mipmap.ic_repeat_white_24dp);
+                SPUtils.getInstance().put("repeat",REPEAT_MODE_DEFAULT);
+                mController.setRepeatMode(PlaybackStateCompat.REPEAT_MODE_ALL);
+            }
+        }else {//初始化
+            int repeat = SPUtils.getInstance().getInt("repeat", REPEAT_MODE_DEFAULT);
+            if(REPEAT_MODE_DEFAULT == repeat){
+                mIvRepeat.setImageResource(R.mipmap.ic_repeat_white_24dp);
+                SPUtils.getInstance().put("repeat",REPEAT_MODE_DEFAULT);
+                mController.setRepeatMode(PlaybackStateCompat.REPEAT_MODE_ALL);
+            }else {
+                mIvRepeat.setImageResource(R.mipmap.ic_repeat_single);
+                SPUtils.getInstance().put("repeat",REPEAT_MODE_SINGLE);
+                mController.setRepeatMode(PlaybackStateCompat.REPEAT_MODE_ONE);
+            }
+        }
+
     }
 
 }

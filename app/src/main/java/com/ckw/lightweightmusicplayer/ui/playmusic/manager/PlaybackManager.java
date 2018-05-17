@@ -6,9 +6,11 @@ import android.os.SystemClock;
 import android.support.annotation.NonNull;
 import android.support.v4.media.session.MediaSessionCompat;
 import android.support.v4.media.session.PlaybackStateCompat;
+import android.util.Log;
 
 import com.ckw.lightweightmusicplayer.ui.playmusic.playback.Playback;
 import com.ckw.lightweightmusicplayer.ui.playmusic.provider.MusicProvider;
+
 
 /**
  * Created by ckw
@@ -147,6 +149,8 @@ public class PlaybackManager implements Playback.Callback{
             // 如果不可能跳过，我们将停止并释放资源
             handleStopRequest(null);
         }
+
+
     }
 
     @Override
@@ -211,6 +215,12 @@ public class PlaybackManager implements Playback.Callback{
     * 接收来自控制器和系统的传输控制、媒体按钮和命令。
     * */
     private class MediaSessionCallback extends MediaSessionCompat.Callback{
+
+        @Override
+        public void onSetRepeatMode(int repeatMode) {
+           //当外部 musicPlayFragment中mController.setRepeatMode设置播放模式的改变时，这里可以调用
+            mPlayback.setPlayMode(repeatMode);
+        }
 
         @Override
         public void onPlay() {

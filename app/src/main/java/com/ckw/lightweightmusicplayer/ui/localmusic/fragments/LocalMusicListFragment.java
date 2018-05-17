@@ -103,6 +103,9 @@ public class LocalMusicListFragment extends BaseFragment{
         mAdapter.setOnItemClickListener(new RecyclerArrayAdapter.OnItemClickListener() {
             @Override
             public void onItemClick(int position) {
+                if(position == -1){
+                    return;
+                }
                 MediaBrowserCompat.MediaItem mediaItem = mSongs.get(position);
 
                 RecentUtils.addToRecent(mediaItem);

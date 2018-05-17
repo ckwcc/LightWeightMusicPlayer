@@ -28,6 +28,8 @@ import com.ckw.lightweightmusicplayer.repository.Song;
  * 音乐服务 直接与播放对象的一个实例一起工作，以进行各种调用，如play、pause等。
  */
 public interface Playback {
+
+    void setPlayMode(int repeatMode);
     /**
      * Start/setup the playback.
      * Resources/listeners would be allocated by implementations.
