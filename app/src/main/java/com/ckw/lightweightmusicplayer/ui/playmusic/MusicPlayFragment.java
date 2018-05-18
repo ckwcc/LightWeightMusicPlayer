@@ -9,6 +9,7 @@ import android.support.v4.media.MediaMetadataCompat;
 import android.support.v4.media.session.MediaControllerCompat;
 import android.support.v4.media.session.PlaybackStateCompat;
 import android.text.format.DateUtils;
+import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -16,6 +17,8 @@ import android.widget.TextView;
 import com.blankj.utilcode.util.SPUtils;
 import com.ckw.lightweightmusicplayer.R;
 import com.ckw.lightweightmusicplayer.base.BaseFragment;
+import com.ckw.lightweightmusicplayer.repository.RecentBean;
+import com.ckw.lightweightmusicplayer.utils.RecentUtils;
 import com.ckw.lightweightmusicplayer.weight.ProgressView;
 import com.ckw.lightweightmusicplayer.weight.cover_view.MusicCoverView;
 
@@ -34,13 +37,18 @@ import butterknife.BindView;
  * on 2018/3/14.
  */
 
-public class MusicPlayFragment extends BaseFragment {
+public class MusicPlayFragment extends BaseFragment implements View.OnClickListener {
 
     private static final long PROGRESS_UPDATE_INTERNAL = 1000;
     private static final long PROGRESS_UPDATE_INITIAL_INTERVAL = 100;
     public static final int REPEAT_MODE_DEFAULT = 2;
     public static final int REPEAT_MODE_SINGLE = 1;
     private int mSongDuration;
+    private String mediaId;
+    private String mArtist;
+    private String mTitle;
+    private String mAlbum;
+
 
     @Inject
     public MusicPlayFragment() {
@@ -62,6 +70,8 @@ public class MusicPlayFragment extends BaseFragment {
     ImageView mSkipToNext;//下一首
     @BindView(R.id.repeat)
     ImageView mIvRepeat;//循环模式
+    @BindView(R.id.iv_favorite)
+    ImageView mIvFavorite;//我喜欢的
     @BindView(R.id.tv_song_name)
     TextView mSongName;
     @BindView(R.id.tv_song_artist)
@@ -84,44 +94,6 @@ public class MusicPlayFragment extends BaseFragment {
 
     private MediaControllerCompat mediaControllerCompat;
     private MediaControllerCompat.TransportControls mController;
-
-    public void setMediaControllerCompat(MediaControllerCompat mediaControllerCompat,boolean shouldPlay,String iconUri) {
-        this.mediaControllerCompat = mediaControllerCompat;
-        mController = mediaControllerCompat.getTransportControls();
-        this.mediaControllerCompat.registerCallback(mMediaControllerCallback);
-
-        MediaMetadataCompat metadata = this.mediaControllerCompat.getMetadata();
-
-        PlaybackStateCompat state = this.mediaControllerCompat.getPlaybackState();
-
-        if(state != null){
-            updatePlaybackState(state);
-        }
-
-        if(metadata != null){
-            updateDuration(metadata);
-        }
-
-        if(iconUri != null && !iconUri.equals("")){
-            //图片显示的大小还有问题，后期考虑换一种显示view
-//            Glide.with(getContext()).load(iconUri)
-//                    .into(musicCoverView);
-        }
-
-        if(shouldPlay){
-            updateProgress();
-        }else {
-            musicCoverView.stop();
-        }
-
-        if (state != null && (state.getState() == PlaybackStateCompat.STATE_PLAYING ||
-                state.getState() == PlaybackStateCompat.STATE_BUFFERING)) {
-            scheduleSeekbarUpdate();
-        }
-
-        setRepeatMode(false);
-    }
-
 
 
     @Override
@@ -160,35 +132,47 @@ public class MusicPlayFragment extends BaseFragment {
 
     @Override
     protected void initListener() {
+        mIvFavorite.setOnClickListener(this);
+        mSkipToPrevious.setOnClickListener(this);
+        mSkipToNext.setOnClickListener(this);
+        mIvRepeat.setOnClickListener(this);
+        mFab.setOnClickListener(this);
 
-        mSkipToPrevious.setOnClickListener(new View.OnClickListener() {
+        musicCoverView.setCallbacks(new MusicCoverView.Callbacks() {
             @Override
-            public void onClick(View view) {
-                if(mController != null){
-                    mController.skipToPrevious();
+            public void onMorphEnd(MusicCoverView coverView) {
+
+            }
+
+            @Override
+            public void onRotateEnd(MusicCoverView coverView) {
+                isPlaying = false;
+            }
+        });
+
+    }
+
+    @Override
+    public void onClick(View v) {
+        int id = v.getId();
+        switch (id){
+            case R.id.iv_favorite:
+                if(RecentUtils.isFavorite(mediaId)){//是我的喜欢
+                    mIvFavorite.setImageResource(R.mipmap.ic_favorite_default);
+                    RecentUtils.removeTheFavorite(mediaId);
+                }else {
+                    mIvFavorite.setImageResource(R.mipmap.ic_favorite);
+                    RecentBean recentBean = new RecentBean();
+                    recentBean.setMediaId(mediaId);
+                    recentBean.setTitle(mTitle);
+                    recentBean.setArtist(mArtist);
+                    if(mAlbum != null){
+                        recentBean.setAlbum(mAlbum);
+                    }
+                    RecentUtils.addToFavorite(recentBean);
                 }
-            }
-        });
-
-        mSkipToNext.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if(mController != null){
-                    mController.skipToNext();
-                }
-            }
-        });
-
-        mIvRepeat.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                setRepeatMode(true);
-            }
-        });
-
-        mFab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
+                break;
+            case R.id.fab:
                 if(mediaControllerCompat != null){
                     PlaybackStateCompat state = mediaControllerCompat.getPlaybackState();
                     if (state != null) {
@@ -217,21 +201,16 @@ public class MusicPlayFragment extends BaseFragment {
                         }
                     }
                 }
-            }
-        });
-
-        musicCoverView.setCallbacks(new MusicCoverView.Callbacks() {
-            @Override
-            public void onMorphEnd(MusicCoverView coverView) {
-
-            }
-
-            @Override
-            public void onRotateEnd(MusicCoverView coverView) {
-                isPlaying = false;
-            }
-        });
-
+                break;
+            case R.id.next:
+                if(mController != null){
+                    mController.skipToNext();
+                }
+                break;
+            case R.id.repeat:
+                setRepeatMode(true);
+                break;
+        }
     }
 
     @Override
@@ -256,6 +235,53 @@ public class MusicPlayFragment extends BaseFragment {
         }
     }
 
+    public void setMediaControllerCompat(MediaControllerCompat mediaControllerCompat,boolean shouldPlay,String iconUri,String mediaId) {
+        this.mediaId = mediaId;
+        this.mAlbum = iconUri;
+        this.mediaControllerCompat = mediaControllerCompat;
+        mController = mediaControllerCompat.getTransportControls();
+        this.mediaControllerCompat.registerCallback(mMediaControllerCallback);
+
+        MediaMetadataCompat metadata = this.mediaControllerCompat.getMetadata();
+
+        PlaybackStateCompat state = this.mediaControllerCompat.getPlaybackState();
+
+        if(state != null){
+            updatePlaybackState(state);
+        }
+
+        if(metadata != null){
+            updateDuration(metadata);
+        }
+
+
+        if(iconUri != null && !iconUri.equals("")){
+            //图片显示的大小还有问题，后期考虑换一种显示view
+//            Glide.with(getContext()).load(iconUri)
+//                    .into(musicCoverView);
+        }
+
+        if (RecentUtils.isFavorite(mediaId)) {
+            mIvFavorite.setImageResource(R.mipmap.ic_favorite);
+        }else {
+            mIvFavorite.setImageResource(R.mipmap.ic_favorite_default);
+        }
+
+        if(shouldPlay){
+            updateProgress();
+        }else {
+            musicCoverView.stop();
+        }
+
+        if (state != null && (state.getState() == PlaybackStateCompat.STATE_PLAYING ||
+                state.getState() == PlaybackStateCompat.STATE_BUFFERING)) {
+            scheduleSeekbarUpdate();
+        }
+
+        setRepeatMode(false);
+    }
+
+
     private final MediaControllerCompat.Callback mMediaControllerCallback =
             new MediaControllerCompat.Callback() {
 
@@ -269,6 +295,7 @@ public class MusicPlayFragment extends BaseFragment {
                     updateDuration(metadata);
                 }
             };
+
 
     /*
     * 更新播放状态
@@ -367,13 +394,13 @@ public class MusicPlayFragment extends BaseFragment {
             return;
         }
         mSongDuration = (int) metadata.getLong(MediaMetadataCompat.METADATA_KEY_DURATION);
-        String artist = metadata.getString(MediaMetadataCompat.METADATA_KEY_ARTIST);
-        String title = metadata.getString(MediaMetadataCompat.METADATA_KEY_TITLE);
+        mArtist = metadata.getString(MediaMetadataCompat.METADATA_KEY_ARTIST);
+        mTitle = metadata.getString(MediaMetadataCompat.METADATA_KEY_TITLE);
         if(mSongName != null){
-            mSongName.setText(title);
+            mSongName.setText(mTitle);
         }
         if(mSongArtist != null){
-            mSongArtist.setText(artist);
+            mSongArtist.setText(this.mArtist);
         }
         if(mProgressView != null){
             mProgressView.setMax(mSongDuration);

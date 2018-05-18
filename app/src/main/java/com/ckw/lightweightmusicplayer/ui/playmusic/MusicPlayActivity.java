@@ -50,7 +50,7 @@ public class MusicPlayActivity extends BaseActivity {
                      mController
                              .playFromMediaId(mediaId, null);
                  }
-                musicPlayFragment.setMediaControllerCompat(mediaControllerCompat,shouldPlay,mIconUri);
+                musicPlayFragment.setMediaControllerCompat(mediaControllerCompat,shouldPlay,mIconUri,mediaId);
             } catch (RemoteException e) {
                 e.printStackTrace();
             }

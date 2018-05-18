@@ -72,6 +72,16 @@
         android:transitionName="@string/transition_name_duration"
         tools:text="04:30"/>
 
+    <ImageView
+        android:id="@+id/iv_favorite"
+        android:src="@mipmap/ic_favorite_default"
+        android:layout_marginBottom="8dp"
+        android:layout_above="@+id/controls"
+        android:layout_centerHorizontal="true"
+        android:background="@color/colorListItem"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
+
 
     <LinearLayout
         android:id="@+id/controls"

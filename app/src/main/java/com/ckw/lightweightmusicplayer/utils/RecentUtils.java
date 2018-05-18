@@ -17,8 +17,76 @@ import java.util.List;
  */
 public class RecentUtils {
 
+    /*
+    * 检查是否是我的喜欢
+    * */
+    public static boolean isFavorite(String mediaId){
+        String favorite = SPUtils.getInstance().getString("favorite");
+        Gson gson = new Gson();
+        RecentlyPlayed recentlyPlayed = gson.fromJson(favorite, RecentlyPlayed.class);
+
+        if(recentlyPlayed != null && recentlyPlayed.getRecentlyPlayed() != null && recentlyPlayed.getRecentlyPlayed().size() > 0){
+            boolean checkMediaId = checkMediaId(mediaId, recentlyPlayed.getRecentlyPlayed());
+            if(checkMediaId){//如果有这首歌
+                return true;
+            }else {
+                return false;
+            }
+        }
+        return false;
+    }
+
+    /*
+    * 删除我的喜欢
+    * */
+    public static void removeTheFavorite(String mediaId){
+        String favorite = SPUtils.getInstance().getString("favorite");
+        Gson gson = new Gson();
+        RecentlyPlayed recentlyPlayed = gson.fromJson(favorite, RecentlyPlayed.class);
+
+        if(recentlyPlayed != null && recentlyPlayed.getRecentlyPlayed() != null && recentlyPlayed.getRecentlyPlayed().size() > 0){
+            boolean checkMediaId = checkMediaId(mediaId, recentlyPlayed.getRecentlyPlayed());
+            if(checkMediaId){
+                int mediaIdPosition = getMediaIdPosition(mediaId, recentlyPlayed.getRecentlyPlayed());
+                if(mediaIdPosition != -1){
+                    recentlyPlayed.getRecentlyPlayed().remove(mediaIdPosition);
+                }
+            }
+            String toJson = gson.toJson(recentlyPlayed);
+            SPUtils.getInstance().put("favorite",toJson);
+        }
+    }
+
+    /*
+    * 添加我的喜欢
+    * */
+    public static void addToFavorite(RecentBean recentBean){
+        String favorite = SPUtils.getInstance().getString("favorite");
+        Gson gson = new Gson();
+        RecentlyPlayed recentlyPlayed = gson.fromJson(favorite, RecentlyPlayed.class);
+
+        if(recentlyPlayed != null && recentlyPlayed.getRecentlyPlayed() != null && recentlyPlayed.getRecentlyPlayed().size() > 0){
+            boolean checkMediaId = checkMediaId(recentBean.getMediaId(), recentlyPlayed.getRecentlyPlayed());
+            if(!checkMediaId){
+                recentlyPlayed.getRecentlyPlayed().add(0,recentBean);
+            }
+            String toJson = gson.toJson(recentlyPlayed);
+            SPUtils.getInstance().put("favorite",toJson);
+        }else {
+            List<RecentBean> list = new ArrayList<>();
+            RecentlyPlayed played = new RecentlyPlayed();
+            played.setRecentlyPlayed(list);
+            played.getRecentlyPlayed().add(0,recentBean);
+            String toJson = gson.toJson(played);
+            SPUtils.getInstance().put("favorite",toJson);
+        }
+    }
+
+    /*
+    * 添加最近播放列表
+    * */
     public static void addToRecent(MediaBrowserCompat.MediaItem mediaItem){
-        //添加最近播放列表
+
         String recent = SPUtils.getInstance().getString("recent");
         Gson gson = new Gson();
         RecentlyPlayed recentlyPlayed = gson.fromJson(recent, RecentlyPlayed.class);
@@ -60,6 +128,13 @@ public class RecentUtils {
         SPUtils.getInstance().remove("recent");
     }
 
+    /*
+    * 清除我的喜欢
+    * */
+    public static void clearFavorite(){
+        SPUtils.getInstance().remove("favorite");
+    }
+
     private static boolean checkMediaId(String mediaId,List<RecentBean> list){
         for (int i = 0; i < list.size(); i++) {
             RecentBean bean = list.get(i);
@@ -69,5 +144,16 @@ public class RecentUtils {
             }
         }
         return false;
+    }
+
+    private static int getMediaIdPosition(String mediaId,List<RecentBean> list){
+        for (int i = 0; i < list.size(); i++) {
+            RecentBean bean = list.get(i);
+            String currentId = bean.getMediaId();
+            if(currentId.equals(mediaId)){
+                return i;
+            }
+        }
+        return -1;
     }
 }

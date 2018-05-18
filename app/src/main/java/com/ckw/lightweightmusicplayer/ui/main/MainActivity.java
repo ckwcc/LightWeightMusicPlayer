@@ -76,6 +76,7 @@ public class MainActivity extends BaseActivity
     //头部颜色渐变
     @BindView(R.id.custom_linear_gradient)
     CustomLinearGradient mCustomLinearGradient;
+    //倒计时控件
     @BindView(R.id.easy_count_down_view)
     EasyCountDownTextureView mCountDownView;
     //最近播放
@@ -83,10 +84,20 @@ public class MainActivity extends BaseActivity
     TextView mTvRecent;
     @BindView(R.id.rv_recent_list)
     RecyclerView mRvRecent;
+    //我喜欢的
+    @BindView(R.id.tv_favorite_list_nothing)
+    TextView mTvFavoriteNothing;
+    @BindView(R.id.tv_playlist_view_all)
+    TextView mTvFavoriteAll;
+    @BindView(R.id.rv_favorite_list)
+    RecyclerView mRvFavorite;
 
     private String mMediaId;//分类id
     private RecentAdapter mRecentAdapter;
     private List<RecentBean> mRecentList;
+
+    private RecentAdapter mFavoriteAdapter;
+    private List<RecentBean> mFavoriteList;
 
     private MediaControllerCompat.TransportControls mController;
 
@@ -102,6 +113,7 @@ public class MainActivity extends BaseActivity
         requestPermission();
 
         initRecentView();
+        initFavoriteView();
     }
 
     @Override
@@ -113,6 +125,7 @@ public class MainActivity extends BaseActivity
     protected void initVariable() {
         themeColor = SPUtils.getInstance().getInt("themeColor",Color.parseColor("#B24242"));
         mRecentList = new ArrayList<>();
+        mFavoriteList = new ArrayList<>();
     }
 
     @Override
@@ -125,6 +138,7 @@ public class MainActivity extends BaseActivity
         mLocalMusicContainer.setOnClickListener(this);
         mPlay.setOnClickListener(this);
         mRecentAdapter.setItemClickListener(this);
+        mFavoriteAdapter.setItemClickListener(this);
     }
 
     @Override
@@ -351,6 +365,25 @@ public class MainActivity extends BaseActivity
         }
     }
 
+    private void initFavoriteView(){
+        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this,LinearLayoutManager.HORIZONTAL,false);
+        mRvFavorite.setLayoutManager(linearLayoutManager);
+        mFavoriteAdapter = new RecentAdapter(mFavoriteList,this);
+        mRvFavorite.setAdapter(mFavoriteAdapter);
+
+        String recent = SPUtils.getInstance().getString("favorite");
+        Gson gson = new Gson();
+
+        RecentlyPlayed recentlyPlayed = gson.fromJson(recent, RecentlyPlayed.class);
+        if(recentlyPlayed != null && recentlyPlayed.getRecentlyPlayed() != null && recentlyPlayed.getRecentlyPlayed().size() > 0){
+            mTvFavoriteNothing.setVisibility(View.GONE);
+            mFavoriteList.addAll(recentlyPlayed.getRecentlyPlayed());
+            mFavoriteAdapter.notifyDataSetChanged();
+        }else {
+            mTvFavoriteNothing.setVisibility(View.VISIBLE);
+        }
+    }
+
     /*
      * 定时关闭功能
      * */
@@ -498,6 +531,7 @@ public class MainActivity extends BaseActivity
         @Override
         public void onChildrenLoaded(@NonNull String parentId, @NonNull List<MediaBrowserCompat.MediaItem> children) {
             super.onChildrenLoaded(parentId, children);
+
             //这里做最近列表的刷新
             String recent = SPUtils.getInstance().getString("recent");
             Gson gson = new Gson();
@@ -505,15 +539,37 @@ public class MainActivity extends BaseActivity
             RecentlyPlayed recentlyPlayed = gson.fromJson(recent, RecentlyPlayed.class);
             if(recentlyPlayed != null && recentlyPlayed.getRecentlyPlayed() != null && recentlyPlayed.getRecentlyPlayed().size() > 0){
                 mTvRecent.setVisibility(View.GONE);
-                mRecentList = recentlyPlayed.getRecentlyPlayed();
+                mRecentList.clear();
+                mRecentList.addAll(recentlyPlayed.getRecentlyPlayed());
                 mRecentAdapter.setData(mRecentList);
                 mRecentAdapter.notifyDataSetChanged();
             }else {
+                mRecentList.clear();
+                mRecentAdapter.notifyDataSetChanged();
                 mTvRecent.setVisibility(View.VISIBLE);
             }
 
+            //这里做最近列表的刷新
+            String favorite = SPUtils.getInstance().getString("favorite");
+            Gson gsonFavorite = new Gson();
+
+            RecentlyPlayed favoritePlayed = gsonFavorite.fromJson(favorite, RecentlyPlayed.class);
+            if(favoritePlayed != null && favoritePlayed.getRecentlyPlayed() != null && favoritePlayed.getRecentlyPlayed().size() > 0){
+                mTvFavoriteNothing.setVisibility(View.GONE);
+                mFavoriteList.clear();
+                mFavoriteList.addAll(favoritePlayed.getRecentlyPlayed());
+                mFavoriteAdapter.setData(mFavoriteList);
+                mFavoriteAdapter.notifyDataSetChanged();
+            }else {
+                mFavoriteList.clear();
+                mFavoriteAdapter.notifyDataSetChanged();
+                mTvFavoriteNothing.setVisibility(View.VISIBLE);
+            }
+
+
         }
     };
+
 
     private void onConnected(){
         mMediaId = MEDIA_ID_NORMAL;
