@@ -66,7 +66,6 @@ public class MusicService extends MediaBrowserServiceCompat implements PlaybackM
     @Override
     public void onCreate() {
         super.onCreate();
-
         // To make the app more responsive, fetch and cache catalog information now.
         // This can help improve the response time in the method
         // {@link #onLoadChildren(String, Result<List<MediaItem>>) onLoadChildren()}.

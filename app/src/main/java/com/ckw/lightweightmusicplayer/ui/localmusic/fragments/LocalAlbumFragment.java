@@ -23,7 +23,6 @@ import javax.inject.Inject;
 import butterknife.BindView;
 
 import static com.ckw.lightweightmusicplayer.ui.playmusic.helper.MediaIdHelper.MEDIA_ID_ALBUM;
-import static com.ckw.lightweightmusicplayer.ui.playmusic.helper.MediaIdHelper.MEDIA_ID_NORMAL;
 
 /**
  * Created by ckw
