@@ -33,6 +33,7 @@
         <activity android:name=".ui.playmusic.MusicPlayActivity" />
         <activity android:name=".ui.localmusic.activities.ArtistActivity" />
         <activity android:name=".ui.about.AboutMeActivity" />
+        <activity android:name=".ui.favorite.MyFavoriteActivity" />
 
         <service android:name=".ui.playmusic.service.MusicService"
             tools:ignore="ExportedService"

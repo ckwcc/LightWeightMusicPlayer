@@ -12,6 +12,7 @@ import android.support.design.widget.Snackbar;
 import android.support.v4.media.MediaBrowserCompat;
 import android.support.v4.media.session.MediaControllerCompat;
 import android.support.v4.media.session.MediaSessionCompat;
+import android.support.v4.view.PagerAdapter;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -34,6 +35,7 @@ import com.ckw.lightweightmusicplayer.base.BaseActivity;
 import com.ckw.lightweightmusicplayer.repository.RecentBean;
 import com.ckw.lightweightmusicplayer.repository.RecentlyPlayed;
 import com.ckw.lightweightmusicplayer.ui.about.AboutMeActivity;
+import com.ckw.lightweightmusicplayer.ui.favorite.MyFavoriteActivity;
 import com.ckw.lightweightmusicplayer.ui.localmusic.LocalMusicActivity;
 import com.ckw.lightweightmusicplayer.ui.playmusic.MusicPlayActivity;
 import com.ckw.lightweightmusicplayer.utils.RecentUtils;
@@ -139,6 +141,7 @@ public class MainActivity extends BaseActivity
         mPlay.setOnClickListener(this);
         mRecentAdapter.setItemClickListener(this);
         mFavoriteAdapter.setItemClickListener(this);
+        mTvFavoriteAll.setOnClickListener(this);
     }
 
     @Override
@@ -269,6 +272,9 @@ public class MainActivity extends BaseActivity
                 }else {
                     Snackbar.make(mPlay,R.string.recent_empty_tip,Snackbar.LENGTH_SHORT).show();
                 }
+                break;
+            case R.id.tv_playlist_view_all:
+                ActivityUtils.startActivity(MyFavoriteActivity.class);
                 break;
         }
     }
