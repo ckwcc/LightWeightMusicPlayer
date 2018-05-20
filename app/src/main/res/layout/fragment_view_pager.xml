@@ -1,10 +1,26 @@
 
-<TextView xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:gravity="center"
-    android:text="@string/app_name"
-    android:textColor="@android:color/white"
-    android:textSize="72sp"
-     />
+    android:textColor="@android:color/white">
+
+
+    <TextView
+        android:id="@+id/tv_title"
+        tools:text="歌名"
+        android:textSize="26sp"
+        android:layout_above="@+id/tv_artist"
+        android:layout_centerHorizontal="true"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
+
+    <TextView
+        android:id="@+id/tv_artist"
+        android:layout_alignParentBottom="true"
+        tools:text="歌手"
+        android:layout_centerHorizontal="true"
+        android:textSize="22sp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
+</RelativeLayout>

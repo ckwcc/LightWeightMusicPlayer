@@ -336,7 +336,9 @@ public class MusicPlayFragment extends BaseFragment implements View.OnClickListe
      * 更新进度条
      * */
     private void updateProgress() {
-        musicCoverView.start();
+        if(musicCoverView !=null){
+            musicCoverView.start();
+        }
         if (mLastPlaybackState == null) {
             return;
         }

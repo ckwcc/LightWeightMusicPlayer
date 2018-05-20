@@ -257,7 +257,7 @@ public class MainActivity extends BaseActivity
                     EasyPermissions.requestPermissions(this,getResources().getString(R.string.need_permission_tip),REQUEST_READ_EXTERNAL_STORAGE,perms);
                 }
                 break;
-            case R.id.fab:
+            case R.id.fab://播放音乐
                 if(mRecentList != null && mRecentList.size() > 0){
                     String mediaId = mRecentList.get(0).getMediaId();
                     String album = mRecentList.get(0).getAlbum();
@@ -273,8 +273,10 @@ public class MainActivity extends BaseActivity
                     Snackbar.make(mPlay,R.string.recent_empty_tip,Snackbar.LENGTH_SHORT).show();
                 }
                 break;
-            case R.id.tv_playlist_view_all:
-                ActivityUtils.startActivity(MyFavoriteActivity.class);
+            case R.id.tv_playlist_view_all://查看全部
+                if(mFavoriteList != null &&  mFavoriteList.size() > 0){
+                    ActivityUtils.startActivity(MyFavoriteActivity.class);
+                }
                 break;
         }
     }
@@ -555,7 +557,7 @@ public class MainActivity extends BaseActivity
                 mTvRecent.setVisibility(View.VISIBLE);
             }
 
-            //这里做最近列表的刷新
+            //这里做我的喜欢的刷新
             String favorite = SPUtils.getInstance().getString("favorite");
             Gson gsonFavorite = new Gson();
 
