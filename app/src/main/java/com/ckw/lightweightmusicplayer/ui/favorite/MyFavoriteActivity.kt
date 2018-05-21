@@ -1,15 +1,19 @@
 package com.ckw.lightweightmusicplayer.ui.favorite
 
 import android.os.Bundle
+import android.support.design.widget.FloatingActionButton
 import android.support.v4.app.Fragment
 import android.support.v4.app.FragmentManager
 import android.support.v4.app.FragmentPagerAdapter
 import android.support.v4.view.ViewPager
+import com.blankj.utilcode.util.ActivityUtils
 import com.blankj.utilcode.util.SPUtils
 import com.ckw.lightweightmusicplayer.R
 import com.ckw.lightweightmusicplayer.base.BaseActivity
 import com.ckw.lightweightmusicplayer.repository.RecentBean
 import com.ckw.lightweightmusicplayer.repository.RecentlyPlayed
+import com.ckw.lightweightmusicplayer.ui.playmusic.MusicPlayActivity
+import com.ckw.lightweightmusicplayer.utils.RecentUtils
 import com.google.gson.Gson
 
 class MyFavoriteActivity : BaseActivity(){
@@ -18,20 +22,13 @@ class MyFavoriteActivity : BaseActivity(){
     private var mAdapter: PagesAdapter? = null
     private var mList: ArrayList<RecentBean>? = null
     private var mFragments: ArrayList<Fragment>? = null
+    private var mFabPlay: FloatingActionButton? = null
 
     override fun initView(savedInstanceState: Bundle?) {
+        findViews()
         getMyFavoriteData()
         initData()
-        val selectedPage = 0
-        mViewPager = findViewById(R.id.viewpager)
-        mAdapter = PagesAdapter(supportFragmentManager,mFragments!!)
-
-        mViewPager!!.adapter = mAdapter
-        mViewPager!!.pageMargin = 40
-        mViewPager!!.offscreenPageLimit = 2
-        mViewPager!!.currentItem = selectedPage
-        mViewPager!!.setPageTransformer(true, FilmPagerTransformer())
-
+        initViewPager()
     }
 
     override fun handleBundle(bundle: Bundle) {
@@ -46,6 +43,19 @@ class MyFavoriteActivity : BaseActivity(){
     }
 
     override fun initListener() {
+        mFabPlay!!.setOnClickListener {
+            val currentItem = mViewPager!!.currentItem
+            val recentBean = mList!![currentItem]
+            RecentUtils.addToRecent(recentBean)
+
+            val bundle = Bundle()
+            bundle.putString("musicId",recentBean.mediaId)
+            if(recentBean.album != ""){
+                bundle.putString("iconUri",recentBean.album)
+            }
+            bundle.putBoolean("play",true)
+            ActivityUtils.startActivity(bundle,MusicPlayActivity::class.java)
+        }
     }
 
     override fun needToolbar(): Boolean {
@@ -56,7 +66,25 @@ class MyFavoriteActivity : BaseActivity(){
         setToolBarTitle(R.string.play_list)
     }
 
-    fun initData(): Unit {
+    private fun findViews(): Unit {
+        mFabPlay = findViewById(R.id.fab_favorite)
+        mViewPager = findViewById(R.id.viewpager)
+    }
+
+    private fun initViewPager() {
+        val selectedPage = 0
+        mAdapter = PagesAdapter(supportFragmentManager,mFragments!!)
+        mViewPager!!.adapter = mAdapter
+        mViewPager!!.pageMargin = 40
+        mViewPager!!.offscreenPageLimit = 2
+        mViewPager!!.currentItem = selectedPage
+        mViewPager!!.setPageTransformer(true, FilmPagerTransformer())
+    }
+
+    /*
+    * 将数据注入fragment
+    * */
+    private fun initData(): Unit {
         mFragments = ArrayList()
         for (i in 0 until mList!!.size) {
             val fragment: PlaceholderFragment = PlaceholderFragment()
@@ -70,7 +98,10 @@ class MyFavoriteActivity : BaseActivity(){
         }
     }
 
-    fun getMyFavoriteData(): Unit {
+    /*
+    * 从sp中获取数据
+    * */
+    private fun getMyFavoriteData(): Unit {
         val favorite = SPUtils.getInstance().getString("favorite")
         val gsonFavorite = Gson()
 
@@ -78,7 +109,6 @@ class MyFavoriteActivity : BaseActivity(){
         if (favoritePlayed != null && favoritePlayed.recentlyPlayed != null && favoritePlayed.recentlyPlayed.size > 0) run{
             mList!!.addAll(favoritePlayed.recentlyPlayed)
         }
-
     }
 
 }

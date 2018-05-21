@@ -82,6 +82,41 @@ public class RecentUtils {
         }
     }
 
+    public static void addToRecent(RecentBean addBean){
+        String recent = SPUtils.getInstance().getString("recent");
+        Gson gson = new Gson();
+        RecentlyPlayed recentlyPlayed = gson.fromJson(recent, RecentlyPlayed.class);
+        if(recentlyPlayed != null && recentlyPlayed.getRecentlyPlayed() != null && recentlyPlayed.getRecentlyPlayed().size() > 0){
+            boolean checkMediaId = checkMediaId(addBean.getMediaId(), recentlyPlayed.getRecentlyPlayed());
+            if(!checkMediaId){
+                RecentBean recentBean = new RecentBean();
+                recentBean.setMediaId(addBean.getMediaId());
+                recentBean.setTitle(addBean.getTitle().toString());
+                recentBean.setArtist(addBean.getTitle());
+                if(addBean.getAlbum() != null){
+                    recentBean.setAlbum(addBean.getAlbum());
+                }
+                recentlyPlayed.getRecentlyPlayed().add(0,recentBean);
+            }
+            String toJson = gson.toJson(recentlyPlayed);
+            SPUtils.getInstance().put("recent",toJson);
+        }else {
+            List<RecentBean> list = new ArrayList<>();
+            RecentlyPlayed played = new RecentlyPlayed();
+            played.setRecentlyPlayed(list);
+            RecentBean recentBean = new RecentBean();
+            recentBean.setMediaId(addBean.getMediaId());
+            recentBean.setTitle(addBean.getTitle());
+            recentBean.setArtist(addBean.getArtist());
+            if(addBean.getAlbum() != null){
+                recentBean.setAlbum(addBean.getAlbum());
+            }
+            played.getRecentlyPlayed().add(0,recentBean);
+            String toJson = gson.toJson(played);
+            SPUtils.getInstance().put("recent",toJson);
+        }
+    }
+
     /*
     * 添加最近播放列表
     * */

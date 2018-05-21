@@ -3,24 +3,46 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:textColor="@android:color/white">
+    android:background="@color/colorListItem">
 
+    <ImageView
+        android:id="@+id/iv_album"
+        android:src="@mipmap/ic_music_default"
+        android:layout_marginBottom="66dp"
+        android:scaleType="fitXY"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
 
-    <TextView
-        android:id="@+id/tv_title"
-        tools:text="歌名"
-        android:textSize="26sp"
-        android:layout_above="@+id/tv_artist"
-        android:layout_centerHorizontal="true"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
-
-    <TextView
-        android:id="@+id/tv_artist"
+    <RelativeLayout
+        android:id="@+id/rl_text_container"
         android:layout_alignParentBottom="true"
-        tools:text="歌手"
-        android:layout_centerHorizontal="true"
-        android:textSize="22sp"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
+        android:layout_width="match_parent"
+        android:layout_height="66dp">
+
+        <TextView
+            android:id="@+id/tv_title"
+            tools:text="歌名歌名歌名歌名歌名歌名歌名"
+            android:maxLines="1"
+            android:maxEms="10"
+            android:ellipsize="end"
+            android:textColor="@color/colorWhite"
+            android:textSize="26sp"
+            android:layout_centerHorizontal="true"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
+        <TextView
+            android:id="@+id/tv_artist"
+            tools:text="歌手"
+            android:layout_below="@+id/tv_title"
+            android:textColor="@color/colorWhite"
+            android:layout_centerHorizontal="true"
+            android:textSize="22sp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
+    </RelativeLayout>
+
+
+
 </RelativeLayout>
