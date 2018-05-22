@@ -41,6 +41,6 @@ class PlaceholderFragment : android.support.v4.app.Fragment() {
 
     companion object {
         val EXTRA_POSITION = "EXTRA_POSITION"
-        private val COLORS = intArrayOf(-0xcc4a1b, -0x559934, -0x663400, -0x44cd, -0xbbbc)
+        val COLORS = intArrayOf(-0xcc4a1b, -0x559934, -0x663400, -0x44cd, -0xbbbc)
     }
 }

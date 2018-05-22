@@ -1,10 +1,7 @@
 package com.ckw.lightweightmusicplayer.ui.favorite
 
 import android.os.Bundle
-import android.support.design.widget.FloatingActionButton
 import android.support.v4.app.Fragment
-import android.support.v4.app.FragmentManager
-import android.support.v4.app.FragmentPagerAdapter
 import android.support.v4.view.ViewPager
 import com.blankj.utilcode.util.ActivityUtils
 import com.blankj.utilcode.util.SPUtils
@@ -15,6 +12,7 @@ import com.ckw.lightweightmusicplayer.repository.RecentlyPlayed
 import com.ckw.lightweightmusicplayer.ui.playmusic.MusicPlayActivity
 import com.ckw.lightweightmusicplayer.utils.RecentUtils
 import com.google.gson.Gson
+import com.leinardi.android.speeddial.SpeedDialView
 
 class MyFavoriteActivity : BaseActivity(){
 
@@ -22,7 +20,7 @@ class MyFavoriteActivity : BaseActivity(){
     private var mAdapter: PagesAdapter? = null
     private var mList: ArrayList<RecentBean>? = null
     private var mFragments: ArrayList<Fragment>? = null
-    private var mFabPlay: FloatingActionButton? = null
+    private var mFabPlay: SpeedDialView? = null
 
     override fun initView(savedInstanceState: Bundle?) {
         findViews()
@@ -43,19 +41,42 @@ class MyFavoriteActivity : BaseActivity(){
     }
 
     override fun initListener() {
-        mFabPlay!!.setOnClickListener {
-            val currentItem = mViewPager!!.currentItem
-            val recentBean = mList!![currentItem]
-            RecentUtils.addToRecent(recentBean)
+        mFabPlay!!.setOnChangeListener(object : SpeedDialView.OnChangeListener{
 
-            val bundle = Bundle()
-            bundle.putString("musicId",recentBean.mediaId)
-            if(recentBean.album != ""){
-                bundle.putString("iconUri",recentBean.album)
+            override fun onMainActionSelected(): Boolean {
+                val currentItem = mViewPager!!.currentItem
+                val recentBean = mList!![currentItem]
+
+                RecentUtils.addToRecent(recentBean)
+
+                val bundle = Bundle()
+                bundle.putString("musicId",recentBean.mediaId)
+                if(recentBean.album != ""){
+                    bundle.putString("iconUri",recentBean.album)
+                }
+                bundle.putBoolean("play",true)
+                ActivityUtils.startActivity(bundle,MusicPlayActivity::class.java)
+                return false
             }
-            bundle.putBoolean("play",true)
-            ActivityUtils.startActivity(bundle,MusicPlayActivity::class.java)
-        }
+
+            override fun onToggleChanged(isOpen: Boolean) {}
+
+        })
+
+        mViewPager!!.addOnPageChangeListener(object : ViewPager.OnPageChangeListener {
+            override fun onPageScrolled(position: Int, positionOffset: Float, positionOffsetPixels: Int) {
+
+            }
+
+            override fun onPageSelected(position: Int) {
+                val i = position % 5
+                mFabPlay!!.mainFabClosedBackgroundColor = PlaceholderFragment.COLORS[position % 5]
+            }
+
+            override fun onPageScrollStateChanged(state: Int) {
+
+            }
+        })
     }
 
     override fun needToolbar(): Boolean {
@@ -75,6 +96,7 @@ class MyFavoriteActivity : BaseActivity(){
         val selectedPage = 0
         mAdapter = PagesAdapter(supportFragmentManager,mFragments!!)
         mViewPager!!.adapter = mAdapter
+        mFabPlay!!.mainFabClosedBackgroundColor = PlaceholderFragment.COLORS[0]
         mViewPager!!.pageMargin = 40
         mViewPager!!.offscreenPageLimit = 2
         mViewPager!!.currentItem = selectedPage
