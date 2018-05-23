@@ -359,7 +359,9 @@ public class MusicPlayFragment extends BaseFragment implements View.OnClickListe
         }else if(currentPosition > (mSongDuration + 1000) && SPUtils.getInstance().getInt("repeat", REPEAT_MODE_DEFAULT) == REPEAT_MODE_DEFAULT){
             mController.skipToNext();
         }
-        mCurrentTime.setText(DateUtils.formatElapsedTime(currentPosition / 1000));
+        if(mCurrentTime != null){
+            mCurrentTime.setText(DateUtils.formatElapsedTime(currentPosition / 1000));
+        }
         if(mProgressView != null){
             mProgressView.setProgress((int) currentPosition);
         }

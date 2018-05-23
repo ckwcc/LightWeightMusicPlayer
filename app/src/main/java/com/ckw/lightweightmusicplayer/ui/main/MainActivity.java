@@ -9,6 +9,7 @@ import android.os.RemoteException;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
+import android.support.v4.content.res.ResourcesCompat;
 import android.support.v4.media.MediaBrowserCompat;
 import android.support.v4.media.session.MediaControllerCompat;
 import android.support.v4.media.session.MediaSessionCompat;
@@ -46,6 +47,8 @@ import com.flask.colorpicker.OnColorSelectedListener;
 import com.flask.colorpicker.builder.ColorPickerClickListener;
 import com.flask.colorpicker.builder.ColorPickerDialogBuilder;
 import com.google.gson.Gson;
+import com.leinardi.android.speeddial.SpeedDialActionItem;
+import com.leinardi.android.speeddial.SpeedDialView;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -71,6 +74,8 @@ public class MainActivity extends BaseActivity
     DrawerLayout mDrawerLayout;
     @BindView(R.id.nav_view)
     NavigationView mNavigationView;
+    @BindView(R.id.fab_play)
+    SpeedDialView mPlaySort;
     @BindView(R.id.fab)
     FloatingActionButton mPlay;
     @BindView(R.id.rl_local_container)
@@ -111,12 +116,13 @@ public class MainActivity extends BaseActivity
         toggle.syncState();
 
         mNavigationView.setNavigationItemSelectedListener(this);
-
         requestPermission();
 
+        initSpeedDialView();
         initRecentView();
         initFavoriteView();
     }
+
 
     @Override
     protected void handleBundle(@NonNull Bundle bundle) {
@@ -349,6 +355,66 @@ public class MainActivity extends BaseActivity
         } else {
             super.onBackPressed();
         }
+    }
+
+    private void initSpeedDialView(){
+        mPlaySort.addActionItem(
+                new SpeedDialActionItem.Builder(R.id.action_use_case, getResources().getDrawable(android.R.drawable.ic_media_play))
+                        .setFabBackgroundColor(ResourcesCompat.getColor(getResources(), R.color.colorAccent, getTheme()))
+                        .setLabel(getResources().getString(R.string.recent_play))
+                        .setLabelColor(getResources().getColor(R.color.colorAccent))
+                        .create()
+        );
+
+        mPlaySort.addActionItem(
+                new SpeedDialActionItem.Builder(R.id.action_use_case_two, getResources().getDrawable(android.R.drawable.ic_media_play))
+                        .setFabBackgroundColor(ResourcesCompat.getColor(getResources(), R.color.colorAccent, getTheme()))
+                        .setLabel(getResources().getString(R.string.play_list))
+                        .setLabelColor(getResources().getColor(R.color.colorAccent))
+                        .create()
+        );
+
+        mPlaySort.setOnActionSelectedListener(new SpeedDialView.OnActionSelectedListener() {
+            @Override
+            public boolean onActionSelected(SpeedDialActionItem actionItem) {
+                switch (actionItem.getId()){
+                    case R.id.action_use_case://最近播放
+                        if(mRecentList != null && mRecentList.size() > 0){
+                            String mediaId = mRecentList.get(0).getMediaId();
+                            String album = mRecentList.get(0).getAlbum();
+
+                            Bundle bundle = new Bundle();
+                            bundle.putString("musicId",mediaId);
+                            if (album != null) {
+                                bundle.putString("iconUri",album);
+                            }
+                            bundle.putBoolean("play",true);
+                            ActivityUtils.startActivity(bundle,MusicPlayActivity.class);
+                        }else {
+                            Snackbar.make(mPlaySort,R.string.recent_empty_tip,Snackbar.LENGTH_SHORT).show();
+                        }
+                        break;
+                    case R.id.action_use_case_two://我喜欢的
+                        if(mFavoriteList != null && mFavoriteList.size() > 0){
+                            String mediaId = mFavoriteList.get(0).getMediaId();
+                            String album = mFavoriteList.get(0).getAlbum();
+
+                            Bundle bundle = new Bundle();
+                            bundle.putString("musicId",mediaId);
+                            if (album != null) {
+                                bundle.putString("iconUri",album);
+                            }
+                            bundle.putBoolean("play",true);
+                            ActivityUtils.startActivity(bundle,MusicPlayActivity.class);
+                        }else {
+                            Snackbar.make(mPlaySort,R.string.favorite_empty_tip,Snackbar.LENGTH_SHORT).show();
+                        }
+                        break;
+                }
+                return false;
+            }
+        });
+
     }
 
     /*

@@ -19,6 +19,7 @@
     <string name="play_list">我喜欢的</string>
     <string name="empty_tip">空空如也</string>
     <string name="recent_empty_tip">最近播放列表为空</string>
+    <string name="favorite_empty_tip">我喜欢的列表为空</string>
 
     <string name="song_num">%d首歌曲</string>
     <string name="need_permission">权限需要</string>
