@@ -3,10 +3,7 @@ package com.ckw.lightweightmusicplayer.ui.login
 import android.content.Context
 import android.os.Bundle
 import android.view.View
-import android.widget.Button
-import android.widget.EditText
-import android.widget.Switch
-import android.widget.TextView
+import android.widget.*
 import butterknife.BindView
 import com.blankj.utilcode.util.SPUtils
 import com.blankj.utilcode.util.ToastUtils
@@ -24,6 +21,12 @@ class LoginFragment : BaseFragment(), View.OnClickListener {
 
     @BindView(R.id.et_user_name)
     lateinit var mEtUserName: EditText
+
+    @BindView(R.id.cb_auto_login)
+    lateinit var mCbAutoLogin: CheckBox
+
+    @BindView(R.id.btn_register)
+    lateinit var mBtnRegister: Button
 
     @BindView(R.id.btn_login)
     lateinit var mBtnLogin: Button
@@ -50,11 +53,17 @@ class LoginFragment : BaseFragment(), View.OnClickListener {
     }
 
     override fun operateViews(view: View?) {
+        val login = SPUtils.getInstance().getString("login","")
+        if(login != ""){
+            mEtUserName.setText(login)
+        }
     }
 
     override fun initListener() {
         mTvForget.setOnClickListener(this)
         mBtnLogin.setOnClickListener(this)
+        mCbAutoLogin.setOnClickListener(this)
+        mBtnRegister.setOnClickListener(this)
     }
 
     override fun initPresenter() {
@@ -66,13 +75,18 @@ class LoginFragment : BaseFragment(), View.OnClickListener {
              R.id.tv_forget_pwd -> { mCallback!!.forgetPassword()}
             R.id.btn_login -> {
                 val userName = mEtUserName.text.toString().trim()
-                if(userName != ""){
+                if(userName != "" ){
                     SPUtils.getInstance().put("login",userName)
                     activity!!.finish()
                 }else{
                     ToastUtils.showShort("用户名为空哟")
                 }
-
+            }
+            R.id.cb_auto_login -> {
+                ToastUtils.showShort("偷偷告诉你，这里点了也白点哟")
+            }
+            R.id.btn_register -> {
+                ToastUtils.showShort("注册什么的，完全不需要！")
             }
         }
     }

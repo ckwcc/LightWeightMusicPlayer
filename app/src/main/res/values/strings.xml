@@ -31,7 +31,7 @@
     <string name="my_github_address">此项目Github地址：%s</string>
     <string name="login">登录</string>
     <string name="user_name_placeholder">请输入用户名</string>
-    <string name="password_placeholder">请输入密码</string>
+    <string name="password_placeholder">密码是什么东东，完全不需要</string>
     <string name="forget_password">忘记密码？</string>
     <string name="auto_login">自动登录</string>
     <string name="register">注册</string>
