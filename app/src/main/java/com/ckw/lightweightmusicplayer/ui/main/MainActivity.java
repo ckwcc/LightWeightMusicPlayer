@@ -13,7 +13,6 @@ import android.support.v4.content.res.ResourcesCompat;
 import android.support.v4.media.MediaBrowserCompat;
 import android.support.v4.media.session.MediaControllerCompat;
 import android.support.v4.media.session.MediaSessionCompat;
-import android.support.v4.view.ViewPager;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -26,6 +25,7 @@ import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
@@ -38,6 +38,7 @@ import com.ckw.lightweightmusicplayer.repository.RecentlyPlayed;
 import com.ckw.lightweightmusicplayer.ui.about.AboutMeActivity;
 import com.ckw.lightweightmusicplayer.ui.favorite.MyFavoriteActivity;
 import com.ckw.lightweightmusicplayer.ui.localmusic.LocalMusicActivity;
+import com.ckw.lightweightmusicplayer.ui.login.LoginActivity;
 import com.ckw.lightweightmusicplayer.ui.playmusic.MusicPlayActivity;
 import com.ckw.lightweightmusicplayer.utils.RecentUtils;
 import com.ckw.lightweightmusicplayer.weight.CustomLinearGradient;
@@ -76,8 +77,6 @@ public class MainActivity extends BaseActivity
     NavigationView mNavigationView;
     @BindView(R.id.fab_play)
     SpeedDialView mPlaySort;
-    @BindView(R.id.fab)
-    FloatingActionButton mPlay;
     @BindView(R.id.rl_local_container)
     RelativeLayout mLocalMusicContainer;
     //头部颜色渐变
@@ -107,15 +106,20 @@ public class MainActivity extends BaseActivity
     private List<RecentBean> mFavoriteList;
 
     private MediaControllerCompat.TransportControls mController;
+    private ImageView mIvLogin;
+    private TextView mTvUserName;
 
     @Override
     protected void initView(Bundle savedInstanceState) {
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                 this, mDrawerLayout, mToolBar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
-        mDrawerLayout.addDrawerListener(toggle);
-        toggle.syncState();
-
+        if(mDrawerLayout != null){
+            mDrawerLayout.addDrawerListener(toggle);
+            toggle.syncState();
+        }
         mNavigationView.setNavigationItemSelectedListener(this);
+
+        initNavigationHeaderView();
         requestPermission();
 
         initSpeedDialView();
@@ -144,10 +148,19 @@ public class MainActivity extends BaseActivity
     @Override
     protected void initListener() {
         mLocalMusicContainer.setOnClickListener(this);
-        mPlay.setOnClickListener(this);
         mRecentAdapter.setItemClickListener(this);
         mFavoriteAdapter.setItemClickListener(this);
         mTvFavoriteAll.setOnClickListener(this);
+        mIvLogin.setOnClickListener(this);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        String login = SPUtils.getInstance().getString("login","");
+        if(!login.equals("")){
+            mTvUserName.setText(login);
+        }
     }
 
     @Override
@@ -263,26 +276,13 @@ public class MainActivity extends BaseActivity
                     EasyPermissions.requestPermissions(this,getResources().getString(R.string.need_permission_tip),REQUEST_READ_EXTERNAL_STORAGE,perms);
                 }
                 break;
-            case R.id.fab://播放音乐
-                if(mRecentList != null && mRecentList.size() > 0){
-                    String mediaId = mRecentList.get(0).getMediaId();
-                    String album = mRecentList.get(0).getAlbum();
-
-                    Bundle bundle = new Bundle();
-                    bundle.putString("musicId",mediaId);
-                    if (album != null) {
-                        bundle.putString("iconUri",album);
-                    }
-                    bundle.putBoolean("play",true);
-                    ActivityUtils.startActivity(bundle,MusicPlayActivity.class);
-                }else {
-                    Snackbar.make(mPlay,R.string.recent_empty_tip,Snackbar.LENGTH_SHORT).show();
-                }
-                break;
             case R.id.tv_playlist_view_all://查看全部
                 if(mFavoriteList != null &&  mFavoriteList.size() > 0){
                     ActivityUtils.startActivity(MyFavoriteActivity.class);
                 }
+                break;
+            case R.id.nav_image_view:
+                ActivityUtils.startActivity(LoginActivity.class);
                 break;
         }
     }
@@ -357,6 +357,23 @@ public class MainActivity extends BaseActivity
         }
     }
 
+    /*
+    * 初始化NavigationView的头部
+    * */
+    private void initNavigationHeaderView(){
+        View headerView = mNavigationView.getHeaderView(0);
+        mIvLogin = headerView.findViewById(R.id.nav_image_view);
+        mTvUserName = headerView.findViewById(R.id.tv_user_name);
+
+        String login = SPUtils.getInstance().getString("login","");
+        if(!login.equals("")){
+            mTvUserName.setText(login);
+        }
+    }
+
+    /*
+    * 初始化播放按钮
+    * */
     private void initSpeedDialView(){
         mPlaySort.addActionItem(
                 new SpeedDialActionItem.Builder(R.id.action_use_case, getResources().getDrawable(android.R.drawable.ic_media_play))
@@ -439,6 +456,9 @@ public class MainActivity extends BaseActivity
         }
     }
 
+    /*
+    * 初始化我喜欢的列表
+    * */
     private void initFavoriteView(){
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this,LinearLayoutManager.HORIZONTAL,false);
         mRvFavorite.setLayoutManager(linearLayoutManager);

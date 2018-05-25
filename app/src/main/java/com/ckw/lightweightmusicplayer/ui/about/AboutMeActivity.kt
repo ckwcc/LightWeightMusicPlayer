@@ -1,7 +1,9 @@
 package com.ckw.lightweightmusicplayer.ui.about
 
+import android.content.Intent
 import android.content.pm.PackageInfo
 import android.content.pm.PackageManager
+import android.net.Uri
 import android.os.Bundle
 import android.widget.TextView
 import butterknife.BindView
@@ -29,7 +31,17 @@ class AboutMeActivity : BaseActivity() {
     }
 
     override fun initListener() {
+        mTvBlogAddress!!.setOnClickListener {
+            val uri = Uri.parse(getMyBlogAddress())
+            val intent = Intent(Intent.ACTION_VIEW,uri)
+            startActivity(intent)
+        }
 
+        mTvGithubAddress!!.setOnClickListener {
+            val uri = Uri.parse(getMyGithubAddress())
+            val intent = Intent(Intent.ACTION_VIEW,uri)
+            startActivity(intent)
+        }
     }
 
     override fun needToolbar(): Boolean {
@@ -57,11 +69,13 @@ class AboutMeActivity : BaseActivity() {
     * 获取博客地址
     * */
     private fun getMyBlogAddress(): String {
-        return String.format(resources.getString(R.string.my_blog_address),"https://blog.csdn.net/ckwccc")
+//        return String.format(resources.getString(R.string.my_blog_address),"https://blog.csdn.net/ckwccc")
+        return "https://blog.csdn.net/ckwccc"
     }
 
-    fun getMyGithubAddress(): String {
-        return String.format(resources.getString(R.string.my_github_address),"https://github.com/ckwcc/LightWeightMusicPlayer")
+    private fun getMyGithubAddress(): String {
+//        return String.format(resources.getString(R.string.my_github_address),"https://github.com/ckwcc/LightWeightMusicPlayer")
+        return "https://github.com/ckwcc/LightWeightMusicPlayer"
     }
 
     /**

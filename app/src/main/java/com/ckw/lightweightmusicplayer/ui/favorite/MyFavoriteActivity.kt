@@ -69,7 +69,6 @@ class MyFavoriteActivity : BaseActivity(){
             }
 
             override fun onPageSelected(position: Int) {
-                val i = position % 5
                 mFabPlay!!.mainFabClosedBackgroundColor = PlaceholderFragment.COLORS[position % 5]
             }
 

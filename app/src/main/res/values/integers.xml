@@ -3,5 +3,6 @@
 
     <integer name="anim_duration_default">400</integer>
     <integer name="anim_duration_short">200</integer>
-
+    <integer name="card_flip_time_full">500</integer>
+    <integer name="card_flip_time_half">250</integer>
 </resources>
