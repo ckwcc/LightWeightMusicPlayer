@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<com.ckw.lightweightmusicplayer.weight.InsetsPercentRelativeLayout
+<android.support.percent.PercentRelativeLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
@@ -8,15 +8,18 @@
     android:layout_height="match_parent"
     android:fitsSystemWindows="true">
 
-    <com.ckw.lightweightmusicplayer.weight.cover_view.MusicCoverView
+    <!--com.ckw.lightweightmusicplayer.weight.InsetsPercentRelativeLayout-->
+
+    <de.hdodenhof.circleimageview.CircleImageView
         android:id="@+id/cover"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
         android:layout_centerInParent="true"
-        android:scaleType="centerInside"
-        android:transitionName="@string/transition_name_cover"
-        app:layout_heightPercent="35%"
-        app:shape="circle" />
+        android:scaleType="centerCrop"
+        app:civ_border_color="#FF000000"
+        android:src="@mipmap/ic_music_default"
+        app:civ_border_width="2dp"
+        android:layout_height="240dp"
+        android:layout_width="240dp"
+        />
 
 
     <include
@@ -32,7 +35,7 @@
         android:layout_centerInParent="true"
         android:transitionName="@string/transition_name_progress"
         app:layout_aspectRatio="100%"
-        app:layout_heightPercent="40%"
+        android:layout_height="250dp"
          />
 
     <android.support.design.widget.FloatingActionButton
@@ -116,4 +119,4 @@
 
     </LinearLayout>
 
-</com.ckw.lightweightmusicplayer.weight.InsetsPercentRelativeLayout>
+</android.support.percent.PercentRelativeLayout>

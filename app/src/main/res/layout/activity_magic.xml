@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:background="@color/colorDark"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+
+   <android.support.v7.widget.RecyclerView
+       android:id="@+id/rv_magic"
+       android:layout_centerInParent="true"
+       android:layout_width="165dp"
+       android:layout_height="165dp">
+   </android.support.v7.widget.RecyclerView>
+
+    <Button
+        android:id="@+id/btn_apply_magic"
+        android:visibility="gone"
+        android:layout_centerHorizontal="true"
+        android:layout_alignParentBottom="true"
+        android:text="@string/apply"
+        android:background="@drawable/bg_button_register"
+        android:layout_marginBottom="@dimen/activity_horizontal_margin"
+        android:textSize="@dimen/normal_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
+    <TextView
+        android:id="@+id/tv_magic_tip"
+        android:text="@string/take_picture_tip"
+        android:textColor="@color/colorWhite"
+        android:textSize="@dimen/normal_text"
+        android:layout_above="@+id/btn_apply_magic"
+        android:visibility="gone"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="@dimen/activity_horizontal_margin"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
+</RelativeLayout>

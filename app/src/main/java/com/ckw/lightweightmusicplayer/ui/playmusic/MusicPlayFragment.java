@@ -1,5 +1,9 @@
 package com.ckw.lightweightmusicplayer.ui.playmusic;
 
+import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
+import android.animation.ObjectAnimator;
+import android.animation.ValueAnimator;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.SystemClock;
@@ -11,16 +15,20 @@ import android.support.v4.media.session.PlaybackStateCompat;
 import android.text.format.DateUtils;
 import android.util.Log;
 import android.view.View;
+import android.view.animation.Animation;
+import android.view.animation.LinearInterpolator;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.blankj.utilcode.util.SPUtils;
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
+import com.bumptech.glide.request.RequestOptions;
 import com.ckw.lightweightmusicplayer.R;
 import com.ckw.lightweightmusicplayer.base.BaseFragment;
 import com.ckw.lightweightmusicplayer.repository.RecentBean;
 import com.ckw.lightweightmusicplayer.utils.RecentUtils;
 import com.ckw.lightweightmusicplayer.weight.ProgressView;
-import com.ckw.lightweightmusicplayer.weight.cover_view.MusicCoverView;
 
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -30,6 +38,7 @@ import java.util.concurrent.TimeUnit;
 import javax.inject.Inject;
 
 import butterknife.BindView;
+import de.hdodenhof.circleimageview.CircleImageView;
 
 
 /**
@@ -48,14 +57,15 @@ public class MusicPlayFragment extends BaseFragment implements View.OnClickListe
     private String mArtist;
     private String mTitle;
     private String mAlbum;
-
+    private ValueAnimator startRotateAnimator;
 
     @Inject
     public MusicPlayFragment() {
     }
 
     @BindView(R.id.cover)
-    MusicCoverView musicCoverView;//旋转view
+    CircleImageView musicCoverView;//旋转view
+
     @BindView(R.id.progress)
     ProgressView mProgressView;//进度条
     @BindView(R.id.time)
@@ -115,6 +125,7 @@ public class MusicPlayFragment extends BaseFragment implements View.OnClickListe
     public void onDestroy() {
         super.onDestroy();
         stopSeekbarUpdate();
+        startRotateAnimator = null;
         mExecutorService.shutdown();
     }
 
@@ -126,6 +137,17 @@ public class MusicPlayFragment extends BaseFragment implements View.OnClickListe
 
     @Override
     protected void operateViews(View view) {
+        String picture = SPUtils.getInstance().getString("picture", "");
+        if(!picture.equals("")){
+            RequestOptions options = new RequestOptions()
+                    .centerCrop()
+                    .placeholder(R.color.colorWhite)
+                    .diskCacheStrategy(DiskCacheStrategy.ALL);
+            Glide.with(getContext())
+                    .load(picture)
+                    .apply(options)
+                    .into(musicCoverView);
+        }
 
     }
 
@@ -137,19 +159,6 @@ public class MusicPlayFragment extends BaseFragment implements View.OnClickListe
         mSkipToNext.setOnClickListener(this);
         mIvRepeat.setOnClickListener(this);
         mFab.setOnClickListener(this);
-
-        musicCoverView.setCallbacks(new MusicCoverView.Callbacks() {
-            @Override
-            public void onMorphEnd(MusicCoverView coverView) {
-
-            }
-
-            @Override
-            public void onRotateEnd(MusicCoverView coverView) {
-                isPlaying = false;
-            }
-        });
-
     }
 
     @Override
@@ -185,7 +194,8 @@ public class MusicPlayFragment extends BaseFragment implements View.OnClickListe
                                 if(mFab != null){
                                     mFab.setImageResource(android.R.drawable.ic_media_play);
                                 }
-                                musicCoverView.stop();
+                                endAnimation(musicCoverView);
+
                                 break;
                             case PlaybackStateCompat.STATE_PAUSED:
                             case PlaybackStateCompat.STATE_STOPPED:
@@ -195,7 +205,7 @@ public class MusicPlayFragment extends BaseFragment implements View.OnClickListe
                                 if(mFab != null){
                                     mFab.setImageResource(android.R.drawable.ic_media_pause);
                                 }
-                                musicCoverView.start();
+                                startAnimation(musicCoverView);
                                 break;
                             default:
                         }
@@ -255,12 +265,6 @@ public class MusicPlayFragment extends BaseFragment implements View.OnClickListe
         }
 
 
-        if(iconUri != null && !iconUri.equals("")){
-            //图片显示的大小还有问题，后期考虑换一种显示view
-//            Glide.with(getContext()).load(iconUri)
-//                    .into(musicCoverView);
-        }
-
         if (RecentUtils.isFavorite(mediaId)) {
             mIvFavorite.setImageResource(R.mipmap.ic_favorite);
         }else {
@@ -269,8 +273,9 @@ public class MusicPlayFragment extends BaseFragment implements View.OnClickListe
 
         if(shouldPlay){
             updateProgress();
+            startAnimation(musicCoverView);
         }else {
-            musicCoverView.stop();
+            endAnimation(musicCoverView);
         }
 
         if (state != null && (state.getState() == PlaybackStateCompat.STATE_PLAYING ||
@@ -336,9 +341,7 @@ public class MusicPlayFragment extends BaseFragment implements View.OnClickListe
      * 更新进度条
      * */
     private void updateProgress() {
-        if(musicCoverView !=null){
-            musicCoverView.start();
-        }
+
         if (mLastPlaybackState == null) {
             return;
         }
@@ -442,6 +445,18 @@ public class MusicPlayFragment extends BaseFragment implements View.OnClickListe
             }
         }
 
+    }
+
+    private void startAnimation(final View view){
+        startRotateAnimator = ObjectAnimator.ofFloat(view, View.ROTATION,view.getRotation(),360);
+        startRotateAnimator.setInterpolator(new LinearInterpolator());
+        startRotateAnimator.setRepeatCount(Animation.INFINITE);
+        startRotateAnimator.setDuration(12000);
+        startRotateAnimator.start();
+    }
+
+    private void endAnimation(final View view){
+        startRotateAnimator.pause();
     }
 
 }

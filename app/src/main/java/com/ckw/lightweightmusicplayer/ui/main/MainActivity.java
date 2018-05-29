@@ -39,6 +39,7 @@ import com.ckw.lightweightmusicplayer.ui.about.AboutMeActivity;
 import com.ckw.lightweightmusicplayer.ui.favorite.MyFavoriteActivity;
 import com.ckw.lightweightmusicplayer.ui.localmusic.LocalMusicActivity;
 import com.ckw.lightweightmusicplayer.ui.login.LoginActivity;
+import com.ckw.lightweightmusicplayer.ui.magic.MagicActivity;
 import com.ckw.lightweightmusicplayer.ui.playmusic.MusicPlayActivity;
 import com.ckw.lightweightmusicplayer.utils.RecentUtils;
 import com.ckw.lightweightmusicplayer.weight.CustomLinearGradient;
@@ -235,7 +236,7 @@ public class MainActivity extends BaseActivity
 
                 break;
             case R.id.nav_local://本地音乐
-                String[] perms = {Manifest.permission.READ_EXTERNAL_STORAGE};
+                String[] perms = {Manifest.permission.READ_EXTERNAL_STORAGE,Manifest.permission.WRITE_EXTERNAL_STORAGE};
                 if (EasyPermissions.hasPermissions(this, perms)) {
                     ActivityUtils.startActivity(LocalMusicActivity.class);
                 } else {
@@ -258,6 +259,9 @@ public class MainActivity extends BaseActivity
             case R.id.nav_about_me:
                 ActivityUtils.startActivity(AboutMeActivity.class);
                 break;
+            case R.id.nav_magic:
+                ActivityUtils.startActivity(MagicActivity.class);
+                break;
         }
         mDrawerLayout.closeDrawer(GravityCompat.START);
         return true;
@@ -268,7 +272,7 @@ public class MainActivity extends BaseActivity
         int id = v.getId();
         switch (id){
             case R.id.rl_local_container://本地音乐
-                String[] perms = {Manifest.permission.READ_EXTERNAL_STORAGE};
+                String[] perms = {Manifest.permission.READ_EXTERNAL_STORAGE,Manifest.permission.WRITE_EXTERNAL_STORAGE};
                 if (EasyPermissions.hasPermissions(this, perms)) {
                     ActivityUtils.startActivity(LocalMusicActivity.class);
                 } else {
@@ -338,7 +342,7 @@ public class MainActivity extends BaseActivity
         super.onActivityResult(requestCode, resultCode, data);
 
         if (requestCode == AppSettingsDialog.DEFAULT_SETTINGS_REQ_CODE) {
-            String[] perms = {Manifest.permission.READ_EXTERNAL_STORAGE};
+            String[] perms = {Manifest.permission.READ_EXTERNAL_STORAGE,Manifest.permission.WRITE_EXTERNAL_STORAGE};
             if (EasyPermissions.hasPermissions(this, perms)) {
                 onConnected();
             } else {
@@ -375,18 +379,19 @@ public class MainActivity extends BaseActivity
     * 初始化播放按钮
     * */
     private void initSpeedDialView(){
-        mPlaySort.addActionItem(
-                new SpeedDialActionItem.Builder(R.id.action_use_case, getResources().getDrawable(android.R.drawable.ic_media_play))
-                        .setFabBackgroundColor(ResourcesCompat.getColor(getResources(), R.color.colorAccent, getTheme()))
-                        .setLabel(getResources().getString(R.string.recent_play))
-                        .setLabelColor(getResources().getColor(R.color.colorAccent))
-                        .create()
-        );
 
         mPlaySort.addActionItem(
                 new SpeedDialActionItem.Builder(R.id.action_use_case_two, getResources().getDrawable(android.R.drawable.ic_media_play))
                         .setFabBackgroundColor(ResourcesCompat.getColor(getResources(), R.color.colorAccent, getTheme()))
                         .setLabel(getResources().getString(R.string.play_list))
+                        .setLabelColor(getResources().getColor(R.color.colorAccent))
+                        .create()
+        );
+
+        mPlaySort.addActionItem(
+                new SpeedDialActionItem.Builder(R.id.action_use_case, getResources().getDrawable(android.R.drawable.ic_media_play))
+                        .setFabBackgroundColor(ResourcesCompat.getColor(getResources(), R.color.colorAccent, getTheme()))
+                        .setLabel(getResources().getString(R.string.recent_play))
                         .setLabelColor(getResources().getColor(R.color.colorAccent))
                         .create()
         );
@@ -609,7 +614,7 @@ public class MainActivity extends BaseActivity
     * 权限申请
     * */
     private void requestPermission() {
-        String[] perms = {Manifest.permission.READ_EXTERNAL_STORAGE};
+        String[] perms = {Manifest.permission.READ_EXTERNAL_STORAGE,Manifest.permission.WRITE_EXTERNAL_STORAGE};
         if (EasyPermissions.hasPermissions(this, perms)) {
             onConnected();
         } else {

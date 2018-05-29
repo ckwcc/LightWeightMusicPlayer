@@ -3,7 +3,9 @@
     xmlns:tools="http://schemas.android.com/tools"
     package="com.ckw.lightweightmusicplayer">
 
+    <uses-permission android:name="android.permission.CAMERA" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
     <uses-permission android:name="android.permission.MOUNT_UNMOUNT_FILESYSTEMS"
         tools:ignore="ProtectedPermissions" />
 
@@ -14,6 +16,7 @@
         android:label="@string/app_name"
         android:roundIcon="@mipmap/music"
         android:supportsRtl="true"
+        tools:replace="android:theme"
         android:theme="@style/MaterialTheme">
         <activity
             android:name=".ui.main.MainActivity"
@@ -35,6 +38,7 @@
         <activity android:name=".ui.about.AboutMeActivity" />
         <activity android:name=".ui.favorite.MyFavoriteActivity" />
         <activity android:name=".ui.login.LoginActivity" />
+        <activity android:name=".ui.magic.MagicActivity" />
 
         <service android:name=".ui.playmusic.service.MusicService"
             tools:ignore="ExportedService"
