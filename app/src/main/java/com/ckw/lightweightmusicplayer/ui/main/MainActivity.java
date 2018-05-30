@@ -64,7 +64,7 @@ import static com.ckw.lightweightmusicplayer.ui.playmusic.helper.MediaIdHelper.M
 
 
 public class MainActivity extends BaseActivity
-        implements NavigationView.OnNavigationItemSelectedListener, View.OnClickListener ,EasyPermissions.PermissionCallbacks, ItemClickListener, EasyCountDownTextureView.EasyCountDownListener {
+        implements NavigationView.OnNavigationItemSelectedListener, View.OnClickListener ,EasyPermissions.PermissionCallbacks, EasyCountDownTextureView.EasyCountDownListener {
 
     //在CustomLinearGradient中使用
     public static int themeColor = Color.parseColor("#B24242");
@@ -149,10 +149,43 @@ public class MainActivity extends BaseActivity
     @Override
     protected void initListener() {
         mLocalMusicContainer.setOnClickListener(this);
-        mRecentAdapter.setItemClickListener(this);
-        mFavoriteAdapter.setItemClickListener(this);
         mTvFavoriteAll.setOnClickListener(this);
         mIvLogin.setOnClickListener(this);
+
+        mRecentAdapter.setItemClickListener(new ItemClickListener() {
+            @Override
+            public void setOnItemClick(int position, View view) {
+                if(mRecentList.size() > position){
+                    RecentBean recentBean = mRecentList.get(position);
+                    String album = recentBean.getAlbum();
+                    String mediaId = recentBean.getMediaId();
+
+                    Bundle bundle = new Bundle();
+                    bundle.putString("musicId",mediaId);
+                    bundle.putString("iconUri",album);
+                    bundle.putBoolean("play",true);
+                    ActivityUtils.startActivity(bundle,MusicPlayActivity.class);
+                }
+
+            }
+        });
+        mFavoriteAdapter.setItemClickListener(new ItemClickListener() {
+            @Override
+            public void setOnItemClick(int position, View view) {
+                if(mFavoriteList.size() > position){
+                    RecentBean recentBean = mFavoriteList.get(position);
+                    String album = recentBean.getAlbum();
+                    String mediaId = recentBean.getMediaId();
+
+                    Bundle bundle = new Bundle();
+                    bundle.putString("musicId",mediaId);
+                    bundle.putString("iconUri",album);
+                    bundle.putBoolean("play",true);
+                    ActivityUtils.startActivity(bundle,MusicPlayActivity.class);
+                }
+
+            }
+        });
     }
 
     @Override
@@ -162,19 +195,6 @@ public class MainActivity extends BaseActivity
         if(!login.equals("")){
             mTvUserName.setText(login);
         }
-    }
-
-    @Override
-    public void setOnItemClick(int position, View view) {
-        RecentBean recentBean = mRecentList.get(position);
-        String album = recentBean.getAlbum();
-        String mediaId = recentBean.getMediaId();
-
-        Bundle bundle = new Bundle();
-        bundle.putString("musicId",mediaId);
-        bundle.putString("iconUri",album);
-        bundle.putBoolean("play",true);
-        ActivityUtils.startActivity(bundle,MusicPlayActivity.class);
     }
 
     @Override

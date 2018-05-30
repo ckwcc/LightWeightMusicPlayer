@@ -4,6 +4,8 @@ import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.animation.ObjectAnimator;
 import android.animation.ValueAnimator;
+import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.SystemClock;
@@ -20,6 +22,7 @@ import android.view.animation.LinearInterpolator;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.blankj.utilcode.util.ActivityUtils;
 import com.blankj.utilcode.util.SPUtils;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
@@ -27,6 +30,7 @@ import com.bumptech.glide.request.RequestOptions;
 import com.ckw.lightweightmusicplayer.R;
 import com.ckw.lightweightmusicplayer.base.BaseFragment;
 import com.ckw.lightweightmusicplayer.repository.RecentBean;
+import com.ckw.lightweightmusicplayer.ui.magic.MagicActivity;
 import com.ckw.lightweightmusicplayer.utils.RecentUtils;
 import com.ckw.lightweightmusicplayer.weight.ProgressView;
 
@@ -48,6 +52,7 @@ import de.hdodenhof.circleimageview.CircleImageView;
 
 public class MusicPlayFragment extends BaseFragment implements View.OnClickListener {
 
+    private static final int REQUEST_CODE_PICTURE = 3;
     private static final long PROGRESS_UPDATE_INTERNAL = 1000;
     private static final long PROGRESS_UPDATE_INITIAL_INTERVAL = 100;
     public static final int REPEAT_MODE_DEFAULT = 2;
@@ -86,6 +91,8 @@ public class MusicPlayFragment extends BaseFragment implements View.OnClickListe
     TextView mSongName;
     @BindView(R.id.tv_song_artist)
     TextView mSongArtist;
+    @BindView(R.id.iv_magic)
+    ImageView mIvMagic;
 
     private final ScheduledExecutorService mExecutorService =
             Executors.newSingleThreadScheduledExecutor();
@@ -137,19 +144,8 @@ public class MusicPlayFragment extends BaseFragment implements View.OnClickListe
 
     @Override
     protected void operateViews(View view) {
-        String picture = SPUtils.getInstance().getString("picture", "");
-        if(!picture.equals("")){
-            RequestOptions options = new RequestOptions()
-                    .centerCrop()
-                    .placeholder(R.color.colorWhite)
-                    .diskCacheStrategy(DiskCacheStrategy.ALL);
-            Glide.with(getContext())
-                    .load(picture)
-                    .apply(options)
-                    .into(musicCoverView);
-        }
-
     }
+
 
 
     @Override
@@ -159,6 +155,7 @@ public class MusicPlayFragment extends BaseFragment implements View.OnClickListe
         mSkipToNext.setOnClickListener(this);
         mIvRepeat.setOnClickListener(this);
         mFab.setOnClickListener(this);
+        mIvMagic.setOnClickListener(this);
     }
 
     @Override
@@ -186,7 +183,7 @@ public class MusicPlayFragment extends BaseFragment implements View.OnClickListe
                     PlaybackStateCompat state = mediaControllerCompat.getPlaybackState();
                     if (state != null) {
                         switch (state.getState()) {
-                            case PlaybackStateCompat.STATE_PLAYING: // fall through
+                            case PlaybackStateCompat.STATE_PLAYING:
                             case PlaybackStateCompat.STATE_BUFFERING:
                                 isPlaying = false;
                                 mController.pause();
@@ -194,7 +191,7 @@ public class MusicPlayFragment extends BaseFragment implements View.OnClickListe
                                 if(mFab != null){
                                     mFab.setImageResource(android.R.drawable.ic_media_play);
                                 }
-                                endAnimation(musicCoverView);
+                                stopAnimation();
 
                                 break;
                             case PlaybackStateCompat.STATE_PAUSED:
@@ -220,6 +217,10 @@ public class MusicPlayFragment extends BaseFragment implements View.OnClickListe
             case R.id.repeat:
                 setRepeatMode(true);
                 break;
+            case R.id.iv_magic:
+                Intent intent = new Intent(getContext(),MagicActivity.class);
+                startActivityForResult(intent,REQUEST_CODE_PICTURE);
+                break;
         }
     }
 
@@ -235,7 +236,9 @@ public class MusicPlayFragment extends BaseFragment implements View.OnClickListe
                 mFab.setImageResource(android.R.drawable.ic_media_pause);
             }
         }
+
     }
+
 
     @Override
     public void onStop() {
@@ -243,9 +246,23 @@ public class MusicPlayFragment extends BaseFragment implements View.OnClickListe
         if (mediaControllerCompat != null){
             mediaControllerCompat.unregisterCallback(mMediaControllerCallback);
         }
+
+        stopAnimation();
     }
 
-    public void setMediaControllerCompat(MediaControllerCompat mediaControllerCompat,boolean shouldPlay,String iconUri,String mediaId) {
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if(resultCode == Activity.RESULT_OK && requestCode == REQUEST_CODE_PICTURE){
+            showRotateImageView();
+            if(isPlaying){
+                startAnimation(musicCoverView);
+            }else {
+                stopAnimation();
+            }
+        }
+    }
+
+    public void setMediaControllerCompat(MediaControllerCompat mediaControllerCompat, boolean shouldPlay, String iconUri, String mediaId) {
         this.mediaId = mediaId;
         this.mAlbum = iconUri;
         this.mediaControllerCompat = mediaControllerCompat;
@@ -273,9 +290,8 @@ public class MusicPlayFragment extends BaseFragment implements View.OnClickListe
 
         if(shouldPlay){
             updateProgress();
+            showRotateImageView();
             startAnimation(musicCoverView);
-        }else {
-            endAnimation(musicCoverView);
         }
 
         if (state != null && (state.getState() == PlaybackStateCompat.STATE_PLAYING ||
@@ -447,15 +463,42 @@ public class MusicPlayFragment extends BaseFragment implements View.OnClickListe
 
     }
 
+    /*
+    * 展示旋转view
+    * */
+    private void showRotateImageView(){
+        String picture = SPUtils.getInstance().getString("picture", "");
+        if(!picture.equals("")){
+            RequestOptions options = new RequestOptions()
+                    .centerCrop()
+                    .placeholder(R.color.colorWhite)
+                    .diskCacheStrategy(DiskCacheStrategy.ALL);
+            Glide.with(getContext())
+                    .load(picture)
+                    .apply(options)
+                    .into(musicCoverView);
+        }
+
+    }
+
+    /*
+    * 开始旋转动画
+    * */
     private void startAnimation(final View view){
+        if(startRotateAnimator != null){
+            startRotateAnimator = null;
+        }
         startRotateAnimator = ObjectAnimator.ofFloat(view, View.ROTATION,view.getRotation(),360);
         startRotateAnimator.setInterpolator(new LinearInterpolator());
         startRotateAnimator.setRepeatCount(Animation.INFINITE);
-        startRotateAnimator.setDuration(12000);
+        startRotateAnimator.setDuration(10000);
         startRotateAnimator.start();
     }
 
-    private void endAnimation(final View view){
+    /*
+    * 结束旋转动画
+    * */
+    private void stopAnimation(){
         startRotateAnimator.pause();
     }
 

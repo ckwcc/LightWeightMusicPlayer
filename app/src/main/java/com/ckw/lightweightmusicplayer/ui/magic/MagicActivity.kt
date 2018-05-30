@@ -87,6 +87,7 @@ class MagicActivity : BaseActivity(), View.OnClickListener {
 
                 ToastUtils.showShort("设置成功")
 
+                this@MagicActivity.setResult(android.app.Activity.RESULT_OK)
                 finish()
             }
         }
