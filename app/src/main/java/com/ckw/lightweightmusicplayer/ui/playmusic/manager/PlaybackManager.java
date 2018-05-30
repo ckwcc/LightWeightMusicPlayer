@@ -7,8 +7,12 @@ import android.support.annotation.NonNull;
 import android.support.v4.media.session.MediaSessionCompat;
 import android.support.v4.media.session.PlaybackStateCompat;
 
+import com.blankj.utilcode.util.SPUtils;
 import com.ckw.lightweightmusicplayer.ui.playmusic.playback.Playback;
 import com.ckw.lightweightmusicplayer.ui.playmusic.provider.MusicProvider;
+
+import static com.ckw.lightweightmusicplayer.ui.playmusic.MusicPlayFragment.REPEAT_MODE_DEFAULT;
+import static com.ckw.lightweightmusicplayer.ui.playmusic.MusicPlayFragment.REPEAT_MODE_SINGLE;
 
 
 /**
@@ -49,11 +53,11 @@ public class PlaybackManager implements Playback.Callback{
     /**
      * 处理播放音乐的请求
      */
-    public void handlePlayRequest() {
+    public void handlePlayRequest(boolean isFinish) {
         MediaSessionCompat.QueueItem currentMusic = mQueueManager.getCurrentMusic();
         if (currentMusic != null) {
             mServiceCallback.onPlaybackStart();
-            mPlayback.play(currentMusic);
+            mPlayback.play(currentMusic,isFinish);
         }
     }
 
@@ -141,13 +145,20 @@ public class PlaybackManager implements Playback.Callback{
     @Override
     public void onCompletion() {
         //媒体播放器完成了当前的歌曲，继续下一个。
-        if (mQueueManager.skipQueuePosition(1)) {
-            handlePlayRequest();
+        if(SPUtils.getInstance().getInt("repeat", REPEAT_MODE_DEFAULT) == REPEAT_MODE_SINGLE){
+            boolean b = mQueueManager.skipQueuePosition(0);
+            handlePlayRequest(true);
             mQueueManager.updateMetadata();
-        } else {
-            // 如果不可能跳过，我们将停止并释放资源
-            handleStopRequest(null);
+        }else {
+            if (mQueueManager.skipQueuePosition(1)) {
+                handlePlayRequest(true);
+                mQueueManager.updateMetadata();
+            } else {
+                // 如果不可能跳过，我们将停止并释放资源
+                handleStopRequest(null);
+            }
         }
+        
 
 
     }
@@ -167,48 +178,6 @@ public class PlaybackManager implements Playback.Callback{
         mQueueManager.setQueueFromMusic(mediaId);
     }
 
-    /**
-     * 切换到不同的播放实例，如果可能的话，保持所有播放状态。
-     *
-     * @param playback switch to this playback
-     */
-    public void switchToPlayback(Playback playback, boolean resumePlaying) {
-        if (playback == null) {
-            throw new IllegalArgumentException("Playback cannot be null");
-        }
-        // Suspends current state.
-        int oldState = mPlayback.getState();
-        long pos = mPlayback.getCurrentStreamPosition();
-        String currentMediaId = mPlayback.getCurrentMediaId();
-        mPlayback.stop(false);
-        playback.setCallback(this);
-        playback.setCurrentMediaId(currentMediaId);
-        playback.seekTo(pos < 0 ? 0 : pos);
-        playback.start();
-        // Swaps instance.
-        mPlayback = playback;
-        switch (oldState) {
-            case PlaybackStateCompat.STATE_BUFFERING:
-            case PlaybackStateCompat.STATE_CONNECTING:
-            case PlaybackStateCompat.STATE_PAUSED:
-                mPlayback.pause();
-                break;
-            case PlaybackStateCompat.STATE_PLAYING:
-                MediaSessionCompat.QueueItem currentMusic = mQueueManager.getCurrentMusic();
-                if (resumePlaying && currentMusic != null) {
-                    mPlayback.play(currentMusic);
-                } else if (!resumePlaying) {
-                    mPlayback.pause();
-                } else {
-                    mPlayback.stop(true);
-                }
-                break;
-            case PlaybackStateCompat.STATE_NONE:
-                break;
-            default:
-        }
-    }
-
 
     /*
     * 接收来自控制器和系统的传输控制、媒体按钮和命令。
@@ -216,16 +185,10 @@ public class PlaybackManager implements Playback.Callback{
     private class MediaSessionCallback extends MediaSessionCompat.Callback{
 
         @Override
-        public void onSetRepeatMode(int repeatMode) {
-           //当外部 musicPlayFragment中mController.setRepeatMode设置播放模式的改变时，这里可以调用
-            mPlayback.setPlayMode(repeatMode);
-        }
-
-        @Override
         public void onPlay() {
             if (mQueueManager.getCurrentMusic() == null) {
             }
-            handlePlayRequest();
+            handlePlayRequest(false);
         }
 
         @Override
@@ -242,7 +205,7 @@ public class PlaybackManager implements Playback.Callback{
         @Override
         public void onPlayFromMediaId(String mediaId, Bundle extras) {
             mQueueManager.setQueueFromMusic(mediaId);
-            handlePlayRequest();
+            handlePlayRequest(false);
         }
 
         @Override
@@ -258,7 +221,7 @@ public class PlaybackManager implements Playback.Callback{
         @Override
         public void onSkipToNext() {
             if (mQueueManager.skipQueuePosition(1)) {
-                handlePlayRequest();
+                handlePlayRequest(false);
             } else {
                 handleStopRequest("Cannot skip");
             }
@@ -268,7 +231,7 @@ public class PlaybackManager implements Playback.Callback{
         @Override
         public void onSkipToPrevious() {
             if (mQueueManager.skipQueuePosition(-1)) {
-                handlePlayRequest();
+                handlePlayRequest(false);
             } else {
                 handleStopRequest("Cannot skip");
             }

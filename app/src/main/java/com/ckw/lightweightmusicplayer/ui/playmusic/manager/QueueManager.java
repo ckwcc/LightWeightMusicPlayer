@@ -22,7 +22,6 @@ import android.support.annotation.NonNull;
 import android.support.v4.media.MediaMetadataCompat;
 import android.support.v4.media.session.MediaSessionCompat;
 
-import com.ckw.lightweightmusicplayer.R;
 import com.ckw.lightweightmusicplayer.ui.playmusic.AlbumArtCache;
 import com.ckw.lightweightmusicplayer.ui.playmusic.helper.QueueHelper;
 import com.ckw.lightweightmusicplayer.ui.playmusic.provider.MusicProvider;

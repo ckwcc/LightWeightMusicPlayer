@@ -29,7 +29,7 @@ import com.ckw.lightweightmusicplayer.repository.Song;
  */
 public interface Playback {
 
-    void setPlayMode(int repeatMode);
+//    void setPlayMode(int repeatMode);
     /**
      * Start/setup the playback.
      * Resources/listeners would be allocated by implementations.
@@ -83,7 +83,7 @@ public interface Playback {
      */
     void updateLastKnownStreamPosition();
 
-    void play(MediaSessionCompat.QueueItem item);
+    void play(MediaSessionCompat.QueueItem item,boolean isFinish);
 
     void pause();
 

@@ -7,7 +7,6 @@ import android.graphics.Color;
 import android.os.Bundle;
 import android.os.RemoteException;
 import android.support.annotation.NonNull;
-import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v4.content.res.ResourcesCompat;
 import android.support.v4.media.MediaBrowserCompat;
@@ -416,6 +415,7 @@ public class MainActivity extends BaseActivity
                         .create()
         );
 
+
         mPlaySort.setOnActionSelectedListener(new SpeedDialView.OnActionSelectedListener() {
             @Override
             public boolean onActionSelected(SpeedDialActionItem actionItem) {
@@ -452,6 +452,7 @@ public class MainActivity extends BaseActivity
                             Snackbar.make(mPlaySort,R.string.favorite_empty_tip,Snackbar.LENGTH_SHORT).show();
                         }
                         break;
+
                 }
                 return false;
             }

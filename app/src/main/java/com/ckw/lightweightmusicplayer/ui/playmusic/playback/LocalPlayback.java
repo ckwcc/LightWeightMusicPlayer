@@ -170,12 +170,12 @@ public final class LocalPlayback implements Playback {
 
     }
 
-    @Override
-    public void setPlayMode(int repeatMode) {
-        if(mExoPlayer != null){
-            mExoPlayer.setRepeatMode(repeatMode);
-        }
-    }
+//    @Override
+//    public void setPlayMode(int repeatMode) {
+//        if(mExoPlayer != null){
+//            mExoPlayer.setRepeatMode(repeatMode);
+//        }
+//    }
 
     @Override
     public void start() {
@@ -241,18 +241,53 @@ public final class LocalPlayback implements Playback {
     }
 
     @Override
-    public void play(MediaSessionCompat.QueueItem item) {
+    public void play(MediaSessionCompat.QueueItem item,boolean isFinish) {
 
         mPlayOnFocusGain = true;
         tryToGetAudioFocus();
         registerAudioNoisyReceiver();
         String mediaId = item.getDescription().getMediaId();
-        boolean mediaHasChanged = !TextUtils.equals(mediaId, mCurrentMediaId);
-        if (mediaHasChanged) {
-            mCurrentMediaId = mediaId;
-        }
+        if(!isFinish){
+            boolean mediaHasChanged = !TextUtils.equals(mediaId, mCurrentMediaId);
+            if (mediaHasChanged) {
+                mCurrentMediaId = mediaId;
+            }
 
-        if (mediaHasChanged || mExoPlayer == null) {
+            if (mediaHasChanged ||mExoPlayer == null) {
+                releaseResources(false); // release everything except the player
+                MediaMetadataCompat track =
+                        mMusicProvider.getMusic(item.getDescription().getMediaId());
+
+                String source = track.getString(SongSource.CUSTOM_METADATA_TRACK_SOURCE);
+                if (source != null) {
+                    source = source.replaceAll(" ", "%20"); // Escape spaces for URLs
+                }
+
+                if (mExoPlayer == null) {
+                    mExoPlayer =
+                            ExoPlayerFactory.newSimpleInstance(
+                                    mContext, new DefaultTrackSelector(), new DefaultLoadControl());
+
+                    mExoPlayer.addListener(mEventListener);
+                }
+
+                final AudioAttributes audioAttributes = new AudioAttributes.Builder()
+                        .setContentType(CONTENT_TYPE_MUSIC)
+                        .setUsage(USAGE_MEDIA)
+                        .build();
+                mExoPlayer.setAudioAttributes(audioAttributes);
+
+                DataSource.Factory dataSourceFactory =
+                        new DefaultDataSourceFactory(
+                                mContext, Util.getUserAgent(mContext, "uamp"), null);
+                ExtractorsFactory extractorsFactory = new DefaultExtractorsFactory();
+                MediaSource mediaSource =
+                        new ExtractorMediaSource(
+                                Uri.parse(source), dataSourceFactory, extractorsFactory, null, null);
+                mExoPlayer.prepare(mediaSource);
+            }
+        }else {
+            mCurrentMediaId = mediaId;
             releaseResources(false); // release everything except the player
             MediaMetadataCompat track =
                     mMusicProvider.getMusic(item.getDescription().getMediaId());
@@ -266,38 +301,25 @@ public final class LocalPlayback implements Playback {
                 mExoPlayer =
                         ExoPlayerFactory.newSimpleInstance(
                                 mContext, new DefaultTrackSelector(), new DefaultLoadControl());
-                mExoPlayer.addListener(mEventListener);
             }
+            mExoPlayer.addListener(mEventListener);
 
-            // Android "O" makes much greater use of AudioAttributes, especially
-            // with regards to AudioFocus. All of UAMP's tracks are music, but
-            // if your content includes spoken word such as audiobooks or podcasts
-            // then the content type should be set to CONTENT_TYPE_SPEECH for those
-            // tracks.
             final AudioAttributes audioAttributes = new AudioAttributes.Builder()
                     .setContentType(CONTENT_TYPE_MUSIC)
                     .setUsage(USAGE_MEDIA)
                     .build();
             mExoPlayer.setAudioAttributes(audioAttributes);
 
-            // Produces DataSource instances through which media data is loaded.
             DataSource.Factory dataSourceFactory =
                     new DefaultDataSourceFactory(
                             mContext, Util.getUserAgent(mContext, "uamp"), null);
-            // Produces Extractor instances for parsing the media data.
             ExtractorsFactory extractorsFactory = new DefaultExtractorsFactory();
-            // The MediaSource represents the media to be played.
             MediaSource mediaSource =
                     new ExtractorMediaSource(
                             Uri.parse(source), dataSourceFactory, extractorsFactory, null, null);
-            // Prepares media to play (happens on background thread) and triggers
-            // {@code onPlayerStateChanged} callback when the stream is ready to play.
             mExoPlayer.prepare(mediaSource);
-
-            // If we are streaming from the internet, we want to hold a
-            // Wifi lock, which prevents the Wifi radio from going to
-            // sleep while the song is playing.
         }
+
 
         configurePlayerState();
     }

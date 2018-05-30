@@ -1,6 +1,7 @@
 package com.ckw.lightweightmusicplayer.ui.playmusic;
 
 import android.os.Bundle;
+import android.os.PersistableBundle;
 import android.os.RemoteException;
 import android.support.annotation.NonNull;
 import android.support.v4.app.FragmentManager;
@@ -8,6 +9,7 @@ import android.support.v4.media.session.MediaControllerCompat;
 import android.support.v4.media.session.MediaSessionCompat;
 
 import com.blankj.utilcode.util.FragmentUtils;
+import com.blankj.utilcode.util.SPUtils;
 import com.ckw.lightweightmusicplayer.R;
 import com.ckw.lightweightmusicplayer.base.BaseActivity;
 
@@ -49,6 +51,7 @@ public class MusicPlayActivity extends BaseActivity {
                  if(shouldPlay){
                      mController
                              .playFromMediaId(mediaId, null);
+                     SPUtils.getInstance().put("mediaId",mediaId);
                  }
                 musicPlayFragment.setMediaControllerCompat(mediaControllerCompat,shouldPlay,mIconUri,mediaId);
             } catch (RemoteException e) {
@@ -64,6 +67,7 @@ public class MusicPlayActivity extends BaseActivity {
         FragmentUtils.add(manager,musicPlayFragment,R.id.cl_content);
 
     }
+
 
     @Override
     protected void handleBundle(@NonNull Bundle bundle) {

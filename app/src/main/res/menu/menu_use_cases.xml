@@ -17,14 +17,22 @@
 
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
+
     <item
         android:id="@+id/action_use_case"
         android:icon="@android:drawable/ic_media_play"
         app:showAsAction="always"
         android:title="最近播放" />
+
     <item
         android:id="@+id/action_use_case_two"
         android:icon="@android:drawable/ic_media_play"
         app:showAsAction="always"
         android:title="我喜欢的" />
+
+    <!--<item-->
+        <!--android:id="@+id/action_use_case_three"-->
+        <!--android:icon="@android:drawable/ic_media_play"-->
+        <!--app:showAsAction="always"-->
+        <!--android:title="正在播放" />-->
 </menu>

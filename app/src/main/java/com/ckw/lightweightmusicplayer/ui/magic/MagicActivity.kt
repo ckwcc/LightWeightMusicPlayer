@@ -85,7 +85,7 @@ class MagicActivity : BaseActivity(), View.OnClickListener {
 
                 SPUtils.getInstance().put("picture",path)
 
-                ToastUtils.showShort("设置成功")
+                ToastUtils.showShort("应用成功")
 
                 this@MagicActivity.setResult(android.app.Activity.RESULT_OK)
                 finish()

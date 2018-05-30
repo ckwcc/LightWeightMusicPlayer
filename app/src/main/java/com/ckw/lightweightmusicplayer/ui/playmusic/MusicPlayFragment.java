@@ -11,6 +11,7 @@ import android.os.Handler;
 import android.os.SystemClock;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
+import android.support.v4.media.MediaBrowserCompat;
 import android.support.v4.media.MediaMetadataCompat;
 import android.support.v4.media.session.MediaControllerCompat;
 import android.support.v4.media.session.PlaybackStateCompat;
@@ -91,8 +92,6 @@ public class MusicPlayFragment extends BaseFragment implements View.OnClickListe
     TextView mSongName;
     @BindView(R.id.tv_song_artist)
     TextView mSongArtist;
-    @BindView(R.id.iv_magic)
-    ImageView mIvMagic;
 
     private final ScheduledExecutorService mExecutorService =
             Executors.newSingleThreadScheduledExecutor();
@@ -155,7 +154,6 @@ public class MusicPlayFragment extends BaseFragment implements View.OnClickListe
         mSkipToNext.setOnClickListener(this);
         mIvRepeat.setOnClickListener(this);
         mFab.setOnClickListener(this);
-        mIvMagic.setOnClickListener(this);
     }
 
     @Override
@@ -214,12 +212,13 @@ public class MusicPlayFragment extends BaseFragment implements View.OnClickListe
                     mController.skipToNext();
                 }
                 break;
+            case R.id.previous:
+                if(mController != null){
+                    mController.skipToPrevious();
+                }
+                break;
             case R.id.repeat:
                 setRepeatMode(true);
-                break;
-            case R.id.iv_magic:
-                Intent intent = new Intent(getContext(),MagicActivity.class);
-                startActivityForResult(intent,REQUEST_CODE_PICTURE);
                 break;
         }
     }
@@ -250,17 +249,6 @@ public class MusicPlayFragment extends BaseFragment implements View.OnClickListe
         stopAnimation();
     }
 
-    @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if(resultCode == Activity.RESULT_OK && requestCode == REQUEST_CODE_PICTURE){
-            showRotateImageView();
-            if(isPlaying){
-                startAnimation(musicCoverView);
-            }else {
-                stopAnimation();
-            }
-        }
-    }
 
     public void setMediaControllerCompat(MediaControllerCompat mediaControllerCompat, boolean shouldPlay, String iconUri, String mediaId) {
         this.mediaId = mediaId;
@@ -270,7 +258,6 @@ public class MusicPlayFragment extends BaseFragment implements View.OnClickListe
         this.mediaControllerCompat.registerCallback(mMediaControllerCallback);
 
         MediaMetadataCompat metadata = this.mediaControllerCompat.getMetadata();
-
         PlaybackStateCompat state = this.mediaControllerCompat.getPlaybackState();
 
         if(state != null){
@@ -314,6 +301,12 @@ public class MusicPlayFragment extends BaseFragment implements View.OnClickListe
                 @Override
                 public void onMetadataChanged(MediaMetadataCompat metadata) {
                     updateDuration(metadata);
+                    RecentBean recentBean = new RecentBean();
+                    recentBean.setMediaId(mediaId);
+                    recentBean.setAlbum(mAlbum);
+                    recentBean.setArtist(metadata.getString(MediaMetadataCompat.METADATA_KEY_ARTIST));
+                    recentBean.setTitle(metadata.getString(MediaMetadataCompat.METADATA_KEY_TITLE));
+                    RecentUtils.addToRecent(recentBean);
                 }
             };
 
@@ -370,14 +363,6 @@ public class MusicPlayFragment extends BaseFragment implements View.OnClickListe
             currentPosition += (int) timeDelta * mLastPlaybackState.getPlaybackSpeed();
         }
 
-        if(currentPosition > (mSongDuration + 1000) && SPUtils.getInstance().getInt("repeat", REPEAT_MODE_DEFAULT) == REPEAT_MODE_SINGLE){
-            //这里的目的是为了让单曲循环时，控制进度条和正在播放的时间正确
-            currentPosition = 0;
-            mController.pause();
-            mController.play();
-        }else if(currentPosition > (mSongDuration + 1000) && SPUtils.getInstance().getInt("repeat", REPEAT_MODE_DEFAULT) == REPEAT_MODE_DEFAULT){
-            mController.skipToNext();
-        }
         if(mCurrentTime != null){
             mCurrentTime.setText(DateUtils.formatElapsedTime(currentPosition / 1000));
         }
@@ -499,7 +484,9 @@ public class MusicPlayFragment extends BaseFragment implements View.OnClickListe
     * 结束旋转动画
     * */
     private void stopAnimation(){
-        startRotateAnimator.pause();
+        if(startRotateAnimator != null){
+            startRotateAnimator.pause();
+        }
     }
 
 }

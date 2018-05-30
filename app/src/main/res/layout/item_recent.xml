@@ -10,9 +10,8 @@
     <ImageView
         android:id="@+id/iv_album"
         android:src="@mipmap/ic_music_default"
-        android:layout_centerHorizontal="true"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
+        android:layout_width="100dp"
+        android:layout_height="100dp" />
 
     <RelativeLayout
         android:layout_below="@+id/iv_album"
@@ -22,7 +21,10 @@
         <TextView
             android:id="@+id/tv_song_name"
             android:textColor="@color/colorWhite"
-            tools:text="歌名"
+            tools:text="歌名歌名歌名歌名"
+            android:maxLines="1"
+            android:maxEms="8"
+            android:ellipsize="end"
             android:textSize="12sp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content" />
@@ -32,6 +34,10 @@
             tools:text="歌手"
             android:textColor="@color/colorWhite"
             android:textSize="10sp"
+            android:singleLine="true"
+            android:maxLines="1"
+            android:maxEms="8"
+            android:ellipsize="end"
             android:layout_below="@+id/tv_song_name"
             android:layout_alignStart="@+id/tv_song_name"
             android:layout_width="wrap_content"

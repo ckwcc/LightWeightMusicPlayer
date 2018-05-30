@@ -72,7 +72,7 @@ public class ArtistActivity extends BaseActivity{
                 public void onItemClick(int position) {
                     MediaBrowserCompat.MediaItem item = mAdapter.getItem(position);
                     if(item != null){
-                        RecentUtils.addToRecent(item);
+//                        RecentUtils.addToRecent(item);
                         Uri iconUri = item.getDescription().getIconUri();
 
                         Bundle bundle = new Bundle();

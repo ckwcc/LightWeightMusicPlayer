@@ -134,7 +134,7 @@ public class AlbumActivity extends BaseActivity {
                 public void onItemClick(int position) {
                     if(mSongs != null){
 
-                        RecentUtils.addToRecent(mSongs.get(position));
+//                        RecentUtils.addToRecent(mSongs.get(position));
 
                         Uri iconUri = mSongs.get(position).getDescription().getIconUri();
 

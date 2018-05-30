@@ -87,7 +87,7 @@ public class MusicService extends MediaBrowserServiceCompat implements PlaybackM
 
                     @Override
                     public void onCurrentQueueIndexUpdated(int queueIndex) {
-                        mPlaybackManager.handlePlayRequest();
+                        mPlaybackManager.handlePlayRequest(false);
                     }
 
                     @Override
