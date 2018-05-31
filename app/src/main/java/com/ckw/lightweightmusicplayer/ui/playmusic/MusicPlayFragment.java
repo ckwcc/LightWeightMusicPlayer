@@ -1,17 +1,12 @@
 package com.ckw.lightweightmusicplayer.ui.playmusic;
 
-import android.animation.Animator;
-import android.animation.AnimatorListenerAdapter;
 import android.animation.ObjectAnimator;
 import android.animation.ValueAnimator;
-import android.app.Activity;
-import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.SystemClock;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
-import android.support.v4.media.MediaBrowserCompat;
 import android.support.v4.media.MediaMetadataCompat;
 import android.support.v4.media.session.MediaControllerCompat;
 import android.support.v4.media.session.PlaybackStateCompat;
@@ -23,7 +18,6 @@ import android.view.animation.LinearInterpolator;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.blankj.utilcode.util.ActivityUtils;
 import com.blankj.utilcode.util.SPUtils;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
@@ -31,7 +25,6 @@ import com.bumptech.glide.request.RequestOptions;
 import com.ckw.lightweightmusicplayer.R;
 import com.ckw.lightweightmusicplayer.base.BaseFragment;
 import com.ckw.lightweightmusicplayer.repository.RecentBean;
-import com.ckw.lightweightmusicplayer.ui.magic.MagicActivity;
 import com.ckw.lightweightmusicplayer.utils.RecentUtils;
 import com.ckw.lightweightmusicplayer.weight.ProgressView;
 
@@ -239,14 +232,14 @@ public class MusicPlayFragment extends BaseFragment implements View.OnClickListe
     }
 
 
+
+
     @Override
     public void onStop() {
         super.onStop();
         if (mediaControllerCompat != null){
             mediaControllerCompat.unregisterCallback(mMediaControllerCallback);
         }
-
-        stopAnimation();
     }
 
 
@@ -301,9 +294,12 @@ public class MusicPlayFragment extends BaseFragment implements View.OnClickListe
                 @Override
                 public void onMetadataChanged(MediaMetadataCompat metadata) {
                     updateDuration(metadata);
+
                     RecentBean recentBean = new RecentBean();
-                    recentBean.setMediaId(mediaId);
-                    recentBean.setAlbum(mAlbum);
+                    recentBean.setMediaId(metadata.getDescription().getMediaId());
+                    if (metadata.getDescription().getIconUri() != null) {
+                        recentBean.setAlbum(metadata.getDescription().getIconUri().toString());
+                    }
                     recentBean.setArtist(metadata.getString(MediaMetadataCompat.METADATA_KEY_ARTIST));
                     recentBean.setTitle(metadata.getString(MediaMetadataCompat.METADATA_KEY_TITLE));
                     RecentUtils.addToRecent(recentBean);
@@ -476,7 +472,7 @@ public class MusicPlayFragment extends BaseFragment implements View.OnClickListe
         startRotateAnimator = ObjectAnimator.ofFloat(view, View.ROTATION,view.getRotation(),360);
         startRotateAnimator.setInterpolator(new LinearInterpolator());
         startRotateAnimator.setRepeatCount(Animation.INFINITE);
-        startRotateAnimator.setDuration(10000);
+        startRotateAnimator.setDuration(12000);
         startRotateAnimator.start();
     }
 

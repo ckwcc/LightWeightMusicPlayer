@@ -1,8 +1,10 @@
 package com.ckw.lightweightmusicplayer.ui.main;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -35,8 +37,8 @@ public class RecentAdapter extends RecyclerView.Adapter<RecentAdapter.ViewHolder
         this.mContext = mContext;
     }
 
-    public void setData(List<RecentBean> mData) {
-        this.mData = mData;
+    public void setData(List<RecentBean> data) {
+        this.mData = data;
     }
 
     @NonNull
@@ -48,14 +50,17 @@ public class RecentAdapter extends RecyclerView.Adapter<RecentAdapter.ViewHolder
     }
 
     @Override
-    public void onBindViewHolder(@NonNull ViewHolder holder, final int position) {
+    public void onBindViewHolder(@NonNull ViewHolder holder, @SuppressLint("RecyclerView") final int position) {
         RecentBean recentBean = mData.get(position);
         holder.tvSongName.setText(recentBean.getTitle());
         holder.tvSongArtist.setText(recentBean.getArtist());
         String album = recentBean.getAlbum();
+
         if(album != null && !"".equals(album)){
             Glide.with(mContext).load(album)
                     .into(holder.ivAlbum);
+        }else {
+            holder.ivAlbum.setImageResource(R.mipmap.ic_music_default);
         }
 
         holder.itemView.setOnClickListener(new View.OnClickListener() {

@@ -108,8 +108,6 @@ public class LocalMusicListFragment extends BaseFragment{
                 }
                 MediaBrowserCompat.MediaItem mediaItem = mSongs.get(position);
 
-//                RecentUtils.addToRecent(mediaItem);
-
                 Uri iconUri = mediaItem.getDescription().getIconUri();
 
                 Bundle bundle = new Bundle();

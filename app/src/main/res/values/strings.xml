@@ -1,6 +1,6 @@
 <resources>
     <!--<string name="app_name">LightWeightMusicPlayer</string>-->
-    <string name="app_name">小世界</string>
+    <string name="app_name">CNUO</string>
 
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
@@ -9,11 +9,11 @@
     <string name="action_settings">设置</string>
     <string name="drawer_item_home">主页</string>
     <string name="drawer_item_local">本地音乐</string>
-    <string name="drawer_item_personality">个性背景</string>
+    <string name="drawer_item_personality">个性背景-</string>
     <string name="drawer_item_folder">清除最近播放</string>
     <string name="drawer_item_timer">定时关闭</string>
     <string name="drawer_item_skin">个性换肤</string>
-    <string name="drawer_item_about">关于小世界</string>
+    <string name="drawer_item_about">关于CNUO</string>
 
     <string name="recent_play">最近播放</string>
     <string name="current_play">正在播放</string>

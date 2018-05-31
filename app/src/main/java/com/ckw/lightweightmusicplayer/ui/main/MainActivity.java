@@ -15,6 +15,7 @@ import android.support.v4.media.session.MediaSessionCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.support.design.widget.NavigationView;
@@ -37,6 +38,7 @@ import com.ckw.lightweightmusicplayer.repository.RecentlyPlayed;
 import com.ckw.lightweightmusicplayer.ui.about.AboutMeActivity;
 import com.ckw.lightweightmusicplayer.ui.favorite.MyFavoriteActivity;
 import com.ckw.lightweightmusicplayer.ui.localmusic.LocalMusicActivity;
+import com.ckw.lightweightmusicplayer.ui.localsongs.LocalSongsActivity;
 import com.ckw.lightweightmusicplayer.ui.login.LoginActivity;
 import com.ckw.lightweightmusicplayer.ui.magic.MagicActivity;
 import com.ckw.lightweightmusicplayer.ui.playmusic.MusicPlayActivity;
@@ -77,8 +79,16 @@ public class MainActivity extends BaseActivity
     NavigationView mNavigationView;
     @BindView(R.id.fab_play)
     SpeedDialView mPlaySort;
-    @BindView(R.id.rl_local_container)
-    RelativeLayout mLocalMusicContainer;
+
+    /*
+    * 本地布局 点击
+    * */
+    @BindView(R.id.rl_local_song)
+    RelativeLayout mRlLocalSong;
+    @BindView(R.id.rl_local_album)
+    RelativeLayout mRlLocalAlbum;
+    @BindView(R.id.rl_local_artist)
+    RelativeLayout mRlLocalArtist;
     //头部颜色渐变
     @BindView(R.id.custom_linear_gradient)
     CustomLinearGradient mCustomLinearGradient;
@@ -147,7 +157,9 @@ public class MainActivity extends BaseActivity
 
     @Override
     protected void initListener() {
-        mLocalMusicContainer.setOnClickListener(this);
+        mRlLocalSong.setOnClickListener(this);
+        mRlLocalAlbum.setOnClickListener(this);
+        mRlLocalArtist.setOnClickListener(this);
         mTvFavoriteAll.setOnClickListener(this);
         mIvLogin.setOnClickListener(this);
 
@@ -290,10 +302,10 @@ public class MainActivity extends BaseActivity
     public void onClick(View v) {
         int id = v.getId();
         switch (id){
-            case R.id.rl_local_container://本地音乐
+            case R.id.rl_local_song://本地音乐(首页版本)
                 String[] perms = {Manifest.permission.READ_EXTERNAL_STORAGE,Manifest.permission.WRITE_EXTERNAL_STORAGE};
                 if (EasyPermissions.hasPermissions(this, perms)) {
-                    ActivityUtils.startActivity(LocalMusicActivity.class);
+                    ActivityUtils.startActivity(LocalSongsActivity.class);
                 } else {
                     //继续申请，直到同意为止
                     EasyPermissions.requestPermissions(this,getResources().getString(R.string.need_permission_tip),REQUEST_READ_EXTERNAL_STORAGE,perms);

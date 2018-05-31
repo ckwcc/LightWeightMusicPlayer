@@ -52,6 +52,8 @@ public class LocalSongViewHolder extends BaseViewHolder<MediaBrowserCompat.Media
         if (iconUri != null) {
             Glide.with(getContext()).load(iconUri.toString())
                     .into(mSongImg);
+        }else {
+            Glide.with(getContext()).load(getContext().getResources().getDrawable(R.mipmap.ic_music_default)).into(mSongImg);
         }
 
 

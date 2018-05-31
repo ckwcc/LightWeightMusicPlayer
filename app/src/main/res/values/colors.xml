@@ -9,6 +9,7 @@
     <color name="colorAccent">#FF4081</color>
     <color name="colorDark">#111111</color>
     <color name="colorListItem">#232323</color>
+    <color name="colorSmallBlack">#1b1b1b</color>
     <color name="colorGray">#797878</color>
     <color name="colorSmallGray">#bab5b5</color>
     <color name="colorWhite">#ffffff</color>

@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:background="@color/colorDark"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <RelativeLayout
+        android:id="@+id/rl_local_song"
+        android:elevation="4dp"
+        android:translationZ="6dp"
+        android:background="@color/colorSmallBlack"
+        android:layout_width="match_parent"
+        android:layout_height="66dp">
+
+        <ImageView
+            android:id="@+id/iv_local_song"
+            android:src="@mipmap/ic_music_default"
+            android:layout_centerVertical="true"
+            android:layout_alignParentStart="true"
+            android:layout_marginStart="@dimen/activity_horizontal_margin"
+            android:layout_width="44dp"
+            android:layout_height="44dp" />
+
+        <TextView
+            android:layout_toEndOf="@+id/iv_local_song"
+            android:text="本地歌曲"
+            android:textColor="@color/colorWhite"
+            android:layout_centerVertical="true"
+            android:layout_marginStart="@dimen/activity_horizontal_margin"
+            android:textSize="@dimen/small_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1px"
+            android:layout_alignParentBottom="true"
+            android:layout_marginLeft="@dimen/margin_ten"
+            android:layout_marginRight="@dimen/margin_ten"
+            android:background="@color/colorGray" />
+
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:id="@+id/rl_local_album"
+        android:elevation="4dp"
+        android:translationZ="6dp"
+        android:background="@color/colorSmallBlack"
+        android:layout_width="match_parent"
+        android:layout_height="66dp">
+
+        <ImageView
+            android:id="@+id/iv_local_album"
+            android:src="@mipmap/ic_music_default"
+            android:layout_centerVertical="true"
+            android:layout_alignParentStart="true"
+            android:layout_marginStart="@dimen/activity_horizontal_margin"
+            android:layout_width="44dp"
+            android:layout_height="44dp" />
+
+        <TextView
+            android:layout_toEndOf="@+id/iv_local_album"
+            android:text="本地专辑"
+            android:textColor="@color/colorWhite"
+            android:layout_centerVertical="true"
+            android:layout_marginStart="@dimen/activity_horizontal_margin"
+            android:textSize="@dimen/small_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1px"
+            android:layout_alignParentBottom="true"
+            android:layout_marginLeft="@dimen/margin_ten"
+            android:layout_marginRight="@dimen/margin_ten"
+            android:background="@color/colorGray" />
+
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:id="@+id/rl_local_artist"
+        android:elevation="4dp"
+        android:translationZ="6dp"
+        android:background="@color/colorSmallBlack"
+        android:layout_width="match_parent"
+        android:layout_height="66dp">
+
+        <ImageView
+            android:id="@+id/iv_local_artist"
+            android:src="@mipmap/ic_music_default"
+            android:layout_centerVertical="true"
+            android:layout_alignParentStart="true"
+            android:layout_marginStart="@dimen/activity_horizontal_margin"
+            android:layout_width="44dp"
+            android:layout_height="44dp" />
+
+        <TextView
+            android:layout_toEndOf="@+id/iv_local_artist"
+            android:text="本地歌手"
+            android:textColor="@color/colorWhite"
+            android:layout_centerVertical="true"
+            android:layout_marginStart="@dimen/activity_horizontal_margin"
+            android:textSize="@dimen/small_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1px"
+            android:layout_alignParentBottom="true"
+            android:layout_marginLeft="@dimen/margin_ten"
+            android:layout_marginRight="@dimen/margin_ten"
+            android:background="@color/colorGray" />
+
+    </RelativeLayout>
+
+</LinearLayout>

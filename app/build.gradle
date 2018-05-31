@@ -103,7 +103,7 @@ dependencies {
 
     //圆形图片
     implementation 'de.hdodenhof:circleimageview:2.2.0'
-
-
+    //recycleview 特殊滑动效果
+    implementation 'com.github.DingMouRen:LayoutManagerGroup:f68c9712e5'
 
 }

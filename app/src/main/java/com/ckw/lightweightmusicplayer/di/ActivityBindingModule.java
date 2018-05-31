@@ -4,6 +4,8 @@ import com.ckw.lightweightmusicplayer.ui.about.AboutMeActivity;
 import com.ckw.lightweightmusicplayer.ui.about.AboutMeModule;
 import com.ckw.lightweightmusicplayer.ui.favorite.MyFavoriteActivity;
 import com.ckw.lightweightmusicplayer.ui.favorite.MyFavoriteModule;
+import com.ckw.lightweightmusicplayer.ui.localsongs.LocalSongsActivity;
+import com.ckw.lightweightmusicplayer.ui.localsongs.LocalSongsModule;
 import com.ckw.lightweightmusicplayer.ui.login.LoginActivity;
 import com.ckw.lightweightmusicplayer.ui.login.LoginModule;
 import com.ckw.lightweightmusicplayer.ui.magic.MagicActivity;
@@ -65,5 +67,9 @@ public abstract class ActivityBindingModule {
     @ActivityScoped
     @ContributesAndroidInjector(modules = MagicModule.class)
     abstract MagicActivity magicActivity();
+
+    @ActivityScoped
+    @ContributesAndroidInjector(modules = LocalSongsModule.class)
+    abstract LocalSongsActivity localSongsActivity();
 
 }

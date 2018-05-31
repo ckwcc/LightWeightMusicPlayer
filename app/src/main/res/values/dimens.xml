@@ -6,6 +6,7 @@
     <dimen name="nav_header_height">176dp</dimen>
     <dimen name="fab_margin">16dp</dimen>
     <dimen name="common_app_bar_layout_elevation">2dp</dimen>
+    <dimen name="margin_ten">10dp</dimen>
 
     <!--
     12sp 小字提示
