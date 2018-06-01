@@ -87,7 +87,7 @@ public class AlbumActivity extends BaseActivity {
     protected void onMediaBrowserConnected() {
         super.onMediaBrowserConnected();
         boolean connected = mMediaBrowser.isConnected();
-        mediaId = MediaIdHelper.MEDIA_ID_ALBUM_DETAIL +"&"+mAlbumTitle;
+        mediaId = MediaIdHelper.MEDIA_ID_ALBUM_DETAIL +"&&"+mAlbumTitle;
         if(connected){
             mMediaBrowser.unsubscribe(mediaId);
             mMediaBrowser.subscribe(mediaId,mSubscriptionCallback);

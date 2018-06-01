@@ -205,7 +205,7 @@ public class MusicProvider {
                 mediaItems.add(createAlbumMediaItem(albumTitle));
             }
         }else if(mediaId.startsWith(MediaIdHelper.MEDIA_ID_ALBUM_DETAIL)){//专辑详情
-            String[] split = mediaId.split("&");
+            String[] split = mediaId.split("&&");
             List<MediaMetadataCompat> musicsByAlbum = getMusicsByAlbum(split[1]);
             for (int i = 0; i < musicsByAlbum.size(); i++) {
                 mediaItems.add(createMediaItem(musicsByAlbum.get(i)));
@@ -216,11 +216,14 @@ public class MusicProvider {
                 mediaItems.add(createArtistMediaItem(artistName));
             }
         }else if(mediaId.startsWith(MediaIdHelper.MEDIA_ID_ARTIST_DETAIL)){//歌手列表详情
-            String[] split = mediaId.split("&");
+            String[] split = mediaId.split("&&");
             List<MediaMetadataCompat> musicByArtist = getMusicByArtist(split[1]);
-            for (int i = 0; i < musicByArtist.size(); i++) {
-                mediaItems.add(createMediaItem(musicByArtist.get(i)));
+            if(musicByArtist != null){
+                for (int i = 0; i < musicByArtist.size(); i++) {
+                    mediaItems.add(createMediaItem(musicByArtist.get(i)));
+                }
             }
+
         }
         return mediaItems;
     }

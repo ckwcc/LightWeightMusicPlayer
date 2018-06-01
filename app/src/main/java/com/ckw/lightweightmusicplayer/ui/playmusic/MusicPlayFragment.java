@@ -18,6 +18,7 @@ import android.view.animation.LinearInterpolator;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.blankj.utilcode.util.LogUtils;
 import com.blankj.utilcode.util.SPUtils;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
@@ -107,7 +108,7 @@ public class MusicPlayFragment extends BaseFragment implements View.OnClickListe
 
     @Override
     public void initPresenter() {
-
+        LogUtils.d();
     }
 
     @Override

@@ -40,9 +40,6 @@ class LocalSongsFragment @Inject constructor() : BaseFragment() {
     /*
      * 浏览器订阅的接口，数据的回调
      * */
-    /*
-     * 浏览器订阅的接口，数据的回调
-     * */
     private val mSubscriptionCallback = object : MediaBrowserCompat.SubscriptionCallback() {
         override fun onChildrenLoaded(parentId: String, children: List<MediaBrowserCompat.MediaItem>) {
             super.onChildrenLoaded(parentId, children)

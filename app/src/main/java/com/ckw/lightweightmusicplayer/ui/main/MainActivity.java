@@ -38,6 +38,7 @@ import com.ckw.lightweightmusicplayer.repository.RecentlyPlayed;
 import com.ckw.lightweightmusicplayer.ui.about.AboutMeActivity;
 import com.ckw.lightweightmusicplayer.ui.favorite.MyFavoriteActivity;
 import com.ckw.lightweightmusicplayer.ui.localalbums.LocalAlbumsActivity;
+import com.ckw.lightweightmusicplayer.ui.localartists.LocalArtistsActivity;
 import com.ckw.lightweightmusicplayer.ui.localmusic.LocalMusicActivity;
 import com.ckw.lightweightmusicplayer.ui.localsongs.LocalSongsActivity;
 import com.ckw.lightweightmusicplayer.ui.login.LoginActivity;
@@ -319,6 +320,15 @@ public class MainActivity extends BaseActivity
                 } else {
                     //继续申请，直到同意为止
                     EasyPermissions.requestPermissions(this,getResources().getString(R.string.need_permission_tip),REQUEST_READ_EXTERNAL_STORAGE,permsAlbum);
+                }
+                break;
+            case R.id.rl_local_artist:
+                String[] permsArtist = {Manifest.permission.READ_EXTERNAL_STORAGE,Manifest.permission.WRITE_EXTERNAL_STORAGE};
+                if (EasyPermissions.hasPermissions(this, permsArtist)) {
+                    ActivityUtils.startActivity(LocalArtistsActivity.class);
+                } else {
+                    //继续申请，直到同意为止
+                    EasyPermissions.requestPermissions(this,getResources().getString(R.string.need_permission_tip),REQUEST_READ_EXTERNAL_STORAGE,permsArtist);
                 }
                 break;
             case R.id.tv_playlist_view_all://查看全部

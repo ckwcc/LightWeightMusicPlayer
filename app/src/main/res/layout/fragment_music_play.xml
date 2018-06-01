@@ -14,7 +14,7 @@
         android:layout_centerInParent="true"
         android:scaleType="centerCrop"
         app:civ_border_color="#FF000000"
-        android:src="@mipmap/ic_music_default"
+        android:src="@mipmap/bg_echelon"
         app:civ_border_width="2dp"
         android:layout_height="240dp"
         android:layout_width="240dp"

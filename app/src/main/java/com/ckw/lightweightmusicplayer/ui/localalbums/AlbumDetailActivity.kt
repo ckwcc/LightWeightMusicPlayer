@@ -99,7 +99,7 @@ class AlbumDetailActivity: BaseActivity() {
     }
 
     fun onConnected() {
-        val mediaId = MediaIdHelper.MEDIA_ID_ALBUM_DETAIL + "&" + mAlbumName
+        val mediaId = MediaIdHelper.MEDIA_ID_ALBUM_DETAIL + "&&" + mAlbumName
         mediaBrowser.unsubscribe(mediaId)
         mediaBrowser.subscribe(mediaId, mSubscriptionCallback)
     }

@@ -46,6 +46,7 @@
         <activity android:name=".ui.localalbums.AlbumDetailActivity"
             android:theme="@style/AppTheme.Skid_2"
             />
+        <activity android:name=".ui.localartists.LocalArtistsActivity" />
 
         <service android:name=".ui.playmusic.service.MusicService"
             tools:ignore="ExportedService"

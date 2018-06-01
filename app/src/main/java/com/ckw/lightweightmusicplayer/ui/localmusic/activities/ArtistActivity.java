@@ -102,7 +102,7 @@ public class ArtistActivity extends BaseActivity{
     protected void onMediaBrowserConnected() {
         super.onMediaBrowserConnected();
         boolean connected = mMediaBrowser.isConnected();
-        mediaId = MediaIdHelper.MEDIA_ID_ARTIST_DETAIL +"&"+ mArtistName;
+        mediaId = MediaIdHelper.MEDIA_ID_ARTIST_DETAIL +"&&"+ mArtistName;
         if(connected){
             mMediaBrowser.unsubscribe(mediaId);
             mMediaBrowser.subscribe(mediaId,mSubscriptionCallback);

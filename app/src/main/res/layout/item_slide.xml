@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.v7.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="321dp"
+    android:layout_height="456dp"
+    android:layout_gravity="center_horizontal"
+    app:cardCornerRadius="5dp"
+    app:elevation="10dp"
+    >
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+    <ImageView
+        android:id="@+id/img_bg"
+        android:src="@mipmap/bg_echelon"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:scaleType="centerCrop"
+        android:layout_above="@+id/rela_bottom"
+        />
+        <TextView
+            android:id="@+id/tv_title"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_horizontal"
+            android:textColor="@android:color/white"
+            android:textStyle="bold"
+            android:layout_marginTop="16dp"
+            android:textSize="30sp"
+            />
+        <RelativeLayout
+            android:id="@+id/rela_bottom"
+            android:layout_width="match_parent"
+            android:layout_height="56dp"
+            android:layout_alignParentBottom="true"
+            android:background="@android:color/white"
+            >
+            <de.hdodenhof.circleimageview.CircleImageView
+                android:id="@+id/img_user"
+                android:layout_width="35dp"
+                android:layout_height="35dp"
+                android:layout_centerVertical="true"
+                android:src="@mipmap/ic_music_default"
+                android:layout_marginLeft="16dp"
+                />
+
+            <TextView
+                android:id="@+id/tv_artist_name"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textStyle="bold"
+                android:maxEms="6"
+                android:textSize="@dimen/small_title"
+                tools:text="歌手歌手歌手歌手"
+                android:ellipsize="end"
+                android:layout_centerVertical="true"
+                android:layout_toRightOf="@+id/img_user"
+                android:layout_marginLeft="10dp"
+                android:layout_marginRight="16dp"
+                android:singleLine="true"
+                />
+
+            <TextView
+                android:id="@+id/tv_song_num"
+                android:layout_centerVertical="true"
+                android:layout_alignParentEnd="true"
+                android:singleLine="true"
+                android:maxEms="10"
+                android:ellipsize="end"
+                tools:text="2首歌曲"
+                android:layout_marginEnd="@dimen/activity_horizontal_margin"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+        </RelativeLayout>
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1px"
+            android:background="#b2b2b2"
+            android:layout_alignParentBottom="true"
+            />
+    </RelativeLayout>
+
+</android.support.v7.widget.CardView>
