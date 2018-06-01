@@ -67,7 +67,6 @@ class LocalAlbumsActivity : BaseActivity(), AlbumClickListener {
         intent.putExtra("img", mediaItem.description.iconUri.toString())
         intent.putExtra("album", mediaItem.description.mediaId)
         intent.putExtra("artist",mediaItem.description.title)
-        intent.putExtra("mediaId",mediaItem.mediaId)
         val p1 = Pair.create(viewHolder!!.imgBg as View, "img_view_1")
         val p2 = Pair.create(viewHolder!!.tvTitle as View, "title_1")
         val p3 = Pair.create(viewHolder!!.tvBottom as View, "tv_bottom")

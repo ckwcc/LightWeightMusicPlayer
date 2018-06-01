@@ -1,4 +1,5 @@
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools"
+    >
 
     <style name="AppTheme.NoActionBar">
         <item name="windowActionBar">false</item>
@@ -24,5 +25,29 @@
     <style name="ThumbTransitionStyle">
         <item name="android:transitionName">@string/translation_thumb</item>
     </style>
+
+    <!--沉浸式主题-->
+    <style name="AppTheme.StatusTranslate" parent="android:Theme.Holo.Light.NoActionBar">
+        <!--状态栏透明并且最外层布局顶格，除非使用android:fitsystem="true"-->
+        <item name="android:windowTranslucentStatus">true</item>
+    </style>
+
+    <!--SkidRightLayoutManager-->
+    <style name="AppTheme.Skid_1" parent="MaterialTheme">
+        <item name="android:windowContentTransitions" tools:targetApi="lollipop">true</item>
+        <item name="android:windowAllowReturnTransitionOverlap" tools:targetApi="lollipop">false</item>
+        <item name="android:windowAllowEnterTransitionOverlap" tools:targetApi="lollipop">false</item>
+
+    </style>
+    <style name="AppTheme.Skid_2" parent="MaterialTheme">
+        <item name="android:windowIsTranslucent">true</item>
+        <item name="android:windowBackground">@android:color/transparent</item>
+        <item name="android:windowContentTransitions" tools:targetApi="lollipop">true</item>
+        <item name="android:windowAllowReturnTransitionOverlap" tools:targetApi="lollipop">false</item>
+        <item name="android:windowAllowEnterTransitionOverlap" tools:targetApi="lollipop">false</item>
+        <item name="android:windowSharedElementEnterTransition" tools:targetApi="lollipop">@transition/enter_share_element_transfrom_skid_2</item>
+    </style>
+
+
 
 </resources>

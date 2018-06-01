@@ -40,8 +40,12 @@
         <activity android:name=".ui.login.LoginActivity" />
         <activity android:name=".ui.magic.MagicActivity" />
         <activity android:name=".ui.localsongs.LocalSongsActivity" />
-        <activity android:name=".ui.localalbums.LocalAlbumsActivity" />
-        <activity android:name=".ui.localalbums.AlbumDetailActivity" />
+        <activity android:name=".ui.localalbums.LocalAlbumsActivity"
+            android:theme="@style/AppTheme.Skid_1"
+            />
+        <activity android:name=".ui.localalbums.AlbumDetailActivity"
+            android:theme="@style/AppTheme.Skid_2"
+            />
 
         <service android:name=".ui.playmusic.service.MusicService"
             tools:ignore="ExportedService"
