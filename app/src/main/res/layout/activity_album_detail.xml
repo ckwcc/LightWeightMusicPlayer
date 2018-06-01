@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/colorDark"
+    >
+
+    <ImageView
+        android:id="@+id/img_bg"
+        android:src="@mipmap/bg_echelon"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:scaleType="centerCrop"
+        android:background="@android:color/transparent"
+        android:transitionName="img_view_1" />
+
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/rv_album_detail"
+        android:layout_alignParentTop="true"
+        android:layout_above="@+id/tv_title"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+    </android.support.v7.widget.RecyclerView>
+
+
+    <TextView
+        android:id="@+id/tv_title"
+        tools:text="专辑"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/tv_bottom"
+        android:layout_marginLeft="16dp"
+        android:background="@android:color/transparent"
+        android:textColor="@android:color/white"
+        android:textSize="30sp"
+        android:textStyle="bold"
+        android:transitionName="title_1" />
+
+    <TextView
+        android:id="@+id/tv_bottom"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:background="@android:color/transparent"
+        android:layout_marginBottom="20dp"
+        android:transitionName="tv_bottom"
+        android:layout_marginLeft="16dp"
+        android:layout_marginRight="16dp"
+        tools:text="歌手"
+        android:textSize="16sp"
+        android:textColor="@android:color/white"
+        android:textStyle="bold" />
+</RelativeLayout>

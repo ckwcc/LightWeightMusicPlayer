@@ -39,8 +39,9 @@
         <activity android:name=".ui.favorite.MyFavoriteActivity" />
         <activity android:name=".ui.login.LoginActivity" />
         <activity android:name=".ui.magic.MagicActivity" />
-        <activity android:name=".ui.localsong.LocalSongActivity" />
         <activity android:name=".ui.localsongs.LocalSongsActivity" />
+        <activity android:name=".ui.localalbums.LocalAlbumsActivity" />
+        <activity android:name=".ui.localalbums.AlbumDetailActivity" />
 
         <service android:name=".ui.playmusic.service.MusicService"
             tools:ignore="ExportedService"

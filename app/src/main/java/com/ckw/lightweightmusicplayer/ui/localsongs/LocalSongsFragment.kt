@@ -21,6 +21,7 @@ import java.util.ArrayList
 import javax.inject.Inject
 
 import butterknife.BindView
+import com.ckw.lightweightmusicplayer.ui.playmusic.helper.MediaIdHelper
 
 
 /**
@@ -81,7 +82,7 @@ class LocalSongsFragment @Inject constructor() : BaseFragment() {
     }
 
     fun onConnected(mediaBrowser: MediaBrowserCompat) {
-        val mediaId = "__LOCAL_NORMAL__"
+        val mediaId = MediaIdHelper.MEDIA_ID_NORMAL
         mediaBrowser.unsubscribe(mediaId)
         mediaBrowser.subscribe(mediaId, mSubscriptionCallback)
     }
