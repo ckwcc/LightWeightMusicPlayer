@@ -92,7 +92,7 @@ public class RecentUtils {
                 RecentBean recentBean = new RecentBean();
                 recentBean.setMediaId(addBean.getMediaId());
                 recentBean.setTitle(addBean.getTitle().toString());
-                recentBean.setArtist(addBean.getTitle());
+                recentBean.setArtist(addBean.getArtist());
                 if(addBean.getAlbum() != null){
                     recentBean.setAlbum(addBean.getAlbum());
                 }

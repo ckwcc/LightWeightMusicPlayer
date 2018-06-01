@@ -11,17 +11,16 @@
             android:id="@+id/nav_local"
             android:icon="@mipmap/ic_local"
             android:title="@string/drawer_item_local" />
+        <item
+            android:id="@+id/nav_clear_recent"
+            android:icon="@mipmap/ic_clear"
+            android:title="@string/drawer_item_folder" />
 
         <item
             android:id="@+id/nav_magic"
             android:icon="@mipmap/ic_magic"
             android:title="@string/drawer_item_personality" />
 
-        <item
-            android:id="@+id/nav_time_close"
-            android:icon="@mipmap/ic_recent"
-            android:title="@string/drawer_item_timer"
-            />
 
         <item
             android:id="@+id/nav_change_skin"
@@ -30,9 +29,10 @@
             />
 
         <item
-            android:id="@+id/nav_clear_recent"
-            android:icon="@mipmap/ic_clear"
-            android:title="@string/drawer_item_folder" />
+            android:id="@+id/nav_time_close"
+            android:icon="@mipmap/ic_recent"
+            android:title="@string/drawer_item_timer"
+            />
 
         <item
             android:id="@+id/nav_about_me"

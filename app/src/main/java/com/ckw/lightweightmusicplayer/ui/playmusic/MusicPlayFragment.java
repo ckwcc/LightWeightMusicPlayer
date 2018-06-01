@@ -108,7 +108,6 @@ public class MusicPlayFragment extends BaseFragment implements View.OnClickListe
 
     @Override
     public void initPresenter() {
-        LogUtils.d();
     }
 
     @Override
@@ -125,7 +124,7 @@ public class MusicPlayFragment extends BaseFragment implements View.OnClickListe
     public void onDestroy() {
         super.onDestroy();
         stopSeekbarUpdate();
-        startRotateAnimator = null;
+        startRotateAnimator.end();
         mExecutorService.shutdown();
     }
 
@@ -194,7 +193,7 @@ public class MusicPlayFragment extends BaseFragment implements View.OnClickListe
                                 if(mFab != null){
                                     mFab.setImageResource(android.R.drawable.ic_media_pause);
                                 }
-                                startAnimation(musicCoverView);
+                                restartAnimation();
                                 break;
                             default:
                         }
@@ -295,7 +294,6 @@ public class MusicPlayFragment extends BaseFragment implements View.OnClickListe
                 @Override
                 public void onMetadataChanged(MediaMetadataCompat metadata) {
                     updateDuration(metadata);
-
                     RecentBean recentBean = new RecentBean();
                     recentBean.setMediaId(metadata.getDescription().getMediaId());
                     if (metadata.getDescription().getIconUri() != null) {
@@ -459,6 +457,8 @@ public class MusicPlayFragment extends BaseFragment implements View.OnClickListe
                     .load(picture)
                     .apply(options)
                     .into(musicCoverView);
+        }else {
+            musicCoverView.setImageResource(R.mipmap.bg_echelon);
         }
 
     }
@@ -467,14 +467,20 @@ public class MusicPlayFragment extends BaseFragment implements View.OnClickListe
     * 开始旋转动画
     * */
     private void startAnimation(final View view){
-        if(startRotateAnimator != null){
-            startRotateAnimator = null;
-        }
-        startRotateAnimator = ObjectAnimator.ofFloat(view, View.ROTATION,view.getRotation(),360);
+        startRotateAnimator = ObjectAnimator.ofFloat(view, View.ROTATION,0,360);
         startRotateAnimator.setInterpolator(new LinearInterpolator());
         startRotateAnimator.setRepeatCount(Animation.INFINITE);
         startRotateAnimator.setDuration(12000);
         startRotateAnimator.start();
+    }
+
+    /*
+    * 恢复动画
+    * */
+    private void restartAnimation(){
+        if(startRotateAnimator != null){
+            startRotateAnimator.resume();
+        }
     }
 
     /*
