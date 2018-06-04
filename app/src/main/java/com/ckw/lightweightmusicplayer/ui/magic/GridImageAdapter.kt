@@ -87,7 +87,6 @@ class GridImageAdapter(private val context: Context,
     override fun onCreateViewHolder(viewGroup: ViewGroup, i: Int): ViewHolder {
         val view = mInflater.inflate(R.layout.gv_filter_image,
                 viewGroup, false)
-        val viewHolder = ViewHolder(view)
         return ViewHolder(view)
     }
 
@@ -119,7 +118,7 @@ class GridImageAdapter(private val context: Context,
             }
             val media = list[position]
             val mimeType = media.mimeType
-            var path = ""
+            var path: String?
             if (media.isCut && !media.isCompressed) {
                 // 裁剪过
                 path = media.cutPath

@@ -137,17 +137,23 @@ public final class LocalPlayback implements Playback {
                             break;
                         case AudioManager.AUDIOFOCUS_LOSS_TRANSIENT_CAN_DUCK:
                             // Audio focus was lost, but it's possible to duck (i.e.: play quietly)
+                            //音频焦点丢失了，但也有可能隐藏(例如:静音播放)
                             mCurrentAudioFocusState = AUDIO_NO_FOCUS_CAN_DUCK;
                             break;
                         case AudioManager.AUDIOFOCUS_LOSS_TRANSIENT:
                             // Lost audio focus, but will gain it back (shortly), so note whether
-                            // playback should resume
+                            // playback should resume  所以请注意播放是否应该恢复
                             mCurrentAudioFocusState = AUDIO_NO_FOCUS_NO_DUCK;
                             break;
                         case AudioManager.AUDIOFOCUS_LOSS:
-                            // Lost audio focus, probably "permanently"
+                            // Lost audio focus, probably "permanently" 丢失的音频焦点，可能是“永久的”
                             mCurrentAudioFocusState = AUDIO_NO_FOCUS_NO_DUCK;
                             break;
+                    }
+
+                    if (mExoPlayer != null) {
+                        // Update the player state based on the change
+                        configurePlayerState();
                     }
 
                 }

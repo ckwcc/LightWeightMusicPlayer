@@ -31,6 +31,9 @@ import android.widget.TextView;
 
 import com.blankj.utilcode.util.ActivityUtils;
 import com.blankj.utilcode.util.SPUtils;
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
+import com.bumptech.glide.request.RequestOptions;
 import com.ckw.lightweightmusicplayer.R;
 import com.ckw.lightweightmusicplayer.base.BaseActivity;
 import com.ckw.lightweightmusicplayer.repository.RecentBean;
@@ -163,7 +166,7 @@ public class MainActivity extends BaseActivity
         mRlLocalAlbum.setOnClickListener(this);
         mRlLocalArtist.setOnClickListener(this);
         mTvFavoriteAll.setOnClickListener(this);
-        mIvLogin.setOnClickListener(this);
+//        mIvLogin.setOnClickListener(this);
 
         mRecentAdapter.setItemClickListener(new ItemClickListener() {
             @Override
@@ -208,6 +211,8 @@ public class MainActivity extends BaseActivity
         if(!login.equals("")){
             mTvUserName.setText(login);
         }
+
+        showNavigationImageView();
     }
 
     @Override
@@ -337,7 +342,7 @@ public class MainActivity extends BaseActivity
                 }
                 break;
             case R.id.nav_image_view:
-                ActivityUtils.startActivity(LoginActivity.class);
+//                ActivityUtils.startActivity(LoginActivity.class);
                 break;
         }
     }
@@ -424,6 +429,26 @@ public class MainActivity extends BaseActivity
         if(!login.equals("")){
             mTvUserName.setText(login);
         }
+    }
+
+    /*
+     * 展示抽屉的头部
+     * */
+    private void showNavigationImageView(){
+        String picture = SPUtils.getInstance().getString("picture", "");
+        if(!picture.equals("")){
+            RequestOptions options = new RequestOptions()
+                    .centerCrop()
+                    .placeholder(R.color.colorWhite)
+                    .diskCacheStrategy(DiskCacheStrategy.ALL);
+            Glide.with(this)
+                    .load(picture)
+                    .apply(options)
+                    .into(mIvLogin);
+        }else {
+            mIvLogin.setImageResource(R.mipmap.bg_echelon);
+        }
+
     }
 
     /*

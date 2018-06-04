@@ -229,6 +229,7 @@ public class MusicPlayFragment extends BaseFragment implements View.OnClickListe
             }
         }
 
+
     }
 
 
@@ -294,6 +295,12 @@ public class MusicPlayFragment extends BaseFragment implements View.OnClickListe
                 @Override
                 public void onMetadataChanged(MediaMetadataCompat metadata) {
                     updateDuration(metadata);
+                    mediaId = metadata.getDescription().getMediaId();
+                    if (RecentUtils.isFavorite(mediaId)) {
+                        mIvFavorite.setImageResource(R.mipmap.ic_favorite);
+                    }else {
+                        mIvFavorite.setImageResource(R.mipmap.ic_favorite_default);
+                    }
                     RecentBean recentBean = new RecentBean();
                     recentBean.setMediaId(metadata.getDescription().getMediaId());
                     if (metadata.getDescription().getIconUri() != null) {
