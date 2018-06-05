@@ -31,6 +31,7 @@ import android.widget.TextView;
 
 import com.blankj.utilcode.util.ActivityUtils;
 import com.blankj.utilcode.util.SPUtils;
+import com.blankj.utilcode.util.ToastUtils;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.request.RequestOptions;
@@ -44,9 +45,9 @@ import com.ckw.lightweightmusicplayer.ui.localalbums.LocalAlbumsActivity;
 import com.ckw.lightweightmusicplayer.ui.localartists.LocalArtistsActivity;
 import com.ckw.lightweightmusicplayer.ui.localmusic.LocalMusicActivity;
 import com.ckw.lightweightmusicplayer.ui.localsongs.LocalSongsActivity;
-import com.ckw.lightweightmusicplayer.ui.login.LoginActivity;
 import com.ckw.lightweightmusicplayer.ui.magic.MagicActivity;
 import com.ckw.lightweightmusicplayer.ui.playmusic.MusicPlayActivity;
+import com.ckw.lightweightmusicplayer.utils.MediaUtils;
 import com.ckw.lightweightmusicplayer.utils.RecentUtils;
 import com.ckw.lightweightmusicplayer.weight.CustomLinearGradient;
 import com.ckw.lightweightmusicplayer.weight.EasyCountDownTextureView;
@@ -124,6 +125,8 @@ public class MainActivity extends BaseActivity
     private ImageView mIvLogin;
     private TextView mTvUserName;
 
+    private boolean hasData;
+
     @Override
     protected void initView(Bundle savedInstanceState) {
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
@@ -153,6 +156,11 @@ public class MainActivity extends BaseActivity
         themeColor = SPUtils.getInstance().getInt("themeColor",Color.parseColor("#B24242"));
         mRecentList = new ArrayList<>();
         mFavoriteList = new ArrayList<>();
+        if(MediaUtils.getAudioList(this) == null){
+            hasData = false;
+        }else {
+            hasData = true;
+        }
     }
 
     @Override
@@ -276,7 +284,11 @@ public class MainActivity extends BaseActivity
             case R.id.nav_local://本地音乐
                 String[] perms = {Manifest.permission.READ_EXTERNAL_STORAGE,Manifest.permission.WRITE_EXTERNAL_STORAGE};
                 if (EasyPermissions.hasPermissions(this, perms)) {
-                    ActivityUtils.startActivity(LocalMusicActivity.class);
+                    if(hasData){
+                        ActivityUtils.startActivity(LocalMusicActivity.class);
+                    }else {
+                        ToastUtils.showShort(R.string.local_no_data);
+                    }
                 } else {
                     //继续申请，直到同意为止
                     EasyPermissions.requestPermissions(this,getResources().getString(R.string.need_permission_tip),REQUEST_READ_EXTERNAL_STORAGE,perms);
@@ -312,7 +324,11 @@ public class MainActivity extends BaseActivity
             case R.id.rl_local_song://本地音乐(首页版本)
                 String[] perms = {Manifest.permission.READ_EXTERNAL_STORAGE,Manifest.permission.WRITE_EXTERNAL_STORAGE};
                 if (EasyPermissions.hasPermissions(this, perms)) {
-                    ActivityUtils.startActivity(LocalSongsActivity.class);
+                    if(hasData){
+                        ActivityUtils.startActivity(LocalSongsActivity.class);
+                    }else {
+                        ToastUtils.showShort(R.string.local_no_data);
+                    }
                 } else {
                     //继续申请，直到同意为止
                     EasyPermissions.requestPermissions(this,getResources().getString(R.string.need_permission_tip),REQUEST_READ_EXTERNAL_STORAGE,perms);
@@ -321,7 +337,11 @@ public class MainActivity extends BaseActivity
             case R.id.rl_local_album://本地专辑(首页版本)
                 String[] permsAlbum = {Manifest.permission.READ_EXTERNAL_STORAGE,Manifest.permission.WRITE_EXTERNAL_STORAGE};
                 if (EasyPermissions.hasPermissions(this, permsAlbum)) {
-                    ActivityUtils.startActivity(LocalAlbumsActivity.class);
+                    if(hasData){
+                        ActivityUtils.startActivity(LocalAlbumsActivity.class);
+                    }else {
+                        ToastUtils.showShort(R.string.local_no_data);
+                    }
                 } else {
                     //继续申请，直到同意为止
                     EasyPermissions.requestPermissions(this,getResources().getString(R.string.need_permission_tip),REQUEST_READ_EXTERNAL_STORAGE,permsAlbum);
@@ -330,7 +350,11 @@ public class MainActivity extends BaseActivity
             case R.id.rl_local_artist:
                 String[] permsArtist = {Manifest.permission.READ_EXTERNAL_STORAGE,Manifest.permission.WRITE_EXTERNAL_STORAGE};
                 if (EasyPermissions.hasPermissions(this, permsArtist)) {
-                    ActivityUtils.startActivity(LocalArtistsActivity.class);
+                    if(hasData){
+                        ActivityUtils.startActivity(LocalArtistsActivity.class);
+                    }else {
+                        ToastUtils.showShort(R.string.local_no_data);
+                    }
                 } else {
                     //继续申请，直到同意为止
                     EasyPermissions.requestPermissions(this,getResources().getString(R.string.need_permission_tip),REQUEST_READ_EXTERNAL_STORAGE,permsArtist);
@@ -339,6 +363,8 @@ public class MainActivity extends BaseActivity
             case R.id.tv_playlist_view_all://查看全部
                 if(mFavoriteList != null &&  mFavoriteList.size() > 0){
                     ActivityUtils.startActivity(MyFavoriteActivity.class);
+                }else {
+                    ToastUtils.showShort(R.string.local_no_favorite);
                 }
                 break;
             case R.id.nav_image_view:

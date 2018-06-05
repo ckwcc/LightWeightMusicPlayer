@@ -29,18 +29,23 @@ public class LocalSongSource implements SongSource{
         mContext = context;
     }
 
-    public void getLocalSongList(){
+    private void getLocalSongList(){
         mLocalSong = MediaUtils.getAudioList(mContext);
         mTotalAlbumList = MediaUtils.getAlbumList(mContext);
-        for (Song song : mLocalSong) {
-            song.setAlbumObj(getAlbum(song.getAlbumId()));
+        if(mLocalSong != null){
+            for (Song song : mLocalSong) {
+                song.setAlbumObj(getAlbum(song.getAlbumId()));
+            }
         }
+
     }
 
-    public Album getAlbum (int albumId) {
-        for (Album album : mTotalAlbumList) {
-            if (album.getId() == albumId) {
-                return album;
+    private Album getAlbum (int albumId) {
+        if(mTotalAlbumList != null){
+            for (Album album : mTotalAlbumList) {
+                if (album.getId() == albumId) {
+                    return album;
+                }
             }
         }
         return null;
@@ -81,10 +86,11 @@ public class LocalSongSource implements SongSource{
     public Iterator<MediaMetadataCompat> iterator() {
         ArrayList<MediaMetadataCompat> tracks = new ArrayList<>();
 
-        for (int i = 0; i < mLocalSong.size(); i++) {
-            tracks.add(buildFromLocal(mLocalSong.get(i)));
+        if(mLocalSong != null){
+            for (int i = 0; i < mLocalSong.size(); i++) {
+                tracks.add(buildFromLocal(mLocalSong.get(i)));
+            }
         }
-
         return tracks.iterator();
     }
 
@@ -92,8 +98,10 @@ public class LocalSongSource implements SongSource{
     public ArrayList<MediaMetadataCompat> getLocalList() {
         getLocalSongList();
         ArrayList<MediaMetadataCompat> tracks = new ArrayList<>();
-        for (int i = 0; i < mLocalSong.size(); i++) {
-            tracks.add(buildFromLocal(mLocalSong.get(i)));
+        if(mLocalSong != null){
+            for (int i = 0; i < mLocalSong.size(); i++) {
+                tracks.add(buildFromLocal(mLocalSong.get(i)));
+            }
         }
         return tracks;
     }

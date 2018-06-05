@@ -43,6 +43,8 @@
     <string name="take_picture">拍照</string>
     <string name="take_picture_tip">图片将应用于音乐播放界面</string>
     <string name="apply">应用</string>
+    <string name="local_no_data">您的本地没有音乐</string>
+    <string name="local_no_favorite">喜欢的列表为空</string>
     <string name="translation_thumb">thumb</string>
 
     <!--music transition-->

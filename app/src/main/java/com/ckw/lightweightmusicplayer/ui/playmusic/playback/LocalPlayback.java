@@ -29,6 +29,7 @@ import com.google.android.exoplayer2.source.MediaSource;
 import com.google.android.exoplayer2.source.TrackGroupArray;
 import com.google.android.exoplayer2.trackselection.DefaultTrackSelector;
 import com.google.android.exoplayer2.trackselection.TrackSelectionArray;
+import com.google.android.exoplayer2.trackselection.TrackSelector;
 import com.google.android.exoplayer2.upstream.DataSource;
 import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory;
 import com.google.android.exoplayer2.util.Util;
@@ -267,7 +268,6 @@ public final class LocalPlayback implements Playback {
                     mExoPlayer =
                             ExoPlayerFactory.newSimpleInstance(
                                     mContext, new DefaultTrackSelector(), new DefaultLoadControl());
-
                     mExoPlayer.addListener(mEventListener);
                 }
 
@@ -279,7 +279,7 @@ public final class LocalPlayback implements Playback {
 
                 DataSource.Factory dataSourceFactory =
                         new DefaultDataSourceFactory(
-                                mContext, Util.getUserAgent(mContext, "uamp"), null);
+                                mContext, Util.getUserAgent(mContext, "cnuo"), null);
                 ExtractorsFactory extractorsFactory = new DefaultExtractorsFactory();
                 MediaSource mediaSource =
                         new ExtractorMediaSource(
@@ -408,10 +408,11 @@ public final class LocalPlayback implements Playback {
     * 播放器事件监听
     * */
     private final class ExoPlayerEventListener implements ExoPlayer.EventListener {
-        
+
+
         @Override
-        public void onTimelineChanged(Timeline timeline, Object manifest) {
-            // Nothing to do.
+        public void onTimelineChanged(Timeline timeline, Object manifest, int reason) {
+
         }
 
         @Override

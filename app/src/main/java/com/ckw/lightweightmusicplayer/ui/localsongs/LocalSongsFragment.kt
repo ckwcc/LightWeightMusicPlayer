@@ -37,20 +37,6 @@ class LocalSongsFragment @Inject constructor() : BaseFragment() {
     private var mList: MutableList<MediaBrowserCompat.MediaItem>? = null
     private var mAdapter: LocalSongAdapter? = null
 
-    /*
-     * 浏览器订阅的接口，数据的回调
-     * */
-    private val mSubscriptionCallback = object : MediaBrowserCompat.SubscriptionCallback() {
-        override fun onChildrenLoaded(parentId: String, children: List<MediaBrowserCompat.MediaItem>) {
-            super.onChildrenLoaded(parentId, children)
-
-            mList!!.clear()
-            mList!!.addAll(children)
-            mAdapter!!.notifyDataSetChanged()
-
-        }
-    }
-
     override fun getLayoutResID(): Int {
         return R.layout.fragment_local_song
     }
@@ -82,6 +68,20 @@ class LocalSongsFragment @Inject constructor() : BaseFragment() {
         val mediaId = MediaIdHelper.MEDIA_ID_NORMAL
         mediaBrowser.unsubscribe(mediaId)
         mediaBrowser.subscribe(mediaId, mSubscriptionCallback)
+    }
+
+    /*
+    * 浏览器订阅的接口，数据的回调
+    * */
+    private val mSubscriptionCallback = object : MediaBrowserCompat.SubscriptionCallback() {
+        override fun onChildrenLoaded(parentId: String, children: List<MediaBrowserCompat.MediaItem>) {
+            super.onChildrenLoaded(parentId, children)
+
+            mList!!.clear()
+            mList!!.addAll(children)
+            mAdapter!!.notifyDataSetChanged()
+
+        }
     }
 
     internal inner class LocalSongAdapter : RecyclerView.Adapter<LocalSongAdapter.ViewHolder>() {
