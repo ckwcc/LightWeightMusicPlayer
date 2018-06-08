@@ -156,11 +156,18 @@ public class MainActivity extends BaseActivity
         themeColor = SPUtils.getInstance().getInt("themeColor",Color.parseColor("#B24242"));
         mRecentList = new ArrayList<>();
         mFavoriteList = new ArrayList<>();
-        if(MediaUtils.getAudioList(this) == null){
-            hasData = false;
-        }else {
-            hasData = true;
+        String[] perms = {Manifest.permission.READ_EXTERNAL_STORAGE,Manifest.permission.WRITE_EXTERNAL_STORAGE};
+        if (EasyPermissions.hasPermissions(this, perms)) {
+            if(MediaUtils.getAudioList(this) == null){
+                hasData = false;
+            }else {
+                hasData = true;
+            }
+        } else {
+            //继续申请，直到同意为止
+            EasyPermissions.requestPermissions(this,getResources().getString(R.string.need_permission_tip),REQUEST_READ_EXTERNAL_STORAGE,perms);
         }
+
     }
 
     @Override
