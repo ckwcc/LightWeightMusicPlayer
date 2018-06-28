@@ -49,7 +49,7 @@ class LocalAlbumsAdapter() : RecyclerView.Adapter<LocalAlbumsAdapter.ViewHolder>
             Glide.with(mContext!!).load(mediaItem.description.iconUri!!.toString())
                     .into(holder.imgBg!!)
         } else {
-            holder.imgBg!!.setImageResource(R.mipmap.bg_echelon)
+            holder.imgBg!!.setImageResource(R.mipmap.ic_music_default)
         }
         holder.imgBg!!.setOnClickListener {
             listener!!.setOnItemClick(position,holder)

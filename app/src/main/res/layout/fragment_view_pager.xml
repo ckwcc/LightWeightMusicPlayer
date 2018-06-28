@@ -7,7 +7,7 @@
 
     <ImageView
         android:id="@+id/iv_album"
-        android:src="@mipmap/bg_echelon"
+        android:src="@mipmap/ic_music_default"
         android:layout_marginBottom="66dp"
         android:scaleType="fitXY"
         android:layout_width="match_parent"

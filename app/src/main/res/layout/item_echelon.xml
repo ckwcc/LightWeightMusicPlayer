@@ -63,7 +63,7 @@
             android:layout_height="match_parent"
             android:layout_margin="16dp"
             android:scaleType="centerCrop"
-            android:src="@mipmap/bg_echelon" />
+            android:src="@mipmap/ic_music_default" />
     </LinearLayout>
 
     <de.hdodenhof.circleimageview.CircleImageView

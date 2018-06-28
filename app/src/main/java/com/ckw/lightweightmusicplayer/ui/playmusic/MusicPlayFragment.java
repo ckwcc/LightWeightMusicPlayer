@@ -465,7 +465,7 @@ public class MusicPlayFragment extends BaseFragment implements View.OnClickListe
                     .apply(options)
                     .into(musicCoverView);
         }else {
-            musicCoverView.setImageResource(R.mipmap.bg_echelon);
+            musicCoverView.setImageResource(R.mipmap.ic_music_default);
         }
 
     }

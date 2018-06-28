@@ -158,11 +158,7 @@ public class MainActivity extends BaseActivity
         mFavoriteList = new ArrayList<>();
         String[] perms = {Manifest.permission.READ_EXTERNAL_STORAGE,Manifest.permission.WRITE_EXTERNAL_STORAGE};
         if (EasyPermissions.hasPermissions(this, perms)) {
-            if(MediaUtils.getAudioList(this) == null){
-                hasData = false;
-            }else {
-                hasData = true;
-            }
+            hasData = MediaUtils.getAudioList(this) != null;
         } else {
             //继续申请，直到同意为止
             EasyPermissions.requestPermissions(this,getResources().getString(R.string.need_permission_tip),REQUEST_READ_EXTERNAL_STORAGE,perms);
@@ -413,6 +409,7 @@ public class MainActivity extends BaseActivity
 
     @Override
     public void onPermissionsGranted(int requestCode, @NonNull List<String> perms) {
+        hasData = MediaUtils.getAudioList(this) != null;
     }
 
     @Override
@@ -433,6 +430,7 @@ public class MainActivity extends BaseActivity
         if (requestCode == AppSettingsDialog.DEFAULT_SETTINGS_REQ_CODE) {
             String[] perms = {Manifest.permission.READ_EXTERNAL_STORAGE,Manifest.permission.WRITE_EXTERNAL_STORAGE};
             if (EasyPermissions.hasPermissions(this, perms)) {
+                hasData = MediaUtils.getAudioList(this) != null;
                 onConnected();
             } else {
                 //继续申请，直到同意为止
@@ -479,7 +477,7 @@ public class MainActivity extends BaseActivity
                     .apply(options)
                     .into(mIvLogin);
         }else {
-            mIvLogin.setImageResource(R.mipmap.bg_echelon);
+            mIvLogin.setImageResource(R.mipmap.ic_music_default);
         }
 
     }

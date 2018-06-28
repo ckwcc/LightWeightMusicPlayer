@@ -15,7 +15,7 @@
             android:id="@+id/img_bg"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:src="@mipmap/bg_echelon"
+            android:src="@mipmap/ic_music_default"
             android:scaleType="centerCrop"
             android:transitionName="img_view_1"
             />

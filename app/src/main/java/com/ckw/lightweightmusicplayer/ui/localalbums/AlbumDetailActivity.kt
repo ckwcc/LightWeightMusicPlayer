@@ -46,7 +46,7 @@ class AlbumDetailActivity: BaseActivity() {
         if (mImgPath != null && "" != mImgPath && "null" != mImgPath){
             Glide.with(this).load(mImgPath).into(mImgBg)
         }else{
-            mImgBg.setImageResource(R.mipmap.bg_echelon)
+            mImgBg.setImageResource(R.mipmap.ic_music_default)
         }
         mTvAlbum.text = mAlbumName
         mTvArtist.text = mArtistName

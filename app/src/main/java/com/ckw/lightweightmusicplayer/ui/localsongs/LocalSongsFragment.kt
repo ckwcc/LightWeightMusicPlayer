@@ -101,7 +101,7 @@ class LocalSongsFragment @Inject constructor() : BaseFragment() {
                 Glide.with(context!!).load(mediaItem.description.iconUri!!.toString())
                         .into(holder.bg)
             } else {
-                holder.bg.setImageResource(R.mipmap.bg_echelon)
+                holder.bg.setImageResource(R.mipmap.ic_music_default)
             }
             holder.bg.setOnClickListener {
                 val iconUri = mediaItem.description.iconUri

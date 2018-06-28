@@ -9,7 +9,7 @@
 
     <ImageView
         android:id="@+id/img_bg"
-        android:src="@mipmap/bg_echelon"
+        android:src="@mipmap/ic_music_default"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:scaleType="centerCrop"
